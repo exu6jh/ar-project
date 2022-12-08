@@ -1,7 +1,9 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEditor;
+using Object = UnityEngine.Object;
 
 public class LessonReader : MonoBehaviour
 {
@@ -26,7 +28,7 @@ public class LessonReader : MonoBehaviour
         }
 
         savePoint = index;
-        string[] scriptWords = commands[index].Split(" ", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+        string[] scriptWords = commands[index].Split(" ", StringSplitOptions.RemoveEmptyEntries/* | StringSplitOptions.TrimEntries */);
 
         // DEBUG: print out all parsed words in sentence.
         for(int i = 0; i < scriptWords.Length; i++) {
@@ -36,7 +38,7 @@ public class LessonReader : MonoBehaviour
         if(scriptWords[0].Equals("CREATE-OBJECT")) {
             Debug.Log("Creating.");
             
-            string[] names = commands[index].Split("\"", StringSplitOptions.RemoveEmptyEntries | StringSplitOptions.TrimEntries);
+            string[] names = commands[index].Split("\"", StringSplitOptions.RemoveEmptyEntries/* | StringSplitOptions.TrimEntries */);
             for(int i = 0; i < names.Length; i++) {
                 Debug.Log(names[i]);
             }
@@ -59,7 +61,7 @@ public class LessonReader : MonoBehaviour
         } else if(scriptWords[0].Equals("DELETE-OBJECT")) {
             Debug.Log("Deleting.");
 
-            string[] names = commands[index].Split("\"", StringSplitOptions.RemoveEmptyEntries  | StringSplitOptions.TrimEntries);
+            string[] names = commands[index].Split("\"", StringSplitOptions.RemoveEmptyEntries/* | StringSplitOptions.TrimEntries */);
             for(int i = 0; i < names.Length; i++) {
                 Debug.Log(names[i]);
             }
@@ -106,8 +108,8 @@ public class LessonReader : MonoBehaviour
             }
         } else if (scriptWords[0].Equals("MATRIX")) {
             try {
-                string[] terms = commands[index].Split("\"", StringSplitOptions.RemoveEmptyEntries  | StringSplitOptions.TrimEntries);
-                string[] matrixElements = terms[2].Split(new char[] {'[', ']'}, StringSplitOptions.RemoveEmptyEntries  | StringSplitOptions.TrimEntries);
+                string[] terms = commands[index].Split("\"", StringSplitOptions.RemoveEmptyEntries/* | StringSplitOptions.TrimEntries */);
+                string[] matrixElements = terms[2].Split(new char[] {'[', ']'}, StringSplitOptions.RemoveEmptyEntries/* | StringSplitOptions.TrimEntries */);
                 
             } catch {
                 Debug.Log(string.Format("Invalid 3 x 3 matrix supplied in command line {0}", index));
@@ -135,6 +137,8 @@ public class LessonReader : MonoBehaviour
 class Matrix
 {
     public float[,] values;
+    public int rows;
+    public int cols;
 
     public int getRows() {
         return values.GetLength(0);
@@ -163,9 +167,11 @@ class Matrix
         float[,] result = new float[a.rows, a.cols];
         for(int i = 0; i < a.rows; i++) {
             for(int j = 0; j < b.cols; j++) {
-                result[i,j] = a[i,j] + b[i,j];
+                result[i,j] = a.values[i,j] + b.values[i,j];
             }
         }
+
+        return new Matrix(result);
     }
 
     public static Matrix operator *(Matrix a, Matrix b) {
