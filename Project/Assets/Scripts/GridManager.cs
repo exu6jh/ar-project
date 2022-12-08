@@ -7,5 +7,5 @@ public class GridManager : MonoBehaviour
     public GameObject BasisVectorParent;
     public GameObject origin;
 
-    public float euclideanGridScale = 2.5f;
+    [HideInInspector] public float euclideanGridScale = 2.5f;
 }
