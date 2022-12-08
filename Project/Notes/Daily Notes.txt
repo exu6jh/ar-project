@@ -37,3 +37,15 @@ This means war. Or something.
 ----
 
 16.5 FOV camera for accurate Hololens test
+
+----
+
+The vector scale right now is:
+
+0.25, ?, 0.25
+
+And cone is:
+
+0.5, ?, 0.5
+
+But I think it could be thicker...0.35? 0.5?

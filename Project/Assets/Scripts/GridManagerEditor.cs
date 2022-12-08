@@ -60,7 +60,8 @@ public class GridManagerEditor : Editor
                 Vector3 coneLocalScale = cone.localScale;
             
                 tConeLocalScale.y = gridManager.euclideanGridScale;
-                coneLocalScale.y = 0.5f / gridManager.euclideanGridScale;
+                // coneLocalScale.y = 0.5f / gridManager.euclideanGridScale;
+                coneLocalScale.y = coneLocalScale.x / 1.2f / gridManager.euclideanGridScale;
             
                 tCone.localScale = tConeLocalScale;
                 cone.localScale = coneLocalScale;

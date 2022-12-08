@@ -15,7 +15,7 @@ public class GridMovement
 
     public GridMovement Clone()
     {
-        return new GridMovement(dimension, offset);
+        return new(dimension, offset);
     }
 }
 
