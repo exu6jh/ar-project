@@ -49,3 +49,9 @@ And cone is:
 0.5, ?, 0.5
 
 But I think it could be thicker...0.35? 0.5?
+
+----
+
+12/08/2022
+
+Last thing I don't like, For Vector, Constraint has GridManager, but for Point, Manager has GridManager...
