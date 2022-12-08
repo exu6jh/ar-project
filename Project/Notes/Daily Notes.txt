@@ -1,0 +1,39 @@
+https://learn.microsoft.com/en-us/windows/mixed-reality/mrtk-unity/mrtk3-uxcore/packages/uxcore/canvas-ui
+
+Setup
+
+Our components are authored with a 1 design unit : 1mm ratio for physical contexts. When you set up a Canvas for use with volumetric UI intended for display in immersive 3D applications:
+
+Ensure your Canvas is worldspace
+Ensure the scale of the Canvas is globally 0.001 on all axes
+
+
+
+----
+
+
+I have a scaler that restores scales (100 on all axes)
+
+Cylinder that represents grid lines is 0.05, 10, 0.05
+
+But in RectTransform, we also have width and height. We have a Width of 10 and a Height of 2.
+
+----
+
+The Cylinders right now are 4.5 units apart...but, we will need something closer together.
+
+
+----
+
+
+Nope, now Cylinders are 2.5 cm apart, 1 mm thick, 1 m long.
+
+----
+
+For unit vectors, we need to move an object around...but we also need to draw a cylinder & arrow from the origin to that position.
+
+This means war. Or something.
+
+----
+
+16.5 FOV camera for accurate Hololens test
