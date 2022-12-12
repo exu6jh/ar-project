@@ -152,7 +152,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 25b0a3bc7246304488a041cd191998d4, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  filename: Assets/Lessons/test-lesson.txt
+  filename: Assets/Lessons/test-orig-lesson.txt
 --- !u!4 &570098242
 Transform:
   m_ObjectHideFlags: 0

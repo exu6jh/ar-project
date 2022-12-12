@@ -16,6 +16,13 @@ public class BasisVectorManager : MonoBehaviour
     public Vector3 euler = new Vector3(0, 0, -90);
     public float zOffset = -0.2f;
 
+    [HideInInspector] public Vector3 zOffsetVector;
+
+    private void Start()
+    {
+        zOffsetVector = new Vector3(0, 0, zOffset);
+    }
+
     private void Update()
     {
         length = TransformCylinder.transform.localScale.y;
@@ -27,12 +34,12 @@ public class BasisVectorManager : MonoBehaviour
         // Quaternion rotation = pose.Rotation;
     }
 
-    public void SetNewPosition(Vector3 newPosition)
+    public void SetNewValue(Vector3 newValue)
     {
-        value = newPosition;
+        value = newValue;
         
         // Length changes
-        length = newPosition.magnitude;
+        length = newValue.magnitude;
             
         Vector3 newLocalScale = TransformCylinder.transform.localScale;
         newLocalScale.y = length;
@@ -44,12 +51,17 @@ public class BasisVectorManager : MonoBehaviour
         cone.localPosition = newLocalPosition;
             
         // Rotation changes
-        transform.localRotation = Quaternion.FromToRotation(Vector3.up, newPosition);
+        transform.localRotation = Quaternion.FromToRotation(Vector3.up, newValue);
         euler = transform.localRotation.eulerAngles;
     }
 
     public void SetNewLengthEuler(float length, Vector3 euler)
     {
         
+    }
+
+    public void SetNewStartPoint(Vector3 newStart)
+    {
+        transform.localPosition = newStart + zOffsetVector;
     }
 }

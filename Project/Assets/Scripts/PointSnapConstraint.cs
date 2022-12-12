@@ -20,6 +20,8 @@ public class PointSnapConstraint : MonoBehaviour
         originTransform = origin.transform;
         _pointManager = GetComponent<PointManager>();
         _gridManager = _pointManager.gridManager;
+
+        followTransform.parent = transform.parent;
     }
 
     private void Update()
@@ -34,7 +36,8 @@ public class PointSnapConstraint : MonoBehaviour
 
     public void ResetFollowPosition()
     {
-        followTransform.localPosition = Vector3.zero;
+        // followTransform.localPosition = Vector3.zero;
+        followTransform.position = transform.position;
         followTransform.localRotation = Quaternion.identity;
     }
 }

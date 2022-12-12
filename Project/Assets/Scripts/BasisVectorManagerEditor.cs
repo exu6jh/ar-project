@@ -24,13 +24,14 @@ public class BasisVectorManagerEditor : Editor
             Vector3 oldPosition = basisVectorManager.transform.localPosition;
             oldPosition.z = basisVectorManager.zOffset;
             basisVectorManager.transform.localPosition = oldPosition;
+            basisVectorManager.zOffsetVector = new Vector3(0, 0, basisVectorManager.zOffset);
         }
 
         newPosition = EditorGUILayout.Vector3Field("New Position", newPosition);
 
         if (GUILayout.Button("Set New Position"))
         {
-            basisVectorManager.SetNewPosition(newPosition);
+            basisVectorManager.SetNewValue(newPosition);
             newLength = basisVectorManager.length;
             newEuler = basisVectorManager.euler;
 

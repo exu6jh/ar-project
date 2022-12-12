@@ -21,6 +21,7 @@ public class VectorEndpointConstraint : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        _basisVectorManager.SetNewPosition((to.transform.localPosition - from.transform.localPosition) / gridManager.euclideanGridScale);
+        _basisVectorManager.SetNewStartPoint(from.transform.localPosition);
+        _basisVectorManager.SetNewValue((to.transform.localPosition - from.transform.localPosition) / gridManager.euclideanGridScale);
     }
 }
