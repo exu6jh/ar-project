@@ -253,16 +253,38 @@ public class LessonReader : MonoBehaviour
         }
     }
 
-    private IEnumerator Rot(Transform obj, Vector3 target, float time, int commandAfter) {
+    private IEnumerator Rot(Transform obj, Vector3 target, float time, int commandAfter)
+    {
+        bool useSlerp = false;
         if(time > 0.1f) {
-            Vector3 initRotation = obj.eulerAngles;
-            Debug.Log("Changing rotation.");
-            for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
-                obj.eulerAngles = initRotation + i * (target - initRotation) / Mathf.Ceil(time / Time.fixedDeltaTime);
-                yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+            if (useSlerp)
+            {
+                Quaternion initRotation = obj.rotation;
+                Quaternion targetRotation = Quaternion.Euler(target);
+                Debug.Log("Changing rotation.");
+                for (int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++)
+                {
+                    obj.rotation = Quaternion.Slerp(initRotation, targetRotation, i / Mathf.Ceil(time / Time.fixedDeltaTime));
+                    yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+                }
+
+                obj.eulerAngles = target;
+                Debug.Log("Change over.");
             }
-            obj.eulerAngles = target;
-            Debug.Log("Change over.");
+            else
+            {
+                Vector3 initRotation = obj.eulerAngles;
+                Debug.Log("Changing rotation.");
+                for (int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++)
+                {
+                    obj.eulerAngles =
+                        initRotation + i * (target - initRotation) / Mathf.Ceil(time / Time.fixedDeltaTime);
+                    yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+                }
+
+                obj.eulerAngles = target;
+                Debug.Log("Change over.");
+            }
         } else {
             obj.eulerAngles = target;
             Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
