@@ -253,6 +253,33 @@ class Matrix
         this.values = values;
     }
 
+    public Matrix Transpose() {
+        float[,] tValues = new float[getCols(), getRows()];
+        for(int i = 0; i < getCols(); i++) {
+            for(int j = 0; i < getRows(); j++) {
+                tValues[i,j] = values[j,i];
+            }
+        }
+        return new Matrix(tValues);
+    }
+
+    public static float Dot(Matrix a, Matrix b) {
+        if(a.getCols() != 1 || b.getCols() != 1 || a.getRows() != b.getRows()) {
+            Debug.Log("Vector size mismatch. Both vectors must be n rows by 1 column.");
+            throw new System.ArithmeticException();
+        }
+        Matrix single = a.Transpose() * b;
+        return single.values[0,0];
+    }
+
+    public float Magnitude() {
+        return Mathf.Sqrt(Dot(this, this));
+    }
+
+    public static Matrix Proj(Matrix u, Matrix a) {
+        return(Dot(u, a) / Dot(u, u)) * u;
+    }
+
     public static Matrix operator -(Matrix a) {
         float [,] result = new float[a.getRows(), a.getCols()];
         for(int i = 0; i < a.getRows(); i++) {
@@ -291,6 +318,20 @@ class Matrix
             }
         }
         return new Matrix(result);
+    }
+
+    public static Matrix operator *(float a, Matrix b) {
+        float[,] result = new float[b.getRows(), b.getCols()];
+        for(int i = 0; i < b.getRows(); i++) {
+            for(int j = 0; j < b.getCols(); j++) {
+                result[i,j] = a * b.values[i,j];
+            }
+        }
+        return new Matrix(result);
+    }
+
+    public static Matrix operator *(Matrix a, float b) {
+        return b * a;
     }
 
     public static Matrix operator *(Matrix a, Matrix b) {
