@@ -21,6 +21,14 @@ public class PointManager : MonoBehaviour
     private void Update()
     {
         value = transform.localPosition / gridManager.euclideanGridScale;
+        
+        text.text = $"({value.x:0},{value.y:0})";
+
+        textPos.x = 1.75f * ((value.x < 0) ? -1 : 1);
+        textPos.y = 1.00f * ((value.y < 0) ? -1 : 1);
+        text.transform.localPosition = textPos;
+        
+        // Move text code below to Update
     }
 
     public void SetNewPosition(Vector3 newPosition)

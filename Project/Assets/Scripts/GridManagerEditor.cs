@@ -1,17 +1,44 @@
 ﻿#if (UNITY_EDITOR)
+using System;
 using UnityEditor;
 using UnityEngine;
 
 [CustomEditor(typeof(GridManager))]
 public class GridManagerEditor : Editor
 {
+    private float gridLength = 100; // cm
+    private float newGridScale = 5; // cm
 
-    private float newGridScale = 5;
-    
+    private void Awake()
+    {
+        GridManager gridManager = (GridManager) target;
+        gridLength = gridManager.GridlineParent.GetComponent<RectTransform>().sizeDelta.x;
+    }
+
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
         GridManager gridManager = (GridManager) target;
+        
+        gridLength = EditorGUILayout.FloatField("New Grid Length", gridLength);
+
+        if (GUILayout.Button("Set New Grid Length"))
+        {
+            Vector2 newSizeDelta = new Vector2(gridLength, gridLength);
+            
+            gridManager.GetComponent<RectTransform>().sizeDelta = newSizeDelta * 10;
+            gridManager.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = newSizeDelta;
+            gridManager.GridlineParent.GetComponent<RectTransform>().sizeDelta = newSizeDelta;
+            gridManager.BasisVectorParent.GetComponent<RectTransform>().sizeDelta = newSizeDelta;
+
+            foreach (Transform gridline in gridManager.GridlineParent.transform)
+            {
+                Vector3 localScale = gridline.localScale;
+                localScale.y = gridLength / 2;
+                gridline.localScale = localScale;
+            }
+            
+        }
         
         EditorGUILayout.FloatField("Current Grid Scale", gridManager.euclideanGridScale);
         
