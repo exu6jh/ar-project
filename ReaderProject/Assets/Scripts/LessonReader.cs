@@ -118,7 +118,7 @@ public class LessonReader : MonoBehaviour
                 Debug.Log("All goto commands must be formatted like \"GOTO <int>\". For example, \"GOTO 10\".");
             }
             return;
-        } else if(Regex.Match(commands[index], "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" ((\\[(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*\\])|(\"[\\w-.]+\"))$").Success) {
+        } else if(Regex.Match(commands[index], "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" ((\\[(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*\\])|(\"[\\w-.]+\"))( [0-9]+(.[0-9]+))?$").Success) {
             string[] names = commands[index].Split("\"");
             GameObject obj;
             if(gameObjects.ContainsKey(names[1])) {
@@ -131,27 +131,49 @@ public class LessonReader : MonoBehaviour
 
             if(names[3].Equals("POS")) {
                 try {
-                    string matrixElements = commands[index].Split(new char[] {'[', ']'})[1];
+                    string[] parsedString = commands[index].Split(new char[] {'[', ']'});
+                    string matrixElements = parsedString[1];
                     Matrix positionMatrix = new Matrix(matrixElements);
                     if(positionMatrix.getRows() != 1 || positionMatrix.getCols() != 3) {
                         Debug.Log("Error: position should be 1 row by 3 columns.");
                         throw new System.ArithmeticException();
                     }
                     float[,] pos = positionMatrix.values;
-                    obj.transform.position = new Vector3(pos[0,0], pos[0,1], pos[0,2]);
+                    Vector3 targetPosition = new Vector3(pos[0,0], pos[0,1], pos[0,2]);
+                    if(!string.IsNullOrEmpty(parsedString[2])) {
+                        Debug.Log("Movement time detected.");
+                        IEnumerator posCoroutine = Pos(obj.transform, targetPosition, float.Parse(parsedString[2]), index + 1);
+                        StartCoroutine(posCoroutine);
+                    } else {
+                        Debug.Log("No movement time detected.");
+                        obj.transform.position = targetPosition;
+                    }
+                    Execute(index + 1);
+                    return;
                 } catch {
                     Debug.Log("Error: inconsistent matrix size.");
                 }
             } else if(names[3].Equals("ROT")) {
                 try {
-                    string matrixElements = commands[index].Split(new char[] {'[', ']'})[1];
+                    string[] parsedString = commands[index].Split(new char[] {'[', ']'});
+                    string matrixElements = parsedString[1];
                     Matrix rotationMatrix = new Matrix(matrixElements);
                     if(rotationMatrix.getRows() != 1 || rotationMatrix.getCols() != 3) {
                         Debug.Log("Error: rotation should be 1 row by 3 columns.");
                         throw new System.ArithmeticException();
                     }
                     float[,] rot = rotationMatrix.values;
-                    obj.transform.eulerAngles = new Vector3(rot[0,0], rot[0,1], rot[0,2]);
+                    Vector3 targetRotation = new Vector3(rot[0,0], rot[0,1], rot[0,2]);
+                    if(!string.IsNullOrEmpty(parsedString[2])) {
+                        Debug.Log("Rotation time detected.");
+                        IEnumerator rotCoroutine = Rot(obj.transform, targetRotation, float.Parse(parsedString[2]), index + 1);
+                        StartCoroutine(rotCoroutine);
+                    } else {
+                        Debug.Log("No movement time detected.");
+                        obj.transform.eulerAngles = targetRotation;
+                    }
+                    Execute(index + 1);
+                    return;
                 } catch {
                     Debug.Log("Error: inconsistent matrix size.");
                 }
@@ -213,6 +235,38 @@ public class LessonReader : MonoBehaviour
         yield return new WaitForSeconds(waitTime);
         Debug.Log("Wait over.");
         Execute(commandAfter);
+    }
+
+    private IEnumerator Pos(Transform obj, Vector3 target, float time, int commandAfter) {
+        if(time > 0.1f) {
+            Vector3 initPosition = obj.position;
+            Debug.Log("Changing position.");
+            for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
+                obj.position = initPosition + i * (target - initPosition) / Mathf.Ceil(time / Time.fixedDeltaTime);
+                yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+            }
+            obj.position = target;
+            Debug.Log("Change over.");
+        } else {
+            obj.position = target;
+            Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
+        }
+    }
+
+    private IEnumerator Rot(Transform obj, Vector3 target, float time, int commandAfter) {
+        if(time > 0.1f) {
+            Vector3 initRotation = obj.eulerAngles;
+            Debug.Log("Changing rotation.");
+            for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
+                obj.eulerAngles = initRotation + i * (target - initRotation) / Mathf.Ceil(time / Time.fixedDeltaTime);
+                yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+            }
+            obj.eulerAngles = target;
+            Debug.Log("Change over.");
+        } else {
+            obj.eulerAngles = target;
+            Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
+        }
     }
 }
 
