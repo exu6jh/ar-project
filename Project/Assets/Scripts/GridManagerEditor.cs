@@ -29,7 +29,7 @@ public class GridManagerEditor : Editor
             gridManager.GetComponent<RectTransform>().sizeDelta = newSizeDelta * 10;
             gridManager.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = newSizeDelta;
             gridManager.GridlineParent.GetComponent<RectTransform>().sizeDelta = newSizeDelta;
-            gridManager.BasisVectorParent.GetComponent<RectTransform>().sizeDelta = newSizeDelta;
+            gridManager.VectorParent.GetComponent<RectTransform>().sizeDelta = newSizeDelta;
 
             foreach (Transform gridline in gridManager.GridlineParent.transform)
             {
@@ -65,11 +65,11 @@ public class GridManagerEditor : Editor
             // Haha oops it is necessary, forgot the difference between the different parameters
             // to control scaling...
             
-            foreach (Transform basisVector in gridManager.BasisVectorParent.transform)
+            foreach (Transform vector in gridManager.VectorParent.transform)
             {
-                BasisVectorManager basisVectorManager = basisVector.GetComponent<BasisVectorManager>();
+                VectorManager vectorManager = vector.GetComponent<VectorManager>();
             
-                Transform cylinder = basisVectorManager.TransformCylinder.transform.GetChild(0);
+                Transform cylinder = vectorManager.TransformCylinder.transform.GetChild(0);
             
                 Vector3 localPosition = cylinder.localPosition;
                 Vector3 localScale = cylinder.localScale;
@@ -80,7 +80,7 @@ public class GridManagerEditor : Editor
                 cylinder.localPosition = localPosition;
                 cylinder.localScale = localScale;
             
-                Transform tCone = basisVectorManager.TransformCone.transform;
+                Transform tCone = vectorManager.TransformCone.transform;
                 Transform cone = tCone.GetChild(0);
             
                 Vector3 tConeLocalScale = tCone.localScale;
@@ -93,6 +93,11 @@ public class GridManagerEditor : Editor
                 tCone.localScale = tConeLocalScale;
                 cone.localScale = coneLocalScale;
             }
+        }
+
+        if (GUILayout.Button("Reset"))
+        {
+            gridManager.Reset();
         }
     }
 }

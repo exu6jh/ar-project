@@ -6,8 +6,8 @@ using UnityEngine;
 using Quaternion = UnityEngine.Quaternion;
 using Vector3 = UnityEngine.Vector3;
 
-[CustomEditor(typeof(BasisVectorManager))]
-public class BasisVectorManagerEditor : Editor
+[CustomEditor(typeof(VectorManager))]
+public class VectorManagerEditor : Editor
 {
 
     private Vector3 newPosition = Vector3.right;
@@ -17,23 +17,23 @@ public class BasisVectorManagerEditor : Editor
     {
         base.OnInspectorGUI();
         
-        BasisVectorManager basisVectorManager = (BasisVectorManager) target;
+        VectorManager vectorManager = (VectorManager) target;
 
         if (GUILayout.Button("Set New Z Offset"))
         {
-            Vector3 oldPosition = basisVectorManager.transform.localPosition;
-            oldPosition.z = basisVectorManager.zOffset;
-            basisVectorManager.transform.localPosition = oldPosition;
-            basisVectorManager.zOffsetVector = new Vector3(0, 0, basisVectorManager.zOffset);
+            Vector3 oldPosition = vectorManager.transform.localPosition;
+            oldPosition.z = vectorManager.zOffset;
+            vectorManager.transform.localPosition = oldPosition;
+            vectorManager.zOffsetVector = new Vector3(0, 0, vectorManager.zOffset);
         }
 
         newPosition = EditorGUILayout.Vector3Field("New Position", newPosition);
 
         if (GUILayout.Button("Set New Position"))
         {
-            basisVectorManager.SetNewValue(newPosition);
-            newLength = basisVectorManager.length;
-            newEuler = basisVectorManager.euler;
+            vectorManager.SetNewValue(newPosition);
+            newLength = vectorManager.length;
+            newEuler = vectorManager.euler;
 
             // // Length changes
             // newLength = newPosition.magnitude;
@@ -58,17 +58,17 @@ public class BasisVectorManagerEditor : Editor
         if (GUILayout.Button("Set New Length and Euler"))
         {
             // Length changes
-            Vector3 newLocalScale = basisVectorManager.TransformCylinder.transform.localScale;
+            Vector3 newLocalScale = vectorManager.TransformCylinder.transform.localScale;
             newLocalScale.y = newLength;
-            basisVectorManager.TransformCylinder.transform.localScale = newLocalScale;
+            vectorManager.TransformCylinder.transform.localScale = newLocalScale;
             
-            Transform cone = basisVectorManager.TransformCone.transform.GetChild(0);
+            Transform cone = vectorManager.TransformCone.transform.GetChild(0);
             Vector3 newLocalPosition = cone.localPosition;
             newLocalPosition.y = newLength;
             cone.localPosition = newLocalPosition;
             
             // Rotation changes
-            basisVectorManager.transform.localRotation = Quaternion.Euler(newEuler);
+            vectorManager.transform.localRotation = Quaternion.Euler(newEuler);
             
             // Update newPosition
             newPosition = Quaternion.Euler(newEuler) * (Vector3.up * newLength);

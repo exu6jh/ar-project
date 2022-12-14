@@ -4,7 +4,7 @@ using Microsoft.MixedReality.Toolkit.Input;
 using UnityEngine;
 
 [ExecuteInEditMode]
-public class BasisVectorManager : MonoBehaviour
+public class VectorManager : MonoBehaviour
 {
 
     public GameObject TransformCylinder;
@@ -63,5 +63,10 @@ public class BasisVectorManager : MonoBehaviour
     public void SetNewStartPoint(Vector3 newStart)
     {
         transform.localPosition = newStart + zOffsetVector;
+    }
+
+    public Vector3 GetCurStartPoint()
+    {
+        return transform.localPosition - zOffsetVector;
     }
 }
