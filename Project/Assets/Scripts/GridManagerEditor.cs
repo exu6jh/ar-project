@@ -62,14 +62,7 @@ public class GridManagerEditor : Editor
 
             foreach (Transform gridline in gridManager.GridlineParent.transform)
             {
-                GridlineManager gridlineManager = gridline.GetComponent<GridlineManager>();
-                Vector3 position = Vector3.zero;
-                foreach (GridMovement gridMovement in gridlineManager.movement)
-                {
-                    position[gridMovement.dimension] = gridMovement.offset * gridManager.euclideanGridScale;
-                }
-
-                gridline.localPosition = position;
+                gridManager.SetGridlinePosition(gridline);
             }
 
             // No longer necessary because of VectorEndpointConstraints

@@ -137,9 +137,35 @@ public class GridManager : MonoBehaviour
         linearMap = !linearMap;
     }
 
-    public void SetGridlinePosition(Transform gridline)
+    public void SetGridlinePosition(Transform gridline, bool skipRS = true)
     {
-        
+        GridlineManager gridlineManager = gridline.GetComponent<GridlineManager>();
+                
+        // Position
+        Vector3 position = Vector3.zero;
+        // Gave up, added pointing dim
+        // bool[] dimMove = new bool[dimensions];
+        foreach (GridMovement gridMovement in gridlineManager.movement)
+        {
+            position[gridMovement.dimension] = gridMovement.offset * euclideanGridScale;
+            // dimMove[gridMovement.dimension] = true;
+        }
+
+        position = tMatrix * position;
+
+        gridline.localPosition = position;
+
+        if (skipRS)
+            return;
+                
+        // Rotation
+        Vector3 pointingDimVec = _vectorManagers[gridlineManager.pointingDim].standardValue;
+        gridline.localRotation = Quaternion.FromToRotation(Vector3.up, pointingDimVec);
+                
+        // Scale
+        Vector3 localScale = gridline.localScale;
+        localScale.y = gridLength / 2 * pointingDimVec.magnitude;
+        gridline.localScale = localScale;
     }
 
     private void Update()
@@ -156,30 +182,7 @@ public class GridManager : MonoBehaviour
 
             foreach (Transform gridline in GridlineParent.transform)
             {
-                GridlineManager gridlineManager = gridline.GetComponent<GridlineManager>();
-                
-                // Position
-                Vector3 position = Vector3.zero;
-                // Gave up, added pointing dim
-                // bool[] dimMove = new bool[dimensions];
-                foreach (GridMovement gridMovement in gridlineManager.movement)
-                {
-                    position[gridMovement.dimension] = gridMovement.offset * euclideanGridScale;
-                    // dimMove[gridMovement.dimension] = true;
-                }
-
-                position = tMatrix * position;
-
-                gridline.localPosition = position;
-                
-                // Rotation
-                Vector3 pointingDimVec = _vectorManagers[gridlineManager.pointingDim].standardValue;
-                gridline.localRotation = Quaternion.FromToRotation(Vector3.up, pointingDimVec);
-                
-                // Scale
-                Vector3 localScale = gridline.localScale;
-                localScale.y = gridLength / 2 * pointingDimVec.magnitude;
-                gridline.localScale = localScale;
+                SetGridlinePosition(gridline);
             }
 
             if (linearMap)
