@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,7 +13,7 @@ public class LessonReader : MonoBehaviour
     
     // for generally keeping track of objects in the scene
     private Dictionary<string, bool> flags;
-    private Dictionary<string, GameObject> gameObjects;
+    private Dictionary<string, List<Transformable>> gameObjects;
     private Dictionary<string, Matrix> matrices;
 
     // for WAIT-UNTIL
@@ -48,7 +49,7 @@ public class LessonReader : MonoBehaviour
         commands = lessonLines;
 
         flags = new Dictionary<string, bool>();
-        gameObjects = new Dictionary<string, GameObject>();
+        gameObjects = new Dictionary<string, List<Transformable>>();
         matrices = new Dictionary<string, Matrix>();
 
         savePoint = 0;
@@ -87,9 +88,9 @@ public class LessonReader : MonoBehaviour
 
                 if(names.Length > 3) {
                     newObj.name = names[3];
-                    gameObjects[names[3]] = newObj;
+                    gameObjects[names[3]] = GridManager.createTransformable(newObj);
                 } else {
-                    gameObjects[names[1]] = newObj;
+                    gameObjects[names[1]] = GridManager.createTransformable(newObj);
                 }
             } catch {
                 Debug.Log(string.Format("Asset \"{0}\" not found.", names[1]));
@@ -113,7 +114,7 @@ public class LessonReader : MonoBehaviour
             Debug.Log("Deleting game object.");
             string[] names = commands[index].Split("\"");
             if(gameObjects.ContainsKey(names[1])) {
-                Destroy(gameObjects[names[1]]);
+                Destroy(gameObjects[names[1]][0].gameObject);
             } else {
                 Debug.Log(string.Format("No such object {0} detected.", names[1]));
             }
@@ -132,8 +133,8 @@ public class LessonReader : MonoBehaviour
             Debug.Log("Waiting until.");
             try {
                 string[] names = commands[index].Split("\"");
-                waitUntilObject1 = gameObjects[names[1]];
-                waitUntilObject2 = gameObjects[names[3]];
+                waitUntilObject1 = gameObjects[names[1]][0].gameObject;
+                waitUntilObject2 = gameObjects[names[3]][0].gameObject;
                 string[] keywords = names[2].Split(" ");
                 waitUntilType = keywords[1];
                 
@@ -180,9 +181,9 @@ public class LessonReader : MonoBehaviour
         } else if(Regex.Match(commands[index], "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" ((\\[(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*\\])|(\"[\\w-.]+\"))( [0-9]+(.[0-9]+))?$").Success) {
             Debug.Log("Assigning property.");
             string[] names = commands[index].Split("\"");
-            GameObject obj;
+            List<Transformable> objTransformables;
             if(gameObjects.ContainsKey(names[1])) {
-                obj = gameObjects[names[1]];
+                objTransformables = gameObjects[names[1]];
             } else {
                 Debug.Log(string.Format("No such object {0} detected.", names[1]));
                 Execute(index + 1);
@@ -203,11 +204,15 @@ public class LessonReader : MonoBehaviour
                     Vector3 targetPosition = new Vector3(pos[0,0], pos[0,1], pos[0,2]);
                     if(!string.IsNullOrEmpty(parsedString[2])) {
                         Debug.Log("Movement time detected.");
-                        IEnumerator posCoroutine = Pos(obj.transform, targetPosition, float.Parse(parsedString[2]), index + 1);
+                        // Only support animating the first transformable, for simplicity
+                        IEnumerator posCoroutine = Pos(objTransformables[0], targetPosition, float.Parse(parsedString[2]), index + 1);
                         StartCoroutine(posCoroutine);
                     } else {
                         Debug.Log("No movement time detected.");
-                        obj.transform.position = targetPosition;
+                        foreach (Transformable transformable in objTransformables)
+                        {
+                            transformable.SetStandardValue(targetPosition);
+                        }
                     }
                     Execute(index + 1);
                     return;
@@ -228,11 +233,17 @@ public class LessonReader : MonoBehaviour
                     Vector3 targetRotation = new Vector3(rot[0,0], rot[0,1], rot[0,2]);
                     if(!string.IsNullOrEmpty(parsedString[2])) {
                         Debug.Log("Rotation time detected.");
-                        IEnumerator rotCoroutine = Rot(obj.transform, targetRotation, float.Parse(parsedString[2]), index + 1);
+                        // Only support animating the first transformable, for simplicity
+                        // Also unknown effects, this should be avoided for transformable objects...
+                        IEnumerator rotCoroutine = Rot(objTransformables[0].gameObject.transform, targetRotation, float.Parse(parsedString[2]), index + 1);
                         StartCoroutine(rotCoroutine);
                     } else {
                         Debug.Log("No movement time detected.");
-                        obj.transform.eulerAngles = targetRotation;
+                        // Unknown effects, this should not be used for transformable objects...
+                        foreach (Transformable transformable in objTransformables)
+                        {
+                            transformable.gameObject.transform.eulerAngles = targetRotation;
+                        }
                     }
                     Execute(index + 1);
                     return;
@@ -249,7 +260,12 @@ public class LessonReader : MonoBehaviour
                         throw new System.ArithmeticException();
                     }
                     float[,] scale = scaleMatrix.values;
-                    obj.transform.localScale = new Vector3(scale[0,0], scale[0,1], scale[0,2]);
+                    // Unknown effects, this should be avoided for transformable objects...
+                    Vector3 targetLocalScale = new Vector3(scale[0,0], scale[0,1], scale[0,2]);
+                    foreach (Transformable transformable in objTransformables)
+                    {
+                        transformable.gameObject.transform.localScale = targetLocalScale;
+                    }
                 } catch {
                     Debug.Log("Error: inconsistent matrix size.");
                 }
@@ -277,21 +293,33 @@ public class LessonReader : MonoBehaviour
             string[] parsedString = commands[index].Split("\"");
             // Set some temporary default values.
             GameObject newGrid = Instantiate(grid);
-            gameObjects[parsedString[1]] = newGrid;
+            ;
+            gameObjects[parsedString[1]] = new List<Transformable>
+            {
+                new Transformable.MPartialGridManager(newGrid, newGrid.GetComponent<GridManager>())
+            };
             Execute(index + 1);
             return;
         } else if(Regex.Match(commands[index], "^DRAW POINT \"[\\w\\- ]+\" ON \"[\\w\\- ]+\"$").Success) {
             Debug.Log("Drawing point.");
             string[] parsedString = commands[index].Split("\"");
             GameObject newPoint = Instantiate(point);
-            gameObjects[parsedString[1]] = newPoint;
-            try {
-                GameObject managerObj = gameObjects[parsedString[3]];
+            PointManager newPointManager = newPoint.GetComponent<PointManager>();
+            PointSnapConstraint newPointSnapConstraint = newPoint.GetComponent<PointSnapConstraint>();
+            gameObjects[parsedString[1]] = new List<Transformable>
+            {
+                new Transformable.MPointSnapConstraint(newPointSnapConstraint),
+                new Transformable.MPointManager(newPointManager)
+            };
+            try
+            {
+                GridManager manager = ((Transformable.MPartialGridManager) gameObjects[parsedString[3]][0]).GridManager;
+                GameObject managerObj = manager.gameObject;
                 newPoint.transform.parent = managerObj.transform;
-                GridManager manager = managerObj.GetComponent<GridManager>();
-                newPoint.GetComponent<PointManager>().gridManager = manager;
-                newPoint.GetComponent<PointSnapConstraint>().origin = manager.origin;
-                newPoint.transform.localScale = new Vector3(10,10,10);
+                newPointManager.gridManager = manager;
+                newPointSnapConstraint.origin = manager.origin;
+                // Originally to make points easier to see
+                // newPoint.transform.localScale = new Vector3(10,10,10);
             } catch {
                 Debug.Log("Error: could not find corresponding grid.");
             }
@@ -301,10 +329,14 @@ public class LessonReader : MonoBehaviour
             Debug.Log("Drawing vector.");
             string[] parsedString = commands[index].Split("\"");
             GameObject newVector = Instantiate(vector);
-            gameObjects[parsedString[1]] = newVector;
+            VectorManager newVectorManager = newVector.GetComponent<VectorManager>();
+            gameObjects[parsedString[1]] = new List<Transformable>
+            {
+                new Transformable.MVectorManager(newVectorManager)
+            };
             try {
-                GameObject endpoint1 = gameObjects[parsedString[3]];
-                GameObject endpoint2 = gameObjects[parsedString[5]];
+                GameObject endpoint1 = gameObjects[parsedString[3]][0].gameObject;
+                GameObject endpoint2 = gameObjects[parsedString[5]][0].gameObject;
                 if(endpoint1.GetComponent<PointManager>().gridManager != endpoint2.GetComponent<PointManager>().gridManager) {
                     Debug.Log("You must select two endpoints that are on the same grid.");
                     throw new System.ArithmeticException();
@@ -313,7 +345,7 @@ public class LessonReader : MonoBehaviour
                 GridManager manager = endpoint1.GetComponent<PointManager>().gridManager;
                 constraint.from = endpoint1;
                 constraint.to = endpoint2;
-                newVector.GetComponent<VectorManager>().gridManager = manager;
+                newVectorManager.gridManager = manager;
                 constraint.gridManager = manager;
                 newVector.transform.parent = manager.transform;
                 newVector.transform.localScale = new Vector3(10,1,10);
@@ -325,21 +357,46 @@ public class LessonReader : MonoBehaviour
         } else if(Regex.Match(commands[index], "^APPLY-MATRIX \"[\\w\\- ]+\" TO \"[\\w\\-. ]+\"$").Success) {
             Debug.Log("Applying matrix transformation.");
             string[] names = commands[index].Split("\"");
-            if(matrices.ContainsKey(names[1]) && gameObjects.ContainsKey(names[3])) {
-                foreach(MeshFilter filters in gameObjects[names[3]].GetComponentsInChildren<MeshFilter>()) {
-                    Mesh mesh = filters.mesh;
-                    Vector3[] vertices = mesh.vertices;
-                    for(int i = 0; i < vertices.Length; i++) {
-                        Vector3 wrtParent = filters.transform.TransformPoint(vertices[i]) - gameObjects[names[3]].transform.position;
-                        float[,] vertexPosition = new float[3,1]{{wrtParent.x},{wrtParent.y},{wrtParent.z}};
-                        Matrix vertexMatrix = new Matrix(vertexPosition);
-                        Matrix transformedMatrix = matrices[names[1]] * vertexMatrix;
-                        Vector3 transformedWrtParent = new Vector3(transformedMatrix.values[0,0], transformedMatrix.values[1,0], transformedMatrix.values[2,0]);
-                        Vector3 transformedPosition = filters.transform.InverseTransformPoint(transformedWrtParent + gameObjects[names[3]].transform.position);
-                        vertices[i] = transformedPosition;
-                    }
-                    mesh.vertices = vertices;
-                    mesh.RecalculateNormals();
+            if(matrices.ContainsKey(names[1]) && gameObjects.ContainsKey(names[3]))
+            {
+
+                Matrix matrixToApply = matrices[names[1]];
+                
+                // Only support applying matrix to the first transformable, for simplicity
+                Transformable transformable = gameObjects[names[3]][0];
+                switch (transformable)
+                {
+                    case Transformable.MPartialGridManager partialGridManager:
+                        GridManager gridManager = partialGridManager.GridManager;
+
+                        foreach (VectorManager vectorManager in gridManager.GetVectorManagers())
+                        {
+                            Matrix result = matrixToApply * new Matrix(vectorManager.standardValue);
+                            vectorManager.SetNewStandardValue(new Vector3(result.values[0,0], result.values[1,0], result.values[2,0]));
+                        }
+
+                        break;
+                    case Transformable.NotTransformable notTransformable:
+                        GameObject gameObject = notTransformable.GameObject;
+                        foreach(MeshFilter filters in gameObject.GetComponentsInChildren<MeshFilter>()) {
+                            Mesh mesh = filters.mesh;
+                            Vector3[] vertices = mesh.vertices;
+                            for(int i = 0; i < vertices.Length; i++) {
+                                Vector3 wrtParent = filters.transform.TransformPoint(vertices[i]) - gameObject.transform.position;
+                                float[,] vertexPosition = new float[3,1]{{wrtParent.x},{wrtParent.y},{wrtParent.z}};
+                                Matrix vertexMatrix = new Matrix(vertexPosition);
+                                Matrix transformedMatrix = matrixToApply * vertexMatrix;
+                                Vector3 transformedWrtParent = new Vector3(transformedMatrix.values[0,0], transformedMatrix.values[1,0], transformedMatrix.values[2,0]);
+                                Vector3 transformedPosition = filters.transform.InverseTransformPoint(transformedWrtParent + gameObject.transform.position);
+                                vertices[i] = transformedPosition;
+                            }
+                            mesh.vertices = vertices;
+                            mesh.RecalculateNormals();
+                        }
+                        break;
+                    default:
+                        Debug.Log("Matrix not supported on this object");
+                        break;
                 }
             } else {
                 Debug.Log(string.Format("Either no matrix {0} or no object {1} detected.", names[1], names[3]));
@@ -365,18 +422,17 @@ public class LessonReader : MonoBehaviour
         Execute(commandAfter);
     }
 
-    private IEnumerator Pos(Transform obj, Vector3 target, float time, int commandAfter) {
+    private IEnumerator Pos(Transformable transformable, Vector3 target, float time, int commandAfter) {
         if(time > 0.1f) {
-            Vector3 initPosition = obj.position;
-            Debug.Log("Changing position.");
+            Vector3 initPosition = transformable.GetStandardValue();
             for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
-                obj.position = Vector3.Lerp(initPosition, target, i / Mathf.Ceil(time / Time.fixedDeltaTime));
+                transformable.SetStandardValue(Vector3.Lerp(initPosition, target, i / Mathf.Ceil(time / Time.fixedDeltaTime)));
                 yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
             }
-            obj.position = target;
+            transformable.SetStandardValue(target);
             Debug.Log("Change over.");
         } else {
-            obj.position = target;
+            transformable.SetStandardValue(target);
             Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
         }
     }
@@ -430,6 +486,8 @@ class Matrix
     public int getCols() {
         return values.GetLength(1);
     }
+
+    public Matrix(Vector3 vector3) : this(new float[3,1] {{vector3.x}, {vector3.y}, {vector3.z}}) {}
 
     public Matrix(float[,] values) {
         if(values.Rank != 2) {

@@ -1,5 +1,6 @@
 ﻿using System;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 // [ExecuteInEditMode]
 public class PointSnapConstraint : MonoBehaviour
@@ -14,10 +15,10 @@ public class PointSnapConstraint : MonoBehaviour
     public bool disableSnapping = false;
     
     public Vector3 followValue;
+    public Vector3 followStandardValue;
     
     private PointManager _pointManager;
     private GridManager _gridManager;
-    private Vector3 _followStandardValue;
     // private Vector3 _followValue;
 
     private void Awake()
@@ -43,8 +44,8 @@ public class PointSnapConstraint : MonoBehaviour
     private void Update()
     {
         // Vector3 pos = originTransform.InverseTransformPoint(followTransform.position);
-        _followStandardValue = followTransform.localPosition / _gridManager.euclideanGridScale;
-        followValue = _gridManager.tMatrix.inverse * _followStandardValue;
+        followStandardValue = followTransform.localPosition / _gridManager.euclideanGridScale;
+        followValue = _gridManager.tMatrix.inverse * followStandardValue;
         float closestCoordX;
         float closestCoordY;
         if (disableSnapping)
@@ -73,8 +74,13 @@ public class PointSnapConstraint : MonoBehaviour
         followTransform.localRotation = Quaternion.identity;
     }
 
+    public void SetFollowStandardValue(Vector3 newStandardValue)
+    {
+        followTransform.transform.localPosition = newStandardValue * _gridManager.euclideanGridScale;
+    }
+
     public void SetFollowValue(Vector3 newValue)
     {
-        followTransform.transform.localPosition = _gridManager.tMatrix * newValue * _gridManager.euclideanGridScale;
+        SetFollowStandardValue(_gridManager.tMatrix * newValue);
     }
 }
