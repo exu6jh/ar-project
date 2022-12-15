@@ -11,4 +11,8 @@ public class ChangeScene : MonoBehaviour
     public void GoToScene(GetScene getScene) => GoToScene(getScene.sceneToLoad);
 
     public void SetLesson(string text) => Globals.lesson = text;
+
+    public void SetLesson(LESSONS lessons) => SetLesson(Globals.LessonEnumToString(lessons));
+    
+    public void SetLesson(GetScene getScene) => SetLesson(getScene.lessonToLoad);
 }

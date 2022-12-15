@@ -7,4 +7,5 @@ public class GetScene : MonoBehaviour
 {
     // The associated scene to be loaded
     public SCENES sceneToLoad;
+    public LESSONS lessonToLoad;
 }
