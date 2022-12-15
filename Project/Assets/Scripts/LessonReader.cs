@@ -56,7 +56,11 @@ public class LessonReader : MonoBehaviour
 
         savePoint = index;
 
-        if(Regex.Match(commands[index], "^CREATE-OBJECT \"[\\w\\-. ]+\"( AS \"[\\w\\-. ]+\")?$").Success) {
+        if(Regex.Match(commands[index], "^//[\\w-,;. ]+").Success) {
+            Debug.Log("Comment: " + commands[index]);
+            Execute(index + 1);
+            return;
+        } else if(Regex.Match(commands[index], "^CREATE-OBJECT \"[\\w\\-. ]+\"( AS \"[\\w\\-. ]+\")?$").Success) {
             Debug.Log("Creating game object.");
             string[] names = commands[index].Split("\"");
 
@@ -236,6 +240,20 @@ public class LessonReader : MonoBehaviour
                 }
             } else {
                 Debug.Log(string.Format("Error: no valid property {0}", names[3]));
+            }
+            Execute(index + 1);
+            return;
+        } else if(Regex.Match(commands[index], "^PLAY SOUND \"[\\w\\- ]+\"").Success) {
+            Debug.Log("Playing sound.");
+            string[] names = commands[index].Split("\"");
+            try {
+                string[] matchingAssets = AssetDatabase.FindAssets(names[1]);
+                string dataPath = AssetDatabase.GUIDToAssetPath(matchingAssets[0]);
+                AudioClip audio = (AudioClip)AssetDatabase.LoadAssetAtPath(dataPath, typeof(AudioClip));
+                GetComponent<AudioSource>().clip = audio;
+                GetComponent<AudioSource>().Play();
+            } catch {
+                Debug.Log(string.Format("Sound clip \"{0}\" not found.", names[1]));
             }
             Execute(index + 1);
             return;
