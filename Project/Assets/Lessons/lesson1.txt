@@ -1,14 +1,13 @@
 DRAW GRID "defaultGrid"
 ASSIGN-PROPERTY "defaultGrid" "POS" [0,0,1]
 WAIT 2.0
-PLAY SOUND "exp"
-WAIT 2.0
+PLAY SOUND "lesson1"
+WAIT 16.0
 DRAW POINT "point1" ON "defaultGrid"
 DRAW POINT "point2" ON "defaultGrid"
-// Moving around.
 ASSIGN-PROPERTY "point1" "POS" [0.05,0.1,1]
 ASSIGN-PROPERTY "point2" "POS" [0.2,0.2,1]
-WAIT 2.5
+WAIT 7.5
 ASSIGN-PROPERTY "point1" "POS" [-0.2,0,1] 2.0
 ASSIGN-PROPERTY "point2" "POS" [0.1,0.2,1] 2.0
 WAIT 2.5
@@ -17,12 +16,19 @@ ASSIGN-PROPERTY "point2" "POS" [0.05,0.15,1] 2.0
 WAIT 2.5
 ASSIGN-PROPERTY "point1" "POS" [0.15,-0.1,1] 2.0
 ASSIGN-PROPERTY "point2" "POS" [-0.05,0,1] 2.0
-WAIT 3.0
-// Show origin.
+WAIT 5.5
 DRAW POINT "origin" ON "defaultGrid"
 ASSIGN-PROPERTY "origin" "POS" [0,0,1]
-WAIT 10.0
+WAIT 14.5
 DRAW VECTOR "difference" FROM "point1" TO "point2"
-WAIT 5.0
+WAIT 17.0
 DRAW VECTOR "vector1" FROM "origin" TO "point1"
 DRAW VECTOR "vector2" FROM "origin" TO "point2"
+WAIT 3.0
+ASSIGN-PROPERTY "point1" "POS" [0.05,0.1,1] 5.0
+ASSIGN-PROPERTY "point2" "POS" [0.2,0.2,1] 5.0
+WAIT 15.0
+DRAW POINT "point3" ON "defaultGrid"
+ASSIGN-PROPERTY "point3" "POS" [-0.2,0.05,1]
+WAIT 6.0
+DRAW VECTOR "vector3" FROM "origin" TO "point3"
