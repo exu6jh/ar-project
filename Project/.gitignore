@@ -78,5 +78,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 # MRTK Samples
-/[Aa]ssets/[Ss]amples/
+/[Aa]ssets/[Ss]amples/**
 /[Aa]ssets/[Ss]amples.meta
+![Aa]ssets/[Ss]amples/*
+![Aa]ssets/[Ss]amples/Mixed Reality Toolkit Foundation/**
+![Aa]ssets/[Ss]amples/Mixed Reality Toolkit Foundation.meta
+/[Aa]ssets/[Ss]amples/Mixed Reality Toolkit Examples.meta
