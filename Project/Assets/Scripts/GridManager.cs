@@ -1,10 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using System.Numerics;
 using System.Reflection;
 using UnityEngine;
 using UnityEngine.Serialization;
 using UnityEngine.UIElements;
+using Matrix4x4 = UnityEngine.Matrix4x4;
+using Quaternion = UnityEngine.Quaternion;
+using Vector3 = UnityEngine.Vector3;
 
 
 // UGLY TRASH
@@ -15,11 +20,85 @@ namespace System.Runtime.CompilerServices
     internal static class IsExternalInit {}
 }
 
-public record Transformable
+public abstract record Transformable
 {
-    public record MVectorManager(VectorManager VectorManager) : Transformable();
-    public record MPointManager(PointManager PointManager) : Transformable();
-    public record MPointSnapConstraint(PointSnapConstraint PointSnapConstraint) : Transformable();
+    public abstract GameObject gameObject
+    {
+        get;
+    }
+
+    public abstract Vector3 GetStandardValue();
+
+    public abstract void SetStandardValue(Vector3 newStandardValue);
+
+    public abstract Vector3 GetValue();
+
+    public abstract void SetValue(Vector3 newValue);
+
+    // public void DestroyTransformable()
+    // {
+    //     UnityEngine.Object.Destroy(gameObject);
+    // }
+    
+    public record MVectorManager(VectorManager VectorManager) : Transformable()
+    {
+        public override GameObject gameObject => VectorManager.gameObject;
+        
+        public override Vector3 GetStandardValue() => VectorManager.standardValue;
+
+        public override void SetStandardValue(Vector3 newStandardValue) => VectorManager.SetNewStandardValue(newStandardValue);
+
+        public override Vector3 GetValue() => VectorManager.value;
+
+        public override void SetValue(Vector3 newValue) => VectorManager.SetNewValue(newValue);
+    };
+    public record MPointManager(PointManager PointManager) : Transformable()
+    {
+        public override GameObject gameObject => PointManager.gameObject;
+        
+        public override Vector3 GetStandardValue() => PointManager.standardValue;
+
+        public override void SetStandardValue(Vector3 newStandardValue) => PointManager.SetNewStandardValue(newStandardValue);
+
+        public override Vector3 GetValue() => PointManager.value;
+
+        public override void SetValue(Vector3 newValue) => PointManager.SetNewValue(newValue);
+    };
+    public record MPointSnapConstraint(PointSnapConstraint PointSnapConstraint) : Transformable()
+    {
+        public override GameObject gameObject => PointSnapConstraint.gameObject;
+        
+        public override Vector3 GetStandardValue() => PointSnapConstraint.followStandardValue;
+
+        public override void SetStandardValue(Vector3 newStandardValue) => PointSnapConstraint.SetFollowStandardValue(newStandardValue);
+
+        public override Vector3 GetValue() => PointSnapConstraint.followValue;
+
+        public override void SetValue(Vector3 newValue) => PointSnapConstraint.SetFollowValue(newValue);
+    };
+    public record NotTransformable(GameObject GameObject) : Transformable()
+    {
+        public override GameObject gameObject => GameObject.gameObject;
+        
+        //Ambiguity / deliberation: euclideanGridSize cannot be accounted for...
+        public override Vector3 GetStandardValue() => gameObject.transform.localPosition;
+
+        public override void SetStandardValue(Vector3 newStandardValue) =>
+            gameObject.transform.localPosition = newStandardValue;
+
+        public override Vector3 GetValue()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void SetValue(Vector3 newValue)
+        {
+            throw new NotImplementedException();
+        }
+    };
+
+    public record MPartialGridManager(GameObject GameObject, GridManager GridManager) : NotTransformable(GameObject);
+
 
     public static readonly Type[] validTypes = new[] {typeof(VectorManager), typeof(PointManager), typeof(PointSnapConstraint)};
     
@@ -50,7 +129,7 @@ public class GridManager : MonoBehaviour
         Reset();
     }
 
-    private static List<Transformable> createTransformable(GameObject gameObject)
+    public static List<Transformable> createTransformable(GameObject gameObject)
     {
         // MethodInfo methodInfo = typeof(GameObject).GetMethod("GetComponent");
         // foreach (Type type in Transformable.validTypes)
@@ -63,10 +142,17 @@ public class GridManager : MonoBehaviour
         //     }
         // }
         List<Transformable> transformables = new List<Transformable>();
+        
         VectorManager vectorManager = gameObject.GetComponent<VectorManager>();
         if (vectorManager != null)
         {
             transformables.Add(new Transformable.MVectorManager(vectorManager));
+        }
+
+        PointSnapConstraint pointSnapConstraint = gameObject.GetComponent<PointSnapConstraint>();
+        if (pointSnapConstraint != null)
+        {
+            transformables.Add(new Transformable.MPointSnapConstraint(pointSnapConstraint));
         }
 
         PointManager pointManager = gameObject.GetComponent<PointManager>();
@@ -75,16 +161,18 @@ public class GridManager : MonoBehaviour
             transformables.Add(new Transformable.MPointManager(pointManager));
         }
 
-        PointSnapConstraint PointSnapConstraint = gameObject.GetComponent<PointSnapConstraint>();
-        if (pointManager != null)
+        GridManager gridManager = gameObject.GetComponent<GridManager>();
+        if (gridManager != null)
         {
-            transformables.Add(new Transformable.MPointSnapConstraint(PointSnapConstraint));
+            transformables.Add(new Transformable.MPartialGridManager(gridManager.gameObject, gridManager));
         }
 
         if (transformables.Count == 0)
         { 
-            throw new Exception("Bruh. No valid types.");  
+            // throw new Exception("Bruh. No valid types.");
+            transformables.Add(new Transformable.NotTransformable(gameObject));
         }
+        
         return transformables;
     }
 
@@ -182,7 +270,7 @@ public class GridManager : MonoBehaviour
 
             foreach (Transform gridline in GridlineParent.transform)
             {
-                SetGridlinePosition(gridline);
+                SetGridlinePosition(gridline, skipRS: false);
             }
 
             if (linearMap)
@@ -215,6 +303,8 @@ public class GridManager : MonoBehaviour
             }
         }
     }
-    
+
+    public VectorManager[] GetVectorManagers() => _vectorManagers;
+
     // public void 
 }
