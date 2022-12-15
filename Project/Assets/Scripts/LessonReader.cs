@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using UnityEditor;
@@ -30,7 +31,21 @@ public class LessonReader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        commands = System.IO.File.ReadAllLines("Assets/Lessons/" + Globals.lesson);
+        StartNewLesson(System.IO.File.ReadAllLines("Assets/Lessons/" + Globals.lesson));
+    }
+
+    public void StartNewLesson(string userString)
+    {
+        List<string> lessonLines = new List<string>();
+        using (System.IO.StringReader reader = new System.IO.StringReader(userString)) {
+            lessonLines.Add(reader.ReadLine());
+        }
+        StartNewLesson(lessonLines.ToArray());
+    }
+    
+    public void StartNewLesson(string[] lessonLines)
+    {
+        commands = lessonLines;
 
         flags = new Dictionary<string, bool>();
         gameObjects = new Dictionary<string, GameObject>();
