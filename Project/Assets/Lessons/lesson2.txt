@@ -1,16 +1,37 @@
-CREATE-MATRIX "testMat1" [1,0,0;1,1,0;0,0,1]
-CREATE-MATRIX "testMat2" [0.866,0,-0.5;0,1,0;0.5,0,0.866]
-DRAW GRID "defaultGrid"
-DRAW POINT "origin" ON "defaultGrid"
-ASSIGN-PROPERTY "origin" "POS" [0,0,1]
-DRAW POINT "point1" ON "defaultGrid"
-ASSIGN-PROPERTY "point1" "POS" [-0.2,0.25,1]
-DRAW POINT "point2" ON "defaultGrid"
-ASSIGN-PROPERTY "point2" "POS" [0.1,-0.1,1]
-DRAW VECTOR "vector1" FROM "origin" TO "point1"
-DRAW VECTOR "vector2" FROM "origin" TO "point2"
-DRAW VECTOR "difference" FROM "point1" TO "point2"
-ASSIGN-PROPERTY "point1" "POS" [-0.05,0.2,1] 5.0
-ASSIGN-PROPERTY "point2" "POS" [0.05,0.15,1] 5.0
-WAIT 7.0
-APPLY-MATRIX "testMat1" TO "defaultGrid"
+DRAW GRID "defaultGrid1"
+ASSIGN-PROPERTY "defaultGrid1" "POS" [-0.5,0,1]
+DRAW GRID "defaultGrid2"
+ASSIGN-PROPERTY "defaultGrid2" "POS" [0.5,0,1]
+WAIT 2.0
+PLAY SOUND "lesson2"
+DRAW POINT "origin1" ON "defaultGrid1"
+ASSIGN-PROPERTY "origin1" "POS" [-0.5,0,1]
+DRAW POINT "point1" ON "defaultGrid1"
+ASSIGN-PROPERTY "point1" "POS" [-0.65,0.15,1]
+DRAW POINT "point2" ON "defaultGrid1"
+ASSIGN-PROPERTY "point2" "POS" [-0.4,-0.25,1]
+DRAW POINT "point3" ON "defaultGrid1"
+ASSIGN-PROPERTY "point3" "POS" [-0.4,0.15,1]
+WAIT 10.5
+DRAW VECTOR "vector1" FROM "origin1" TO "point1"
+DRAW VECTOR "vector2" FROM "point2" TO "point3"
+WAIT 32
+ASSIGN-PROPERTY "point1" "POS" [-0.55,0.1,1]
+ASSIGN-PROPERTY "point2" "POS" [-0.35,0.05,1]
+ASSIGN-PROPERTY "point3" "POS" [-0.4,0.15,1]
+WAIT 28
+DRAW POINT "origin2" ON "defaultGrid2"
+ASSIGN-PROPERTY "origin2" "POS" [0.5,0,1]
+DRAW POINT "point4" ON "defaultGrid2"
+ASSIGN-PROPERTY "point4" "POS" [0.45,0.1,1]
+DRAW POINT "point5" ON "defaultGrid2"
+ASSIGN-PROPERTY "point5" "POS" [0.65,0.05,1]
+DRAW POINT "point6" ON "defaultGrid2"
+ASSIGN-PROPERTY "point6" "POS" [0.6,0.15,1]
+WAIT 5
+DRAW VECTOR "vector3" FROM "origin2" TO "point4"
+DRAW VECTOR "vector4" FROM "origin2" TO "point5"
+DRAW VECTOR "vector5" FROM "origin2" TO "point6"
+WAIT 23
+CREATE-MATRIX "matrix1" [1,1,0;0,1,0;0,0,1]
+APPLY-MATRIX "matrix1" TO "defaultGrid2"
