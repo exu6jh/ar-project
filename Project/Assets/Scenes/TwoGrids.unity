@@ -938,7 +938,7 @@ PrefabInstance:
       objectReference: {fileID: 1666670648}
     - target: {fileID: 1863266386567895196, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.9999999
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3332227949052744578, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
       propertyPath: dim
@@ -954,7 +954,7 @@ PrefabInstance:
       objectReference: {fileID: 1666670648}
     - target: {fileID: 3332227949052744579, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
       propertyPath: m_Name
-      value: Lin Comb X (1)
+      value: Lin Comb Y
       objectReference: {fileID: 0}
     - target: {fileID: 3332227949052744588, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
       propertyPath: m_Pivot.x
@@ -1042,7 +1042,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8003836820802495364, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
       propertyPath: m_LocalScale.y
-      value: 0.9999999
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
@@ -10386,8 +10386,8 @@ MonoBehaviour:
   gridManager: {fileID: 1472456782}
   TransformCylinder: {fileID: 938006779}
   TransformCone: {fileID: 1368182269}
-  standardValue: {x: 1, y: 0, z: 0}
-  value: {x: 1.0000001, y: -0.00000005960465, z: 0}
+  standardValue: {x: 0.99999994, y: 0.000000059604645, z: 0}
+  value: {x: 1, y: -3.5527133e-15, z: 0}
   length: 1
   euler: {x: 0, y: 0, z: 270}
   zOffset: -0.5
@@ -11194,6 +11194,14 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 133497060}
     m_Modifications:
+    - target: {fileID: 271894439918731971, guid: 620010807d97ca7469adcc00e27f3be2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.1666667
+      objectReference: {fileID: 0}
+    - target: {fileID: 271894439918731971, guid: 620010807d97ca7469adcc00e27f3be2, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.4142135
+      objectReference: {fileID: 0}
     - target: {fileID: 989545634597493769, guid: 620010807d97ca7469adcc00e27f3be2, type: 3}
       propertyPath: to
       value: 
@@ -11298,6 +11306,10 @@ PrefabInstance:
       propertyPath: gridManager
       value: 
       objectReference: {fileID: 1666670648}
+    - target: {fileID: 9175031767196630750, guid: 620010807d97ca7469adcc00e27f3be2, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1.4142135
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 620010807d97ca7469adcc00e27f3be2, type: 3}
 --- !u!1001 &3332227949004397435
@@ -11311,6 +11323,10 @@ PrefabInstance:
       propertyPath: gridManager
       value: 
       objectReference: {fileID: 1666670648}
+    - target: {fileID: 1863266386567895196, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3332227949052744578, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
       propertyPath: target
       value: 
@@ -11407,6 +11423,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: -90
       objectReference: {fileID: 0}
+    - target: {fileID: 8003836820802495364, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 3a73586c3e97cd84d8f7f9225386e5c0, type: 3}
 --- !u!1001 &7032402161531334446
@@ -11416,6 +11436,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1828382179}
     m_Modifications:
+    - target: {fileID: 7032402161171401384, guid: d2f5a31701332454ebe5042664fc24df, type: 3}
+      propertyPath: m_AnchoredPosition.x
+      value: 1.75
+      objectReference: {fileID: 0}
     - target: {fileID: 7032402162090133506, guid: d2f5a31701332454ebe5042664fc24df, type: 3}
       propertyPath: origin
       value: 
