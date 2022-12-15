@@ -1,15 +1,17 @@
 CREATE-MATRIX "testMat1" [1,0,-1;0,1,0;0,0,1]
 CREATE-MATRIX "testMat2" [0.866,0,-0.5;0,1,0;0.5,0,0.866]
-CREATE-OBJECT "bust" "defaultBust"
 CREATE-OBJECT "bust" "bust1"
 CREATE-OBJECT "bust" "bust2"
-ASSIGN-PROPERTY "defaultBust" "POS" [0,0,0]
-ASSIGN-PROPERTY "defaultBust" "ROT" [-90,180,0]
 ASSIGN-PROPERTY "bust1" "POS" [-3,1,0]
 ASSIGN-PROPERTY "bust2" "POS" [3,1,0]
-ASSIGN-PROPERTY "bust1" "POS" [-2,0,0] 5.0
-ASSIGN-PROPERTY "bust1" "ROT" [-90,180,0] 5.0
-ASSIGN-PROPERTY "bust2" "POS" [3,0,0] 2.0
-ASSIGN-PROPERTY "bust2" "ROT" [-90,180,0] 2.0
+ASSIGN-PROPERTY "bust1" "POS" [-2,0,0] 1.0
+ASSIGN-PROPERTY "bust1" "ROT" [-90,180,0] 1.0
+ASSIGN-PROPERTY "bust2" "POS" [3,0,0] 1.0
+ASSIGN-PROPERTY "bust2" "ROT" [-90,180,0] 1.0
 APPLY-MATRIX "testMat1" "bust1"
 APPLY-MATRIX "testMat2" "bust2"
+WAIT 1.0
+WAIT-UNTIL "bust1" GETS-CLOSE 1.0 "bust2"
+CREATE-OBJECT "bust" "defaultBust"
+ASSIGN-PROPERTY "defaultBust" "POS" [0,0,0]
+ASSIGN-PROPERTY "defaultBust" "ROT" [-90,180,0]

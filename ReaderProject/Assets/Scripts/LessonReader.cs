@@ -13,8 +13,12 @@ public class LessonReader : MonoBehaviour
     private Dictionary<string, GameObject> gameObjects;
     private Dictionary<string, Matrix> matrices;
 
-    private string savePhrase;
+    // for WAIT-UNTIL
     private int savePoint;
+    private string waitUntilType;
+    private GameObject waitUntilObject1;
+    private GameObject waitUntilObject2;
+    private float waitUntilDistance;
 
     // Start is called before the first frame update
     void Start()
@@ -24,10 +28,18 @@ public class LessonReader : MonoBehaviour
         flags = new Dictionary<string, bool>();
         gameObjects = new Dictionary<string, GameObject>();
         matrices = new Dictionary<string, Matrix>();
+
+        savePoint = 0;
+        waitUntilType = null;
+        waitUntilObject1 = null;
+        waitUntilObject2 = null;
+        waitUntilDistance = -1f;
+
         Execute(0);
     }
 
     void Execute(int index) {
+        Debug.Log(string.Format("Executing line {0}", index));
         // Handle out of bounds exceptions.
         if(index >= commands.Length) {
             savePoint = -1;
@@ -38,7 +50,7 @@ public class LessonReader : MonoBehaviour
         savePoint = index;
 
         if(Regex.Match(commands[index], "^CREATE-OBJECT \"[\\w\\-. ]+\"( \"[\\w\\-. ]+\")?$").Success) {
-            Debug.Log("Creating.");
+            Debug.Log("Creating game object.");
             string[] names = commands[index].Split("\"");
 
             try {
@@ -60,6 +72,7 @@ public class LessonReader : MonoBehaviour
             Execute(index + 1);
             return;
         } else if (Regex.Match(commands[index], "^CREATE-MATRIX \"[\\w\\- ]+\" \\[((-?[0-9]+(.[0-9]+)?)(,-?[0-9]+(.[0-9]+)?)*)(;(-?[0-9]+(.[0-9]+)?)(,-?[0-9]+(.[0-9]+)?)*)*\\]$").Success) {
+            Debug.Log("Creating matrix.");
             string matrixElements = commands[index].Split(new char[] {'[', ']'})[1];
             string[] names = commands[index].Split("\"");
             try {
@@ -71,7 +84,7 @@ public class LessonReader : MonoBehaviour
             Execute(index + 1);
             return;
         } else if(Regex.Match(commands[index], "^DELETE-OBJECT \"[\\w\\-. ]+\"$").Success) {
-            Debug.Log("Deleting.");
+            Debug.Log("Deleting game object.");
             string[] names = commands[index].Split("\"");
             if(gameObjects.ContainsKey(names[1])) {
                 Destroy(gameObjects[names[1]]);
@@ -89,14 +102,35 @@ public class LessonReader : MonoBehaviour
             IEnumerator waitCoroutine = Wait(waitTime, index + 1);
             StartCoroutine(waitCoroutine);
             return;
-        } else if(Regex.Match(commands[index], "^WAIT-UNTIL \"[\\w\\- ]+\"$").Success) {
-            Debug.Log("WAIT-UNTIL");
-            string[] names = commands[index].Split("\"");
-            savePhrase = names[1];
-            savePoint = index + 1;
+        } else if(Regex.Match(commands[index], "^WAIT-UNTIL \"[\\w\\- ]+\" (COLLIDES|GETS-CLOSE [0-9]+(.[0-9]+)?) \"[\\w\\- ]+\"$").Success) {
+            Debug.Log("Waiting until.");
+            try {
+                string[] names = commands[index].Split("\"");
+                waitUntilObject1 = gameObjects[names[1]];
+                waitUntilObject2 = gameObjects[names[3]];
+                string[] keywords = names[2].Split(" ");
+                waitUntilType = keywords[1];
+                
+                InteractionDetection detect = waitUntilObject1.AddComponent<InteractionDetection>() as InteractionDetection;
+                detect.interactionType = waitUntilType;
+                detect.otherObject = waitUntilObject2;
+                detect.lessonReader = this;
+                if(waitUntilType.Equals("COLLIDES")) {
+                    Debug.Log("Type: collision detection");
+                } else if(waitUntilType.Equals("GETS-CLOSE")) {
+                    Debug.Log("Type: proximity detection");
+                    waitUntilDistance = float.Parse(keywords[2]);
+                    detect.distanceThreshold = waitUntilDistance;
+                }
+
+                savePoint = index + 1;
+            } catch {
+                Debug.Log(string.Format("Error in WAIT-UNTIL in command line {0}", index));
+                Execute(index + 1);
+            }
             return;
         } else if(Regex.Match(commands[index], "^GOTO [0-9]+( IF \"[\\w-]+\" ELSE [0-9]+)?$").Success) {
-            Debug.Log("GOTO");
+            Debug.Log("Going to line.");
             string[] scriptWords = commands[index].Split(" ");
             try {
                 int truePath = int.Parse(scriptWords[1]);
@@ -119,6 +153,7 @@ public class LessonReader : MonoBehaviour
             }
             return;
         } else if(Regex.Match(commands[index], "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" ((\\[(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*\\])|(\"[\\w-.]+\"))( [0-9]+(.[0-9]+))?$").Success) {
+            Debug.Log("Assigning property.");
             string[] names = commands[index].Split("\"");
             GameObject obj;
             if(gameObjects.ContainsKey(names[1])) {
@@ -130,6 +165,7 @@ public class LessonReader : MonoBehaviour
             }
 
             if(names[3].Equals("POS")) {
+                Debug.Log("Changing position.");
                 try {
                     string[] parsedString = commands[index].Split(new char[] {'[', ']'});
                     string matrixElements = parsedString[1];
@@ -154,6 +190,7 @@ public class LessonReader : MonoBehaviour
                     Debug.Log("Error: inconsistent matrix size.");
                 }
             } else if(names[3].Equals("ROT")) {
+                Debug.Log("Changing rotation.");
                 try {
                     string[] parsedString = commands[index].Split(new char[] {'[', ']'});
                     string matrixElements = parsedString[1];
@@ -178,6 +215,7 @@ public class LessonReader : MonoBehaviour
                     Debug.Log("Error: inconsistent matrix size.");
                 }
             } else if(names[3].Equals("SCALE")) {
+                Debug.Log("Changing scale.");
                 try {
                     string matrixElements = commands[index].Split(new char[] {'[', ']'})[1];
                     Matrix scaleMatrix = new Matrix(matrixElements);
@@ -195,7 +233,8 @@ public class LessonReader : MonoBehaviour
             }
             Execute(index + 1);
             return;
-        } else if(Regex.Match(commands[index], "APPLY-MATRIX \"[\\w\\- ]+\" \"[\\w\\-. ]+\"").Success) {
+        } else if(Regex.Match(commands[index], "APPLY-MATRIX \"[\\w\\- ]+\" \"[\\w\\-. ]+\"$").Success) {
+            Debug.Log("Applying matrix transformation.");
             string[] names = commands[index].Split("\"");
             if(matrices.ContainsKey(names[1]) && gameObjects.ContainsKey(names[3])) {
                 foreach(MeshFilter filters in gameObjects[names[3]].GetComponentsInChildren<MeshFilter>()) {
@@ -221,16 +260,14 @@ public class LessonReader : MonoBehaviour
         }
     }
 
-    // Not quite sure what to use this for yet
-    public void ExecuteFromSavePoint(string password) {
-        if(password.Equals(savePhrase)) {
-            Debug.Log("Executing from save point.");
-            Execute(savePoint);
-        } else {
-            Debug.Log("Invalid signal.");
-        }
+    public void ExecuteFromSavePoint() {
+        waitUntilType = null;
+        waitUntilObject1 = null;
+        waitUntilObject2 = null;
+        waitUntilDistance = -1;
+        Execute(savePoint);
     }
-    
+
     private IEnumerator Wait(float waitTime, int commandAfter) {
         yield return new WaitForSeconds(waitTime);
         Debug.Log("Wait over.");
@@ -242,7 +279,7 @@ public class LessonReader : MonoBehaviour
             Vector3 initPosition = obj.position;
             Debug.Log("Changing position.");
             for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
-                obj.position = initPosition + i * (target - initPosition) / Mathf.Ceil(time / Time.fixedDeltaTime);
+                obj.position = Vector3.Lerp(initPosition, target, i / Mathf.Ceil(time / Time.fixedDeltaTime));
                 yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
             }
             obj.position = target;
@@ -255,7 +292,7 @@ public class LessonReader : MonoBehaviour
 
     private IEnumerator Rot(Transform obj, Vector3 target, float time, int commandAfter)
     {
-        bool useSlerp = false;
+        bool useSlerp = true;
         if(time > 0.1f) {
             if (useSlerp)
             {
@@ -277,8 +314,7 @@ public class LessonReader : MonoBehaviour
                 Debug.Log("Changing rotation.");
                 for (int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++)
                 {
-                    obj.eulerAngles =
-                        initRotation + i * (target - initRotation) / Mathf.Ceil(time / Time.fixedDeltaTime);
+                    obj.eulerAngles = Vector3.Lerp(initRotation, target, i / Mathf.Ceil(time / Time.fixedDeltaTime));
                     yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
                 }
 
