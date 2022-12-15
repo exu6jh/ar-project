@@ -57,7 +57,7 @@ public class LessonReader : MonoBehaviour
 
         savePoint = index;
 
-        if(Regex.Match(commands[index], "^CREATE-OBJECT \"[\\w\\-. ]+\"( \"[\\w\\-. ]+\")?$").Success) {
+        if(Regex.Match(commands[index], "^CREATE-OBJECT \"[\\w\\-. ]+\"( AS \"[\\w\\-. ]+\")?$").Success) {
             Debug.Log("Creating game object.");
             string[] names = commands[index].Split("\"");
 
@@ -67,7 +67,7 @@ public class LessonReader : MonoBehaviour
                 GameObject obj = (GameObject)AssetDatabase.LoadAssetAtPath(dataPath, typeof(GameObject));
                 GameObject newObj = Instantiate(obj);
 
-                if(names.Length > 2) {
+                if(names.Length > 3) {
                     newObj.name = names[3];
                     gameObjects[names[3]] = newObj;
                 } else {
@@ -248,7 +248,7 @@ public class LessonReader : MonoBehaviour
             gameObjects[parsedString[1]] = newGrid;
             Execute(index + 1);
             return;
-        } else if(Regex.Match(commands[index], "^DRAW POINT \"[\\w\\- ]+\" \"[\\w\\- ]+\"$").Success) {
+        } else if(Regex.Match(commands[index], "^DRAW POINT \"[\\w\\- ]+\" ON \"[\\w\\- ]+\"$").Success) {
             Debug.Log("Drawing point.");
             string[] parsedString = commands[index].Split("\"");
             GameObject newPoint = Instantiate(point);
@@ -290,7 +290,7 @@ public class LessonReader : MonoBehaviour
             }
             Execute(index + 1);
             return;
-        } else if(Regex.Match(commands[index], "^APPLY-MATRIX \"[\\w\\- ]+\" \"[\\w\\-. ]+\"$").Success) {
+        } else if(Regex.Match(commands[index], "^APPLY-MATRIX \"[\\w\\- ]+\" TO \"[\\w\\-. ]+\"$").Success) {
             Debug.Log("Applying matrix transformation.");
             string[] names = commands[index].Split("\"");
             if(matrices.ContainsKey(names[1]) && gameObjects.ContainsKey(names[3])) {
@@ -298,10 +298,12 @@ public class LessonReader : MonoBehaviour
                     Mesh mesh = filters.mesh;
                     Vector3[] vertices = mesh.vertices;
                     for(int i = 0; i < vertices.Length; i++) {
-                        float[,] vertexPosition = new float[3,1]{{vertices[i].x},{vertices[i].y},{vertices[i].z}};
+                        Vector3 wrtParent = filters.transform.TransformPoint(vertices[i]) - gameObjects[names[3]].transform.position;
+                        float[,] vertexPosition = new float[3,1]{{wrtParent.x},{wrtParent.y},{wrtParent.z}};
                         Matrix vertexMatrix = new Matrix(vertexPosition);
                         Matrix transformedMatrix = matrices[names[1]] * vertexMatrix;
-                        Vector3 transformedPosition = new Vector3(transformedMatrix.values[0,0], transformedMatrix.values[1,0], transformedMatrix.values[2,0]);
+                        Vector3 transformedWrtParent = new Vector3(transformedMatrix.values[0,0], transformedMatrix.values[1,0], transformedMatrix.values[2,0]);
+                        Vector3 transformedPosition = filters.transform.InverseTransformPoint(transformedWrtParent + gameObjects[names[3]].transform.position);
                         vertices[i] = transformedPosition;
                     }
                     mesh.vertices = vertices;
