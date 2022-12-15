@@ -23,7 +23,10 @@ public class LessonReader : MonoBehaviour
     private float waitUntilDistance;
 
     // for DRAWING
+    [Header("Geometry Assets")]
+    public GameObject grid;
     public GameObject point;
+    public GameObject vector;
 
     // Start is called before the first frame update
     void Start()
@@ -237,27 +240,56 @@ public class LessonReader : MonoBehaviour
             }
             Execute(index + 1);
             return;
-        } else if(Regex.Match(commands[index], "^DRAW (POINT|VECTOR) \"[\\w\\- ]+\" \\[(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*\\]$").Success) {
-            Debug.Log("Drawing geometric figure.");
+        } else if(Regex.Match(commands[index], "^DRAW GRID \"[\\w\\- ]+\"").Success) {
+            Debug.Log("Drawing grid.");
             string[] parsedString = commands[index].Split("\"");
+            // Set some temporary default values.
+            GameObject newGrid = Instantiate(grid, new Vector3(0f, 0f, 1f), Quaternion.identity);
+            gameObjects[parsedString[1]] = newGrid;
+            Execute(index + 1);
+            return;
+        } else if(Regex.Match(commands[index], "^DRAW POINT \"[\\w\\- ]+\" \"[\\w\\- ]+\"$").Success) {
+            Debug.Log("Drawing point.");
+            string[] parsedString = commands[index].Split("\"");
+            GameObject newPoint = Instantiate(point);
+            gameObjects[parsedString[1]] = newPoint;
             try {
-                string values = commands[index].Split(new char[]{'[', ']'})[1];
-                Matrix location = new Matrix(values);
-                if(parsedString[0].Equals("DRAW POINT ")) {
-                    Debug.Log("POINT");
-                    if(location.getRows() != 1 || location.getCols() != 3) {
-                        Debug.Log("Point position vector is the wrong size, it should be 1 row by 3 columns.");
-                    }
-                    float[,] pos = location.values;
-                    Vector3 targetPosition = new Vector3(pos[0,0], pos[0,1], pos[0,2]);
-                    GameObject newPoint = Instantiate(point, targetPosition, Quaternion.identity);
-                    gameObjects[parsedString[1]] = newPoint;
-                } else if (parsedString[0].Equals("DRAW VECTOR ")) {
-                    Debug.Log("VECTOR");
-                }
+                GameObject managerObj = gameObjects[parsedString[3]];
+                newPoint.transform.parent = managerObj.transform;
+                GridManager manager = managerObj.GetComponent<GridManager>();
+                newPoint.GetComponent<PointManager>().gridManager = manager;
+                newPoint.GetComponent<PointSnapConstraint>().origin = manager.origin;
+                newPoint.transform.localScale = new Vector3(10,10,10);
             } catch {
-                Debug.Log("Error: inconsistent matrix size.");
+                Debug.Log("Error: could not find corresponding grid.");
             }
+            Execute(index + 1);
+            return;
+        } else if(Regex.Match(commands[index], "^DRAW VECTOR \"[\\w\\- ]+\" FROM \"[\\w\\- ]+\" TO \"[\\w\\- ]+\"$").Success) {
+            Debug.Log("Drawing vector.");
+            string[] parsedString = commands[index].Split("\"");
+            GameObject newVector = Instantiate(vector);
+            gameObjects[parsedString[1]] = newVector;
+            try {
+                GameObject endpoint1 = gameObjects[parsedString[3]];
+                GameObject endpoint2 = gameObjects[parsedString[5]];
+                if(endpoint1.GetComponent<PointManager>().gridManager != endpoint2.GetComponent<PointManager>().gridManager) {
+                    Debug.Log("You must select two endpoints that are on the same grid.");
+                    throw new System.ArithmeticException();
+                }
+                VectorEndpointConstraint constraint = newVector.GetComponent<VectorEndpointConstraint>();
+                GridManager manager = endpoint1.GetComponent<PointManager>().gridManager;
+                constraint.from = endpoint1;
+                constraint.to = endpoint2;
+                newVector.GetComponent<VectorManager>().gridManager = manager;
+                constraint.gridManager = manager;
+                newVector.transform.parent = manager.transform;
+                newVector.transform.localScale = new Vector3(10,1,10);
+            } catch {
+                Debug.Log("Error involving the supplied endpoints.");
+            }
+            Execute(index + 1);
+            return;
         } else if(Regex.Match(commands[index], "^APPLY-MATRIX \"[\\w\\- ]+\" \"[\\w\\-. ]+\"$").Success) {
             Debug.Log("Applying matrix transformation.");
             string[] names = commands[index].Split("\"");

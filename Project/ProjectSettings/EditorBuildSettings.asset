@@ -9,7 +9,7 @@ EditorBuildSettings:
     path: Assets/Scenes/TwoGrids.unity
     guid: 63f7b38b59798c84da9ae348625637d5
   - enabled: 0
-    path: Assets/Scenes/Main.unity
+    path: Assets/Scenes/MainTemplate.unity
     guid: 538d67ab997de994abdf16e69ae6184a
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1b61a105ad546c149bde46986ebae7d4, type: 2}

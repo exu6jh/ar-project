@@ -1,0 +1,16 @@
+CREATE-MATRIX "testMat1" [1,0,-1;0,1,0;0,0,1]
+CREATE-MATRIX "testMat2" [0.866,0,-0.5;0,1,0;0.5,0,0.866]
+DRAW GRID "defaultGrid"
+DRAW POINT "origin" "defaultGrid"
+ASSIGN-PROPERTY "origin" "POS" [0,0,1]
+DRAW POINT "point1" "defaultGrid"
+ASSIGN-PROPERTY "point1" "POS" [-0.2,0.25,1]
+DRAW POINT "point2" "defaultGrid"
+ASSIGN-PROPERTY "point2" "POS" [0.1,-0.1,1]
+DRAW VECTOR "vector1" FROM "origin" TO "point1"
+DRAW VECTOR "vector2" FROM "origin" TO "point2"
+DRAW VECTOR "difference" FROM "point1" TO "point2"
+ASSIGN-PROPERTY "point1" "POS" [-0.05,0.2,1] 5.0
+ASSIGN-PROPERTY "point2" "POS" [0.05,0.15,1] 5.0
+WAIT 1.0
+WAIT-UNTIL "bust1" GETS-CLOSE 1.0 "bust2"
