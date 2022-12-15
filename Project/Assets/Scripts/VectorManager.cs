@@ -1,17 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Input;
 using UnityEngine;
+using UnityEngine.Serialization;
 
 [ExecuteInEditMode]
 public class VectorManager : MonoBehaviour
 {
+    public GridManager gridManager;
 
     public GameObject TransformCylinder;
     public GameObject TransformCone;
+
+    public readonly HashSet<MonoBehaviour> activeConstraints = new HashSet<MonoBehaviour>();
     
     
-    public Vector3 value = Vector3.right;
+    public Vector3 standardValue = Vector3.right;
+    public Vector3 value;
     public float length = 1;
     public Vector3 euler = new Vector3(0, 0, -90);
     public float zOffset = -0.2f;
@@ -27,19 +33,21 @@ public class VectorManager : MonoBehaviour
     {
         length = TransformCylinder.transform.localScale.y;
         euler = transform.localRotation.eulerAngles;
-        value = Quaternion.Euler(euler) * (Vector3.up * length);
+        standardValue = Quaternion.Euler(euler) * (Vector3.up * length);
+        value = gridManager.tMatrix.inverse * standardValue;
         // MixedRealityPose pose;
         // HandJointUtils.TryGetJointPose(TrackedHandJoint.IndexTip, Handedness.Right, out pose);
         // Vector3 position = pose.Position;
         // Quaternion rotation = pose.Rotation;
     }
 
-    public void SetNewValue(Vector3 newValue)
+    public void SetNewStandardValue(Vector3 newStandardValue)
     {
-        value = newValue;
+        standardValue = newStandardValue;
+        value = gridManager.tMatrix.inverse * standardValue;
         
         // Length changes
-        length = newValue.magnitude;
+        length = newStandardValue.magnitude;
             
         Vector3 newLocalScale = TransformCylinder.transform.localScale;
         newLocalScale.y = length;
@@ -51,7 +59,7 @@ public class VectorManager : MonoBehaviour
         cone.localPosition = newLocalPosition;
             
         // Rotation changes
-        transform.localRotation = Quaternion.FromToRotation(Vector3.up, newValue);
+        transform.localRotation = Quaternion.FromToRotation(Vector3.up, newStandardValue);
         euler = transform.localRotation.eulerAngles;
     }
 
@@ -59,6 +67,8 @@ public class VectorManager : MonoBehaviour
     {
         
     }
+
+    public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);
 
     public void SetNewStartPoint(Vector3 newStart)
     {

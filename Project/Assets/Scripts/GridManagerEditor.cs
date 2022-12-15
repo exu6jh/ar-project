@@ -6,27 +6,33 @@ using UnityEngine;
 [CustomEditor(typeof(GridManager))]
 public class GridManagerEditor : Editor
 {
-    // private float gridLength = 100; // cm
+    private float gridLength = 100; // cm
     private float newGridScale = 5; // cm
 
     private void Awake()
     {
         GridManager gridManager = (GridManager) target;
         gridManager.gridLength = gridManager.GridlineParent.GetComponent<RectTransform>().sizeDelta.x;
+        gridLength = gridManager.gridLength;
     }
 
     public override void OnInspectorGUI()
     {
         base.OnInspectorGUI();
         GridManager gridManager = (GridManager) target;
+
+        // EditorGUILayout.ObjectField("T Matrix (debug only)", (UnityEngine.Object) gridManager.tMatrix, typeof(Matrix4x4), true, null);
+
+        EditorGUILayout.FloatField("Current Grid Length", gridManager.gridLength);
         
-        gridManager.gridLength = EditorGUILayout.FloatField("New Grid Length", gridManager.gridLength);
+        gridLength = EditorGUILayout.FloatField("New Grid Length", gridLength);
 
         if (GUILayout.Button("Set New Grid Length"))
         {
             // gridManager.Reset();
+
             
-            Vector2 newSizeDelta = new Vector2(gridManager.gridLength, gridManager.gridLength);
+            Vector2 newSizeDelta = new Vector2(gridLength, gridLength);
             
             gridManager.GetComponent<RectTransform>().sizeDelta = newSizeDelta * 10;
             gridManager.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = newSizeDelta;
@@ -36,9 +42,11 @@ public class GridManagerEditor : Editor
             foreach (Transform gridline in gridManager.GridlineParent.transform)
             {
                 Vector3 localScale = gridline.localScale;
-                localScale.y = gridManager.gridLength / 2;
+                localScale.y = gridLength / 2;
                 gridline.localScale = localScale;
             }
+            
+            gridManager.gridLength = gridLength;
             
         }
         
@@ -97,6 +105,16 @@ public class GridManagerEditor : Editor
                 tCone.localScale = tConeLocalScale;
                 cone.localScale = coneLocalScale;
             }
+        }
+
+        if (GUILayout.Button(gridManager.transformable ? "Disable Transformable" : "Enable Transformable"))
+        {
+            gridManager.ToggleTransformableStatus();
+        }
+
+        if (GUILayout.Button(gridManager.linearMap ? "Disable Linear Map" : "Enable Linear Map"))
+        {
+            gridManager.ToggleLinearMapStatus();
         }
 
         if (GUILayout.Button("Reset"))

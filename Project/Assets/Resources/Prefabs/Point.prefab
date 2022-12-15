@@ -438,7 +438,7 @@ MonoBehaviour:
   proximityType: 3
   executionOrder: 0
   constraintOnMovement: 4
-  useLocalSpaceForConstraint: 0
+  useLocalSpaceForConstraint: 1
 --- !u!1 &7032402162090133508
 GameObject:
   m_ObjectHideFlags: 0

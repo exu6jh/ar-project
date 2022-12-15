@@ -31,7 +31,7 @@ public class VectorManagerEditor : Editor
 
         if (GUILayout.Button("Set New Position"))
         {
-            vectorManager.SetNewValue(newPosition);
+            vectorManager.SetNewStandardValue(newPosition);
             newLength = vectorManager.length;
             newEuler = vectorManager.euler;
 

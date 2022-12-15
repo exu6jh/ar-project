@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,15 +14,25 @@ public class VectorEndpointConstraint : MonoBehaviour
 
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         _vectorManager = GetComponent<VectorManager>();
+    }
+
+    private void OnEnable()
+    {
+        _vectorManager.activeConstraints.Add(this);
+    }
+
+    private void OnDisable()
+    {
+        _vectorManager.activeConstraints.Remove(this);
     }
 
     // Update is called once per frame
     void Update()
     {
         _vectorManager.SetNewStartPoint(from.transform.localPosition);
-        _vectorManager.SetNewValue((to.transform.localPosition - from.transform.localPosition) / gridManager.euclideanGridScale);
+        _vectorManager.SetNewStandardValue((to.transform.localPosition - from.transform.localPosition) / gridManager.euclideanGridScale);
     }
 }
