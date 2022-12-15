@@ -319,7 +319,8 @@ public class LessonReader : MonoBehaviour
                 newPointManager.gridManager = manager;
                 newPointSnapConstraint.origin = manager.origin;
                 // Originally to make points easier to see
-                // newPoint.transform.localScale = new Vector3(10,10,10);
+                newPoint.transform.localPosition = Vector3.zero;
+                newPoint.transform.localScale = new Vector3(1,1,1);
             } catch {
                 Debug.Log("Error: could not find corresponding grid.");
             }
