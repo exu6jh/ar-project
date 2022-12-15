@@ -7,6 +7,7 @@ public class GridlineCreator : MonoBehaviour
     public GridManager gridManager;
     public GameObject gridlinePrefab;
     public GridMovement[] newGridMovements;
+    public int newPointingDim;
     
 }
 

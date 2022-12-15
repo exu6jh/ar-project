@@ -14,7 +14,8 @@ public class GridManager : MonoBehaviour
     public bool transformable = false;
     public bool linearMap = false;
     public Matrix4x4 tMatrix;
-
+    
+    public float gridLength = 100;
     [HideInInspector] public float euclideanGridScale = 2.5f;
 
     private VectorManager[] _vectorManagers;
@@ -47,17 +48,29 @@ public class GridManager : MonoBehaviour
             foreach (Transform gridline in GridlineParent.transform)
             {
                 GridlineManager gridlineManager = gridline.GetComponent<GridlineManager>();
+                
+                // Position
                 Vector3 position = Vector3.zero;
+                // Gave up, added pointing dim
+                // bool[] dimMove = new bool[dimensions];
                 foreach (GridMovement gridMovement in gridlineManager.movement)
                 {
                     position[gridMovement.dimension] = gridMovement.offset * euclideanGridScale;
+                    // dimMove[gridMovement.dimension] = true;
                 }
 
                 position = tMatrix * position;
 
                 gridline.localPosition = position;
                 
-                // Still need code for rotation...
+                // Rotation
+                Vector3 pointingDimVec = _vectorManagers[gridlineManager.pointingDim].value;
+                gridline.localRotation = Quaternion.FromToRotation(Vector3.up, pointingDimVec);
+                
+                // Scale
+                Vector3 localScale = gridline.localScale;
+                localScale.y = gridLength / 2 * pointingDimVec.magnitude;
+                gridline.localScale = localScale;
             }
 
             if (linearMap)

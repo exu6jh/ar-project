@@ -22,4 +22,5 @@ public class GridMovement
 public class GridlineManager : MonoBehaviour
 {
     public GridMovement[] movement;
+    public int pointingDim;
 }

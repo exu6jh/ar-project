@@ -6,13 +6,13 @@ using UnityEngine;
 [CustomEditor(typeof(GridManager))]
 public class GridManagerEditor : Editor
 {
-    private float gridLength = 100; // cm
+    // private float gridLength = 100; // cm
     private float newGridScale = 5; // cm
 
     private void Awake()
     {
         GridManager gridManager = (GridManager) target;
-        gridLength = gridManager.GridlineParent.GetComponent<RectTransform>().sizeDelta.x;
+        gridManager.gridLength = gridManager.GridlineParent.GetComponent<RectTransform>().sizeDelta.x;
     }
 
     public override void OnInspectorGUI()
@@ -20,11 +20,13 @@ public class GridManagerEditor : Editor
         base.OnInspectorGUI();
         GridManager gridManager = (GridManager) target;
         
-        gridLength = EditorGUILayout.FloatField("New Grid Length", gridLength);
+        gridManager.gridLength = EditorGUILayout.FloatField("New Grid Length", gridManager.gridLength);
 
         if (GUILayout.Button("Set New Grid Length"))
         {
-            Vector2 newSizeDelta = new Vector2(gridLength, gridLength);
+            // gridManager.Reset();
+            
+            Vector2 newSizeDelta = new Vector2(gridManager.gridLength, gridManager.gridLength);
             
             gridManager.GetComponent<RectTransform>().sizeDelta = newSizeDelta * 10;
             gridManager.transform.GetChild(0).GetComponent<RectTransform>().sizeDelta = newSizeDelta;
@@ -34,7 +36,7 @@ public class GridManagerEditor : Editor
             foreach (Transform gridline in gridManager.GridlineParent.transform)
             {
                 Vector3 localScale = gridline.localScale;
-                localScale.y = gridLength / 2;
+                localScale.y = gridManager.gridLength / 2;
                 gridline.localScale = localScale;
             }
             
@@ -46,6 +48,8 @@ public class GridManagerEditor : Editor
 
         if (GUILayout.Button("Set New Grid Scale"))
         {
+            // gridManager.Reset();
+            
             gridManager.euclideanGridScale = newGridScale;
 
             foreach (Transform gridline in gridManager.GridlineParent.transform)
