@@ -1,11 +1,13 @@
 ﻿
 public enum SCENES
 {
+    MENU,
+    LESSON,
     TWO_GRIDS,
-    TEST
+    TEMPLATE
 }
 
 public static class Globals
 {
-    
+    public static string lesson;
 }

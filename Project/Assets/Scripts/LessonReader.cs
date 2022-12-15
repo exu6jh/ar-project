@@ -7,7 +7,6 @@ using UnityEditor;
 public class LessonReader : MonoBehaviour
 {
     // for reading commands
-    public string filename;
     private string[] commands;
     
     // for generally keeping track of objects in the scene
@@ -31,7 +30,7 @@ public class LessonReader : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        commands = System.IO.File.ReadAllLines(filename);
+        commands = System.IO.File.ReadAllLines("Assets/Lessons/" + Globals.lesson);
 
         flags = new Dictionary<string, bool>();
         gameObjects = new Dictionary<string, GameObject>();
@@ -244,7 +243,7 @@ public class LessonReader : MonoBehaviour
             Debug.Log("Drawing grid.");
             string[] parsedString = commands[index].Split("\"");
             // Set some temporary default values.
-            GameObject newGrid = Instantiate(grid, new Vector3(0f, 0f, 1f), Quaternion.identity);
+            GameObject newGrid = Instantiate(grid);
             gameObjects[parsedString[1]] = newGrid;
             Execute(index + 1);
             return;

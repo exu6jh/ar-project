@@ -386,7 +386,8 @@ MonoBehaviour:
   GridlineParent: {fileID: 1740916020150546535}
   VectorParent: {fileID: 1740916021387699867}
   origin: {fileID: 1740916020833922253}
-  bases: []
+  bases:
+  - {fileID: 0}
   transformable: 0
   linearMap: 0
   toTransform: []

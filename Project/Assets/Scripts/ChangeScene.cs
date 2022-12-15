@@ -7,8 +7,8 @@ public class ChangeScene : MonoBehaviour
 {
     public static void GoToScene(SCENES scene) => SceneManager.LoadScene((int)scene);
     
-    
     // The GoToScene methods change the scene to that which is passed into it
     public void GoToScene(GetScene getScene) => GoToScene(getScene.sceneToLoad);
 
+    public void SetLesson(string text) => Globals.lesson = text;
 }
