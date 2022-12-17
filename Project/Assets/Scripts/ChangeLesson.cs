@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+// This class is attached to a TextMeshPro InputField object so that upon the content being changed,
+// the global lesson variable is changed.
 public class ChangeLesson : MonoBehaviour
 {
     private TMP_InputField inputField;

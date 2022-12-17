@@ -29,8 +29,8 @@ public class PointManager : MonoBehaviour
         
         text.text = $"({value.x:0.##},{value.y:0.##})";
 
-        textPos.x = 1.75f * ((value.x < 0) ? -1 : 1);
-        textPos.y = 1.00f * ((value.y < 0) ? -1 : 1);
+        textPos.x = 5f * ((value.x < 0) ? -1 : 1);
+        textPos.y = 10f * ((value.y < 0) ? -1 : 1);
         text.transform.localPosition = textPos;
         
         // Move text code below to Update

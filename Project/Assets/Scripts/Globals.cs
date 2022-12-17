@@ -1,4 +1,4 @@
-﻿
+﻿// Scenes available as specified in build settings
 public enum SCENES
 {
     MENU,
@@ -7,6 +7,7 @@ public enum SCENES
     TEMPLATE
 }
 
+// Lessons avilable
 public enum LESSONS
 {
     LESSON_1,
@@ -19,6 +20,7 @@ public static class Globals
 {
     public static string lesson;
 
+    // Convert LESSONS to lesson text file name
     public static string LessonEnumToString(LESSONS lessons)
     {
         switch (lessons)
