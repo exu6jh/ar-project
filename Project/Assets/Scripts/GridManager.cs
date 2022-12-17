@@ -20,6 +20,9 @@ namespace System.Runtime.CompilerServices
     internal static class IsExternalInit {}
 }
 
+
+// This record class serves as the base class for all transformable objects
+// Polymorphism is leveraged to allow for differing behaviors for each class
 public abstract record Transformable
 {
     public abstract GameObject gameObject
@@ -105,6 +108,12 @@ public abstract record Transformable
     private Transformable(){}
 }
 
+
+// This class manages grids, including its basis, which gameobject serves as the GridlineParent, and which gameobject serves
+// as the VectorParent. Grids have a euclideanGridScale, which reflects how many centimeters long one unit of the grid is, when
+// the basis is the "standard euclidean" basis. Grids also contain a tMatrix, which translates the positions of the basis vectors
+// into an actual matrix. (Since we currently work with 2d grids, only the first 2 columns of the matrix are ever modified)
+// When linearMap is true, all objects in toTransform will be attempted to be tranformed with the current value of tMatrix.
 [ExecuteInEditMode]
 public class GridManager : MonoBehaviour
 {
@@ -117,7 +126,7 @@ public class GridManager : MonoBehaviour
     public GameObject[] toTransform;
     
     public Matrix4x4 tMatrix;
-    [HideInInspector] public float gridLength = 100;
+    [HideInInspector] public float gridLength = 100; // Represents how long each gridline is in centimeters
     [HideInInspector] public float euclideanGridScale = 2.5f;
 
     private VectorManager[] _vectorManagers;
@@ -129,6 +138,7 @@ public class GridManager : MonoBehaviour
         Reset();
     }
 
+    // This method scans gameObjects for attached managers and constraints to see if they are "transformable" by the grid.
     public static List<Transformable> createTransformable(GameObject gameObject)
     {
         // MethodInfo methodInfo = typeof(GameObject).GetMethod("GetComponent");
@@ -178,6 +188,7 @@ public class GridManager : MonoBehaviour
 
     public void Reset()
     {
+        // Make sure that all vectors and points in children have their gridManager set to this grid
         foreach (VectorManager vectorManager in GetComponentsInChildren<VectorManager>())
         {
             vectorManager.gridManager = this;
@@ -206,6 +217,8 @@ public class GridManager : MonoBehaviour
         ToggleTransformableStatus();
     }
 
+    // Toggles whether the grid is transformable. When not transformable, points should be able be snap-moved,
+    // and moving basis vectors should be disabled. When transformable, the opposite should be true.
     public void ToggleTransformableStatus()
     {
         transformable = !transformable;
@@ -220,11 +233,14 @@ public class GridManager : MonoBehaviour
         }
     }
 
+    // Toggles whether the grid transformation should affect objects in toTransform
     public void ToggleLinearMapStatus()
     {
         linearMap = !linearMap;
     }
 
+    // Updates the position of some gridline according to the current tMatrix and the gridline's
+    // own stored positions
     public void SetGridlinePosition(Transform gridline, bool skipRS = true)
     {
         GridlineManager gridlineManager = gridline.GetComponent<GridlineManager>();
@@ -260,6 +276,7 @@ public class GridManager : MonoBehaviour
     {
         if (transformable)
         {
+            // Update tMatrix with the current positions of basis vectors
             for(int i = 0; i < dimensions; i++)
             {
                 Vector3 basisValue = _vectorManagers[i].standardValue;
@@ -268,6 +285,7 @@ public class GridManager : MonoBehaviour
                 tMatrix[2, i] = basisValue[2];
             }
 
+            // Update the positions of all gridlines
             foreach (Transform gridline in GridlineParent.transform)
             {
                 SetGridlinePosition(gridline, skipRS: false);
@@ -281,6 +299,7 @@ public class GridManager : MonoBehaviour
                     {
                         case Transformable.MVectorManager mVectorManager:
                             VectorManager vectorManager = mVectorManager.VectorManager;
+                            // Only update vector if it has no other constraints
                             if (vectorManager.activeConstraints.Count == 0)
                             {
                                 vectorManager.SetNewValue(vectorManager.value);
@@ -288,6 +307,7 @@ public class GridManager : MonoBehaviour
                             break;
                         case Transformable.MPointManager mPointManager:
                             PointManager pointManager = mPointManager.PointManager;
+                            // Only update point if it has no other constraints
                             if (pointManager.activeConstraints.Count == 0)
                             {
                                 Debug.Log("Point active!");
@@ -296,6 +316,7 @@ public class GridManager : MonoBehaviour
                             break;
                         case Transformable.MPointSnapConstraint mPointSnapConstraint:
                             PointSnapConstraint pointSnapConstraint = mPointSnapConstraint.PointSnapConstraint;
+                            // Updates position of point's constraint so that the point will be subsequently updated also
                             pointSnapConstraint.SetFollowValue(pointSnapConstraint.followValue);
                             break;
                     }
