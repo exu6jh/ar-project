@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+// This class constrains vectors to lie between two other GameObjects.
 [ExecuteInEditMode]
 public class VectorEndpointConstraint : MonoBehaviour
 {

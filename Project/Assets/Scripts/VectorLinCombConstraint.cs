@@ -5,6 +5,8 @@ using UnityEngine;
 using UnityEngine.Serialization;
 using Vector3 = UnityEngine.Vector3;
 
+
+// This class constraints a vector to represent a part of the linear combination for a target Vector.
 [ExecuteInEditMode]
 public class VectorLinCombConstraint : MonoBehaviour
 {

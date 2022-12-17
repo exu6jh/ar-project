@@ -5,6 +5,10 @@ using Microsoft.MixedReality.Toolkit.Input;
 using UnityEngine;
 using UnityEngine.Serialization;
 
+
+// This class manages Vectors. It updates its standardValue (with standard basis) and value (according to the current
+// gridManager tMatrix). Since vectors are made up of cylinder bodies and cone tips, each component has to be transformed
+// separetely to avoid deformation of the cone head when the vector has different magnitudes.
 [ExecuteInEditMode]
 public class VectorManager : MonoBehaviour
 {

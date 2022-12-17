@@ -3,6 +3,10 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 
+
+// This class manages points. It updates its standardValue (with standard basis) and value (according to the current
+// gridManager tMatrix), as well as updates the text label with the current value. In the future, there could be a toggle
+// For points to display their components in either standardValue or value.
 [ExecuteInEditMode]
 public class PointManager : MonoBehaviour
 {

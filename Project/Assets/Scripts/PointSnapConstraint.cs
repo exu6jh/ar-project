@@ -2,6 +2,12 @@
 using UnityEngine;
 using UnityEngine.Serialization;
 
+
+// This class allows points to be moved by snapping on a grid. By referencing the position of
+// a "follow" GameObject, which can be a NearInterationGrabbable, the point will snap to the nearest
+// gridline to the "follow" object. Separately, at the end of the interaction with the "follow"
+// GameObject, the "follow" position should be reset to the new position of the Point, so that
+// the point can be grabbed again from its exact new location.
 // [ExecuteInEditMode]
 public class PointSnapConstraint : MonoBehaviour
 {
@@ -28,6 +34,8 @@ public class PointSnapConstraint : MonoBehaviour
         _pointManager = GetComponent<PointManager>();
         _gridManager = _pointManager.gridManager;
 
+        // We change follow from a child to a sibling, to avoid rubberbanding effects in position updates.
+        // This happens only at runtime.
         followTransform.parent = transform.parent;
     }
 
