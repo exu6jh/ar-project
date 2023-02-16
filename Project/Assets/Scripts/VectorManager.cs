@@ -52,16 +52,16 @@ public class VectorManager : MonoBehaviour
         
         // Length changes
         length = newStandardValue.magnitude;
-            
+        
         Vector3 newLocalScale = TransformCylinder.transform.localScale;
         newLocalScale.y = length;
         TransformCylinder.transform.localScale = newLocalScale;
-            
+        
         Transform cone = TransformCone.transform.GetChild(0);
         Vector3 newLocalPosition = cone.localPosition;
         newLocalPosition.y = length;
         cone.localPosition = newLocalPosition;
-            
+        
         // Rotation changes
         transform.localRotation = Quaternion.FromToRotation(Vector3.up, newStandardValue);
         euler = transform.localRotation.eulerAngles;
