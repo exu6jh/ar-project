@@ -25,6 +25,18 @@ public class PointManager : MonoBehaviour
     {
         textPos = text.transform.localPosition;
     }
+
+    public void RefreshGridManager(GridManager gridManager)
+    {
+        this.gridManager = gridManager;
+        foreach (MonoBehaviour monoBehaviour in activeConstraints)
+        {
+            if (monoBehaviour is PointSnapConstraint constraint)
+            {
+                constraint.RefreshGridManager();
+            }
+        }
+    }
     
     private void Update()
     {
@@ -52,6 +64,8 @@ public class PointManager : MonoBehaviour
         
         newStandardValue *= gridManager.euclideanGridScale;
         transform.localPosition = newStandardValue;
+        Debug.Log("Setting new point standard value!");
+        Debug.Log(transform.localPosition);
     }
 
     public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);

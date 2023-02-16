@@ -30,23 +30,29 @@ public class PointSnapConstraint : MonoBehaviour
     private void Awake()
     {
         followTransform = follow.transform;
-        originTransform = origin.transform;
+        // originTransform = origin.transform;
         _pointManager = GetComponent<PointManager>();
         _gridManager = _pointManager.gridManager;
+    }
 
-        // We change follow from a child to a sibling, to avoid rubberbanding effects in position updates.
-        // This happens only at runtime.
-        followTransform.parent = transform.parent;
+    public void RefreshGridManager()
+    {
+        _gridManager = _pointManager.gridManager;
     }
 
     private void OnEnable()
     {
+        // We change follow from a child to a sibling, to avoid rubberbanding effects in position updates.
+        // This happens only at runtime.
+        followTransform.parent = transform.parent;
         _pointManager.activeConstraints.Add(this);
     }
 
     private void OnDisable()
     {
         _pointManager.activeConstraints.Remove(this);
+        // Change back to a child
+        followTransform.parent = transform;
     }
 
     private void Update()
@@ -84,7 +90,10 @@ public class PointSnapConstraint : MonoBehaviour
 
     public void SetFollowStandardValue(Vector3 newStandardValue)
     {
-        followTransform.transform.localPosition = newStandardValue * _gridManager.euclideanGridScale;
+        if (this.enabled)
+        {
+            followTransform.transform.localPosition = newStandardValue * _gridManager.euclideanGridScale;   
+        }
     }
 
     public void SetFollowValue(Vector3 newValue)

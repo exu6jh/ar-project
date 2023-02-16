@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -246,8 +247,11 @@ public class LessonReader : MonoBehaviour
                     }
                     Execute(index + 1);
                     return;
-                } catch {
+                } catch (Exception e) {
                     Debug.Log("Error: inconsistent matrix size.");
+                    Debug.Log($"Stack Trace: {e.StackTrace}");
+                    Debug.Log($"Message: {e.Message}");
+                    throw;
                 }
             // If rotation is being changed...
             } else if(names[3].Equals("ROT")) {
@@ -351,19 +355,20 @@ public class LessonReader : MonoBehaviour
             PointSnapConstraint newPointSnapConstraint = newPoint.GetComponent<PointSnapConstraint>();
             gameObjects[parsedString[1]] = new List<Transformable>
             {
-                new Transformable.MPointSnapConstraint(newPointSnapConstraint),
-                new Transformable.MPointManager(newPointManager)
+                new Transformable.MPointManager(newPointManager),
+                new Transformable.MPointSnapConstraint(newPointSnapConstraint)
             };
             try
             {
                 // Set default values related to grid, on point's managers
                 GridManager manager = ((Transformable.MPartialGridManager) gameObjects[parsedString[3]][0]).GridManager;
                 GameObject managerObj = manager.gameObject;
-                newPoint.transform.parent = managerObj.transform;
-                newPointManager.gridManager = manager;
+                newPoint.transform.SetParent(managerObj.transform.GetChild(0), worldPositionStays:false); // Make centimeter scaler the parent
+                newPointManager.RefreshGridManager(manager);
                 newPointSnapConstraint.origin = manager.origin;
                 // Scale normalization
                 // newPoint.transform.localScale = new Vector3(1,1,1);
+                // newPoint.transform.localScale = new Vector3(10,10,10);
             } catch {
                 Debug.Log("Error: could not find corresponding grid.");
             }
@@ -396,7 +401,7 @@ public class LessonReader : MonoBehaviour
                 constraint.to = endpoint2;
                 newVectorManager.gridManager = manager;
                 constraint.gridManager = manager;
-                newVector.transform.parent = manager.transform;
+                newVector.transform.SetParent(manager.transform.GetChild(0), worldPositionStays:false); // Make centimeter scaler the parent
                 // Scale normalization
                 // newVector.transform.localScale = new Vector3(10,1,10);
             } catch {

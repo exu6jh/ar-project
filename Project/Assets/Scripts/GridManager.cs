@@ -38,6 +38,8 @@ public abstract record Transformable
 
     public abstract void SetValue(Vector3 newValue);
 
+    public abstract void SetGridManager(GridManager gridManager);
+
     // public void DestroyTransformable()
     // {
     //     UnityEngine.Object.Destroy(gameObject);
@@ -54,6 +56,8 @@ public abstract record Transformable
         public override Vector3 GetValue() => VectorManager.value;
 
         public override void SetValue(Vector3 newValue) => VectorManager.SetNewValue(newValue);
+
+        public override void SetGridManager(GridManager gridManager) => VectorManager.gridManager = gridManager;
     };
     public record MPointManager(PointManager PointManager) : Transformable()
     {
@@ -66,18 +70,26 @@ public abstract record Transformable
         public override Vector3 GetValue() => PointManager.value;
 
         public override void SetValue(Vector3 newValue) => PointManager.SetNewValue(newValue);
+
+        public override void SetGridManager(GridManager gridManager) => PointManager.RefreshGridManager(gridManager);
     };
+
     public record MPointSnapConstraint(PointSnapConstraint PointSnapConstraint) : Transformable()
     {
         public override GameObject gameObject => PointSnapConstraint.gameObject;
-        
+
         public override Vector3 GetStandardValue() => PointSnapConstraint.followStandardValue;
 
-        public override void SetStandardValue(Vector3 newStandardValue) => PointSnapConstraint.SetFollowStandardValue(newStandardValue);
+        public override void SetStandardValue(Vector3 newStandardValue) =>
+            PointSnapConstraint.SetFollowStandardValue(newStandardValue);
 
         public override Vector3 GetValue() => PointSnapConstraint.followValue;
 
         public override void SetValue(Vector3 newValue) => PointSnapConstraint.SetFollowValue(newValue);
+
+        public override void SetGridManager(GridManager gridManager)
+        {
+        }
     };
     public record NotTransformable(GameObject GameObject) : Transformable()
     {
@@ -97,6 +109,10 @@ public abstract record Transformable
         public override void SetValue(Vector3 newValue)
         {
             throw new NotImplementedException();
+        }
+
+        public override void SetGridManager(GridManager gridManager)
+        {
         }
     };
 
