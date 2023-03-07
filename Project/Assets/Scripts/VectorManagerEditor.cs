@@ -57,21 +57,24 @@ public class VectorManagerEditor : Editor
         
         if (GUILayout.Button("Set New Length and Euler"))
         {
-            // Length changes
-            Vector3 newLocalScale = vectorManager.TransformCylinder.transform.localScale;
-            newLocalScale.y = newLength;
-            vectorManager.TransformCylinder.transform.localScale = newLocalScale;
+            vectorManager.SetNewLengthEuler(newLength, newEuler);
+            newPosition = vectorManager.standardValue;
             
-            Transform cone = vectorManager.TransformCone.transform.GetChild(0);
-            Vector3 newLocalPosition = cone.localPosition;
-            newLocalPosition.y = newLength;
-            cone.localPosition = newLocalPosition;
-            
-            // Rotation changes
-            vectorManager.transform.localRotation = Quaternion.Euler(newEuler);
-            
-            // Update newPosition
-            newPosition = Quaternion.Euler(newEuler) * (Vector3.up * newLength);
+            // // Length changes
+            // Vector3 newLocalScale = vectorManager.TransformCylinder.transform.localScale;
+            // newLocalScale.y = newLength;
+            // vectorManager.TransformCylinder.transform.localScale = newLocalScale;
+            //
+            // Transform cone = vectorManager.TransformCone.transform.GetChild(0);
+            // Vector3 newLocalPosition = cone.localPosition;
+            // newLocalPosition.y = newLength;
+            // cone.localPosition = newLocalPosition;
+            //
+            // // Rotation changes
+            // vectorManager.transform.localRotation = Quaternion.Euler(newEuler);
+            //
+            // // Update newPosition
+            // newPosition = Quaternion.Euler(newEuler) * (Vector3.up * newLength);
         }
     }
 }

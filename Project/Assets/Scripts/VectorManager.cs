@@ -68,8 +68,24 @@ public class VectorManager : MonoBehaviour
     }
 
     public void SetNewLengthEuler(float length, Vector3 euler)
-    {
-        
+    {   
+        // Length changes
+        Vector3 newLocalScale = TransformCylinder.transform.localScale;
+        newLocalScale.y = length;
+        TransformCylinder.transform.localScale = newLocalScale;
+            
+        Transform cone = TransformCone.transform.GetChild(0);
+        Vector3 newLocalPosition = cone.localPosition;
+        newLocalPosition.y = length;
+        cone.localPosition = newLocalPosition;
+            
+        // Rotation changes
+        transform.localRotation = Quaternion.Euler(euler);
+            
+        // Update newPosition
+        standardValue = Quaternion.Euler(euler) * (Vector3.up * length);
+        value = gridManager.tMatrix.inverse * standardValue;
+        // newPosition = Quaternion.Euler(newEuler) * (Vector3.up * newLength);
     }
 
     public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);
