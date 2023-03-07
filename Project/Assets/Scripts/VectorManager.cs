@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.UI;
 using UnityEngine;
 using UnityEngine.Serialization;
 
@@ -82,11 +83,29 @@ public class VectorManager : MonoBehaviour
         // Rotation changes
         transform.localRotation = Quaternion.Euler(euler);
             
-        // Update newPosition
+        // Update values
         standardValue = Quaternion.Euler(euler) * (Vector3.up * length);
         value = gridManager.tMatrix.inverse * standardValue;
-        // newPosition = Quaternion.Euler(newEuler) * (Vector3.up * newLength);
     }
+    
+    public void SetNewLength(float length)
+    {
+        // Length changes
+        Vector3 newLocalScale = TransformCylinder.transform.localScale;
+        newLocalScale.y = length;
+        TransformCylinder.transform.localScale = newLocalScale;
+            
+        Transform cone = TransformCone.transform.GetChild(0);
+        Vector3 newLocalPosition = cone.localPosition;
+        newLocalPosition.y = length;
+        cone.localPosition = newLocalPosition;
+        
+        // Update values
+        standardValue = Quaternion.Euler(euler) * (Vector3.up * length);
+        value = gridManager.tMatrix.inverse * standardValue;
+    }
+
+    public void SetNewLength(SliderEventData data) => SetNewLength(data.NewValue);
 
     public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);
 
