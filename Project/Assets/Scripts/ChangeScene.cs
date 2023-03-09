@@ -6,7 +6,7 @@ using UnityEngine.SceneManagement;
 public class ChangeScene : MonoBehaviour
 {
     // A number of methods to change the scene to that which is passed into it
-    public static void GoToScene(SCENES scene) => SceneManager.LoadScene((int)scene);
+    public static void GoToScene(SCENES scene) => SceneManager.LoadSceneAsync((int)scene);
     public void GoToScene(GetScene getScene) => GoToScene(getScene.sceneToLoad);
 
     // A number of methods to set the global lesson variable.
