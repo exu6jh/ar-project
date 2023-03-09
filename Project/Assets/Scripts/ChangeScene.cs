@@ -10,7 +10,28 @@ public class ChangeScene : MonoBehaviour
     public void GoToScene(GetScene getScene) => GoToScene(getScene.sceneToLoad);
 
     // A number of methods to set the global lesson variable.
-    public void SetLesson(string text) => Globals.lesson = text;
+    public static void SetLesson(string text) => Globals.lesson = text;
     public void SetLesson(LESSONS lessons) => SetLesson(Globals.LessonEnumToString(lessons));
     public void SetLesson(GetScene getScene) => SetLesson(getScene.lessonToLoad);
+
+
+    public void PrevSessionScene()
+    {
+        Globals.activeSession.GoToPreviousScene();
+    }
+    
+    public void NextSessionScene()
+    {
+        Globals.activeSession.GoToNextScene();
+    }
+
+    public void FirstSessionScene()
+    {
+        Globals.activeSession.GoToFirstScene();
+    }
+
+    public void ExitReview()
+    {
+        Globals.activeSession.review = false;
+    }
 }
