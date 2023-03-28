@@ -23,6 +23,57 @@ public enum LESSONS
     // LESSON_4,
 }
 
+// public abstract record QuizState
+// {
+//     
+// }
+//
+// public record VectorQuizState(Vector3 value) : QuizState()
+// {
+//     
+// }
+//
+// public record SliderState(double value) : QuizState()
+// {
+//     
+// }
+
+public abstract class QuizState
+{
+    
+}
+
+public class VectorQuizState : QuizState
+{
+    public Vector3 value;
+
+    public VectorQuizState()
+    {
+        this.value = new Vector3(1, 1);
+    }
+
+    public VectorQuizState(Vector3 value)
+    {
+        this.value = value;
+    }
+}
+
+public class SliderState : QuizState
+{
+    public double value;
+
+    public SliderState()
+    {
+        this.value = 0.2;
+    }
+
+    public SliderState(double value)
+    {
+        this.value = value;
+    }
+}
+
+
 public abstract class SessionScene
 {
     public string publicName;
@@ -79,9 +130,33 @@ public class SandboxScene : ArbitraryScene
     }
 }
 
+public class QuizIntroScene : ArbitraryScene
+{
+    
+    
+    public QuizIntroScene(string publicName, SCENES scene) : base(publicName, scene)
+    {
+    }
+}
+
 public class QuizScene : ArbitraryScene
 {
-    public QuizScene(string publicName, SCENES scene) : base(publicName, scene)
+    public QuizState quizState;
+    public QuizScene(string publicName, SCENES scene, QuizState quizState) : base(publicName, scene)
+    {
+        this.quizState = quizState;
+    }
+
+    public override void GoToScene()
+    {
+        session.activeQuizState = quizState;
+        base.GoToScene();
+    }
+}
+
+public class QuizSubmitScene : ArbitraryScene
+{
+    public QuizSubmitScene(string publicName, SCENES scene) : base(publicName, scene)
     {
     }
 }
@@ -141,6 +216,7 @@ public class Session
     private List<SessionScene> scenes;
     public int scenePosition;
     public List<SessionScene> reviewScenes;
+    public QuizState activeQuizState;
     public bool review;
     
     public Session(string name, SessionSceneListBuilder builder)
@@ -205,6 +281,7 @@ public class Session
 
     public void GoToFirstScene()
     {
+        // Debug.Log(Globals.activeSession);
         scenePosition = 0;
         GoToSceneAt(scenePosition);
     }
@@ -246,13 +323,15 @@ public static class Globals
                 .AddScene(new LessonScene("lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS)) // For now, needs to be changed...
                 .AddReviewScene("review1", new[] {0, 1})
-                .AddScene(new QuizScene("quiz1", SCENES.QUIZ))
+                // .AddScene(new QuizIntroScene("quizIntro", SCENES.QUIZ))
+                .AddScene(new QuizScene("quiz1", SCENES.QUIZ, new SliderState()))
             )
         };
 
         activeSession = defaultSessions[0];
         
         // DEBUG
+        // Debug.Log(Globals.activeSession);
         // activeSession.scenePosition = 1;    
     }
 }

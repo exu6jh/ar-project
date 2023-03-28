@@ -313,16 +313,16 @@ public class GridManager : MonoBehaviour
                 {
                     switch (transformable)
                     {
-                        case Transformable.MVectorManager mVectorManager:
-                            VectorManager vectorManager = mVectorManager.VectorManager;
+                        case Transformable.MVectorManager({ } vectorManager):
+                            // VectorManager vectorManager = mVectorManager.VectorManager;
                             // Only update vector if it has no other constraints
                             if (vectorManager.activeConstraints.Count == 0)
                             {
                                 vectorManager.SetNewValue(vectorManager.value);
                             }
                             break;
-                        case Transformable.MPointManager mPointManager:
-                            PointManager pointManager = mPointManager.PointManager;
+                        case Transformable.MPointManager({ } pointManager):
+                            // PointManager pointManager = mPointManager.PointManager;
                             // Only update point if it has no other constraints
                             if (pointManager.activeConstraints.Count == 0)
                             {
@@ -330,8 +330,8 @@ public class GridManager : MonoBehaviour
                                 pointManager.SetNewValue(pointManager.value);   
                             }
                             break;
-                        case Transformable.MPointSnapConstraint mPointSnapConstraint:
-                            PointSnapConstraint pointSnapConstraint = mPointSnapConstraint.PointSnapConstraint;
+                        case Transformable.MPointSnapConstraint({ } pointSnapConstraint):
+                            // PointSnapConstraint pointSnapConstraint = mPointSnapConstraint.PointSnapConstraint;
                             // Updates position of point's constraint so that the point will be subsequently updated also
                             pointSnapConstraint.SetFollowValue(pointSnapConstraint.followValue);
                             break;

@@ -105,7 +105,7 @@ public class VectorManager : MonoBehaviour
         value = gridManager.tMatrix.inverse * standardValue;
     }
 
-    public void SetNewLength(SliderEventData data) => SetNewLength(data.NewValue);
+    public void SetNewLength(SliderEventData data) => SetNewLength(data.NewValue * 10);
 
     public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);
 

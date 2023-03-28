@@ -10,7 +10,7 @@ public class SetText : MonoBehaviour
 
     public void SetTextTo(SliderEventData data)
     {
-        tpro.SetText(data.NewValue.ToString("N2"));
+        tpro.SetText((data.NewValue * 10).ToString("N2"));
     }
     
 }
