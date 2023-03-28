@@ -169,7 +169,11 @@ public class Session
         }
     }
 
-    public void GoToSceneAt(int scenePos) => scenes[scenePos].GoToScene();
+    public void GoToSceneAt(int scenePos)
+    {
+        DataManager.Instance.AddNewDataEntry(scenes[scenePos].publicName);
+        scenes[scenePos].GoToScene();
+    } 
 
     public void GoToPreviousScene()
     {

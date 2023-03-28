@@ -13,6 +13,7 @@ public class ReviewButton : MonoBehaviour
 
     public void Review()
     {
+        DataManager.Instance.AddNewDataEntry(Globals.activeSession.reviewScenes[reviewNum].publicName);
         Globals.activeSession.reviewScenes[reviewNum].GoToScene();
     }
 }
