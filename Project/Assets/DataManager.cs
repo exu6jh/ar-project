@@ -58,6 +58,10 @@ public class DataManager : MonoBehaviour
 
   public void SubmitData(string Name)
   {
+    if (CurrDataEntry != null)
+    {
+      StopCurrDataEntry();
+    }
     Debug.Log("Submitting data");
     string body = JsonUtility.ToJson(DataListObj);
     this.gameObject.GetComponent<AnalyticsManager>().PostNewData(Name, body);
@@ -65,6 +69,10 @@ public class DataManager : MonoBehaviour
 
   public void SubmitData()
   {
+    if (CurrDataEntry != null)
+    {
+      StopCurrDataEntry();
+    }
     Debug.Log("Submitting data");
     string Name = System.Guid.NewGuid().ToString();
     string body = JsonUtility.ToJson(DataListObj);
