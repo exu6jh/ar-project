@@ -17,12 +17,18 @@ public class ChangeScene : MonoBehaviour
 
     public void PrevSessionScene()
     {
-        Globals.activeSession.GoToPreviousScene();
+        if (!Globals.activeSession.GoToPreviousScene())
+        {
+            Globals.activeSession.GoToMenuScene();
+        }
     }
     
     public void NextSessionScene()
     {
-        Globals.activeSession.GoToNextScene();
+        if (!Globals.activeSession.GoToNextScene())
+        {
+            Globals.activeSession.GoToMenuScene();
+        }
     }
 
     public void FirstSessionScene()
@@ -30,8 +36,13 @@ public class ChangeScene : MonoBehaviour
         Globals.activeSession.GoToFirstScene();
     }
 
+    public void SessionMenuScene()
+    {
+        Globals.activeSession.GoToMenuScene();
+    }
+
     public void ExitReview()
     {
-        Globals.activeSession.review = false;
+        (Globals.activeSession.activeScene as ReviewScene)?.resetActiveReviewScene();
     }
 }

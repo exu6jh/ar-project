@@ -29,6 +29,9 @@ public class VectorManager : MonoBehaviour
 
     [HideInInspector] public Vector3 zOffsetVector;
 
+    // Necessary for quiz...
+    public Vector3 canonicalEuler = new Vector3(0, 0, 0);
+
     private void Start()
     {
         zOffsetVector = new Vector3(0, 0, zOffset);
@@ -105,7 +108,19 @@ public class VectorManager : MonoBehaviour
         value = gridManager.tMatrix.inverse * standardValue;
     }
 
-    public void SetNewLength(SliderEventData data) => SetNewLength(data.NewValue * 10);
+    // public void SetNewLength(SliderEventData data) => SetNewLength(data.NewValue * 10 - 5);
+    public void SetNewLength(SliderEventData data)
+    {
+
+        if (data.NewValue * 10 < 5)
+        {
+            SetNewLengthEuler(5 - data.NewValue * 10, (Quaternion.Euler(canonicalEuler) * Quaternion.Euler(0, 0, 180)).eulerAngles);
+        }
+        else
+        {
+            SetNewLengthEuler(data.NewValue * 10 - 5, canonicalEuler);
+        }
+    }
 
     public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);
 

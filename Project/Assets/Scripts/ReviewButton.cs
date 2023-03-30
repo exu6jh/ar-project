@@ -5,15 +5,17 @@ public class ReviewButton : MonoBehaviour
 {
     public TextMeshPro buttonText;
     public int reviewNum;
+    public ReviewScene reviewScene;
 
     private void Start()
     {
-        buttonText.SetText(Globals.activeSession.reviewScenes[reviewNum].publicName);
+        reviewScene = Globals.activeSession.activeScene as ReviewScene;
+        buttonText.SetText(reviewScene.reviewScenes[reviewNum].publicName);
     }
 
     public void Review()
     {
-        DataManager.Instance.AddNewDataEntry(Globals.activeSession.reviewScenes[reviewNum].publicName);
-        Globals.activeSession.reviewScenes[reviewNum].GoToScene();
+        DataManager.Instance.AddNewDataEntry(reviewScene.reviewScenes[reviewNum].publicName);
+        reviewScene.reviewScenes[reviewNum].GoToScene();
     }
 }

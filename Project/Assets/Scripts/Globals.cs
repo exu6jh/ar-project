@@ -4,7 +4,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.InputSystem;
 
 public enum SCENES
 {
@@ -12,7 +11,10 @@ public enum SCENES
     LESSON,
     TWO_GRIDS,
     REVIEW,
+    QUIZ_INSTRUCTIONS,
     QUIZ,
+    QUIZ_TEST,
+    QUIZ_SUBMIT,
     TEMPLATE
 }
 
@@ -88,7 +90,7 @@ public class SliderQnState : QuizQnState
 
     public SliderQnState()
     {
-        this.value = 0.2;
+        this.value = 0.5;
     }
 
     public SliderQnState(double value)
@@ -207,7 +209,7 @@ public class ArbitraryScene : SessionScene
 
     public override void GoToScene()
     {
-        // this.session.SetActiveScene(this);
+        this.session.SetActiveScene(this);
         ChangeScene.GoToScene(scene);
     }
 }
@@ -240,26 +242,33 @@ public class SandboxScene : ArbitraryScene
     }
 }
 
-public class QuizIntroScene : ArbitraryScene
+public class QuizIntroScene : ArbitraryScene, AbstractSession
 {
     // public List<QuizQnState> quizKey;
     // public List<string> quizQnNames;
     public QuizState quizState;
+    public Session quizSession;
     
-    public QuizIntroScene(string publicName, SCENES scene) : base(publicName, scene)
-    {
-    }
+    // public QuizIntroScene(string publicName, SCENES scene) : base(publicName, scene)
+    // {
+    // }
 
-    public QuizIntroScene(string publicName, SCENES scene, QuizState quizState) : base(publicName, scene)
+    public QuizIntroScene(string publicName, SCENES scene, QuizState quizState, List<SessionScene> quizScenes) : base(publicName, scene)
     {
         this.quizState = quizState;
+        this.quizSession = new Session(publicName, scene, quizScenes);
     }
 
-    public override void GoToScene()
-    {
-        session.activeQuizStates = quizState;
-        base.GoToScene();
-    }
+    // public override void GoToScene()
+    // {
+    //     session.activeQuizStates = quizState;
+    //     base.GoToScene();
+    // }
+    public bool GoToPreviousScene() => quizSession?.GoToPreviousScene() ?? false;
+
+    public bool GoToNextScene() => quizSession?.GoToNextScene() ?? false;
+
+    public void GoToMenuScene() => quizSession?.GoToMenuScene();
 }
 
 public class QuizQnScene : ArbitraryScene
@@ -268,10 +277,10 @@ public class QuizQnScene : ArbitraryScene
     public string quizQnText;
     public int quizQnNum;
     
-    public QuizQnScene(string publicName, SCENES scene, string quizText) : base(publicName, scene)
-    {
-        this.quizQnText = quizText;
-    }
+    // public QuizQnScene(string publicName, SCENES scene, string quizText) : base(publicName, scene)
+    // {
+    //     this.quizQnText = quizText;
+    // }
 
     public QuizQnScene(string publicName, SCENES scene, string quizText, int quizNum) : base(publicName, scene)
     {
@@ -279,13 +288,13 @@ public class QuizQnScene : ArbitraryScene
         this.quizQnNum = quizNum;
     }
 
-    public override void GoToScene()
-    {
-        // session.activeQuizStates[quizNum] = QuizQnState;
-        session.activeQuizQnText = quizQnText;
-        session.activeQuizQnNum = quizQnNum;
-        base.GoToScene();
-    }
+    // public override void GoToScene()
+    // {
+    //     // session.activeQuizStates[quizNum] = QuizQnState;
+    //     session.activeQuizQnText = quizQnText;
+    //     session.activeQuizQnNum = quizQnNum;
+    //     base.GoToScene();
+    // }
 }
 
 public class QuizSubmitScene : ArbitraryScene
@@ -298,6 +307,7 @@ public class QuizSubmitScene : ArbitraryScene
 public class ReviewScene : SessionScene
 {
     public List<SessionScene> reviewScenes;
+    public SessionScene activeReviewScene;
 
     public ReviewScene(string publicName) : base(publicName)
     {
@@ -310,19 +320,24 @@ public class ReviewScene : SessionScene
 
     public override void GoToScene()
     {
-        this.session.review = true;
-        this.session.SetReviewScenes(reviewScenes);
-        // this.session.SetActiveScene(this);
+        // this.session.review = true;
+        // this.session.SetReviewScenes(reviewScenes);
+        this.session.SetActiveScene(this);
         ChangeScene.GoToScene(SCENES.REVIEW);
+    }
+
+    public void resetActiveReviewScene()
+    {
+        activeReviewScene = null;
     }
 }
 
 public class SessionSceneListBuilder
 {
     private List<SessionScene> scenes = new List<SessionScene>();
-    private List<QuizQnScene> quizQnScenes = new List<QuizQnScene>();
+    private List<SessionScene> quizScenes = new List<SessionScene>();
     private List<QuizQnState> quizKey = new List<QuizQnState>();
-    private int quizCounter = 1;
+    private int quizCounter = 0;
 
     public SessionSceneListBuilder AddScene(SessionScene newScene)
     {
@@ -347,54 +362,75 @@ public class SessionSceneListBuilder
 
     public SessionSceneListBuilder AddQuizQn(string qnName, SCENES qnScene, QuizQnState qnState, string qnText)
     {
-        quizQnScenes.Add(new QuizQnScene(qnName, qnScene, qnText, quizCounter++));
+        quizScenes.Add(new QuizQnScene(qnName, qnScene, qnText, quizCounter++));
         quizKey.Add(qnState);
+        return this;
+    }
+
+    public SessionSceneListBuilder AddQuizOtherScene(SessionScene newScene)
+    {
+        quizScenes.Add(newScene);
         return this;
     }
 
     public SessionSceneListBuilder AddWholeQuiz(string quizName, SCENES scene)
     {
         QuizState quizState = new QuizState(quizKey,
-            (from qnScene in quizQnScenes
+            (from qnScene in quizScenes
                 select qnScene.publicName).ToList());
-        scenes.Add(new QuizIntroScene(quizName, scene, quizState));
-        Enumerable.Zip(quizQnScenes, quizState.quizQnStates, (qnScene, state) =>
+        
+        List<SessionScene> reviewScenes = Enumerable.Zip(from quizScene in quizScenes
+                where quizScene is QuizQnScene
+                select quizScene as QuizQnScene
+            , quizState.quizQnStates
+            , (qnScene, state) =>
         {
             qnScene.qnState = state;
-            scenes.Add(qnScene);
-            return 0;
-        });
-        quizQnScenes.Clear();
+            return qnScene as SessionScene;
+        }).ToList();
+
+        quizScenes.Add(new ReviewScene(quizName + "review", reviewScenes));
+        quizScenes.Add(new QuizSubmitScene(quizName + "submit", SCENES.MENU));
+        
+        scenes.Add(new QuizIntroScene(quizName, scene, quizState, quizScenes));
+        quizScenes.Clear();
         quizKey = new List<QuizQnState>();
+        quizCounter = 0;
         return this;
     }
 
     public List<SessionScene> getList() => scenes;
 }
 
-public class Session
+public interface AbstractSession
+{
+    public bool GoToPreviousScene();
+
+    public bool GoToNextScene();
+
+    public void GoToMenuScene();
+}
+
+public class Session : AbstractSession
 {
     public string name;
     private List<SessionScene> scenes;
     public int scenePosition;
+    private SCENES menuScene;
     
     // Eventually, ALL of the below should be replaced with just public SessionScene activeScene!
     public SessionScene activeScene;
     
-    public List<SessionScene> reviewScenes;
-    public bool review;
-    
-    // public QuizQnState activeQuizState;
-    public string activeQuizQnText;
-    public QuizState activeQuizStates;
-    public int activeQuizQnNum;
-    
-    public Session(string name, SessionSceneListBuilder builder)
+    // public List<SessionScene> reviewScenes;
+    // public bool review;
+
+    public Session(string name, SCENES menuScene, SessionSceneListBuilder builder)
     {
         this.name = name;
         this.scenes = builder.getList();
         scenePosition = 0;
-        review = false;
+        this.menuScene = menuScene;
+        // review = false;
 
         foreach (SessionScene scene in scenes)
         {
@@ -402,18 +438,28 @@ public class Session
         }
     }
 
-    public Session(string name, List<SessionScene> scenes)
+    public Session(string name, SCENES menuScene, List<SessionScene> scenes)
     {
         this.name = name;
         this.scenes = scenes;
         scenePosition = 0;
-        review = false;
+        this.menuScene = menuScene;
+        // review = false;
 
         foreach (SessionScene scene in scenes)
         {
             scene.session = this;
         }
     }
+
+    // public static Session New<T>(string name, SCENES menuScene, List<T> scenes) where T : SessionScene
+    // {
+    //     return new Session(name, menuScene, (from scene in scenes select scene as SessionScene).ToList());
+    // } 
+
+    public Session(string name, SessionSceneListBuilder builder) : this(name, SCENES.MENU, builder) {}
+
+    public Session(string name, List<SessionScene> scenes) : this(name, SCENES.MENU, scenes) {}
 
     public void GoToSceneAt(int scenePos)
     {
@@ -421,31 +467,47 @@ public class Session
         scenes[scenePos].GoToScene();
     } 
 
-    public void GoToPreviousScene()
+    public bool GoToPreviousScene()
     {
+        if ((activeScene as AbstractSession)?.GoToPreviousScene() ?? false)
+        {
+            return true;
+        }
+        
         scenePosition--;
         if (scenePosition < 0)
         {
-            scenePosition = scenes.Count - 1;
-            ChangeScene.GoToScene(SCENES.MENU);
+            scenePosition = 0;
+            // DataManager.Instance.AddNewDataEntry("Menu");
+            // ChangeScene.GoToScene(menuScene);
+            return false;
         }
         else
         {
             GoToSceneAt(scenePosition);
+            return true;
         }
     }
 
-    public void GoToNextScene()
+    public bool GoToNextScene()
     {
+        if ((activeScene as AbstractSession)?.GoToNextScene() ?? false)
+        {
+            return true;
+        }
+
         scenePosition++;
         if (scenePosition >= scenes.Count)
         {
             scenePosition = 0;
-            ChangeScene.GoToScene(SCENES.MENU);
+            // DataManager.Instance.AddNewDataEntry("Menu");
+            // ChangeScene.GoToScene(menuScene);
+            return false;
         }
         else
         {
             GoToSceneAt(scenePosition);
+            return true;
         }
     }
 
@@ -456,9 +518,23 @@ public class Session
         GoToSceneAt(scenePosition);
     }
 
+    public void GoToMenuScene()
+    {
+        if (activeScene is AbstractSession session)
+        {
+            session.GoToMenuScene();
+        }
+        else
+        {
+            activeScene = null;
+            DataManager.Instance.AddNewDataEntry("Menu");
+            ChangeScene.GoToScene(menuScene);
+        }
+    }
+
     public void SetReviewScenes(List<SessionScene> reviewScenes)
     {
-        this.reviewScenes = reviewScenes;
+        // this.reviewScenes = reviewScenes;
     }
 
     public void SetActiveScene(SessionScene newActiveScene)
@@ -498,8 +574,11 @@ public static class Globals
                 .AddScene(new LessonScene("lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS)) // For now, needs to be changed...
                 .AddReviewScene("review1", new[] {0, 1})
-                .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?")
-                .AddWholeQuiz("quiz!", SCENES.MENU)
+                .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(0.8), 
+                    "What is the y-component of the green vector?")
+                .AddQuizQn("y-component-boog", SCENES.QUIZ_TEST, new SliderQnState(0.1), 
+                    "What is the y-component of the blue vector?")
+                .AddWholeQuiz("quiz!", SCENES.QUIZ_INSTRUCTIONS)
                 // .AddScene(new QuizIntroScene("quizIntro", SCENES.QUIZ))
                 // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
             )

@@ -18,8 +18,14 @@ EditorBuildSettings:
     path: Assets/Scenes/Review.unity
     guid: cb6b23555c57eff4bbfa95200c0e555a
   - enabled: 1
+    path: Assets/Scenes/QuizInstructions.unity
+    guid: 85dcda2a99467fe44a7e615277ab0511
+  - enabled: 1
     path: Assets/Scenes/Quiz.unity
     guid: 80cfa9a086b616443996754946662762
+  - enabled: 1
+    path: Assets/Scenes/Quiz_test.unity
+    guid: 583b49c96da98454ca5d5ffcd150204e
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1b61a105ad546c149bde46986ebae7d4, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: a150518710108584f812a9ab18131695, type: 2}
