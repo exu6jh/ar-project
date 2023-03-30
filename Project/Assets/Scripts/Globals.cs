@@ -1,8 +1,10 @@
 ﻿// Scenes available as specified in build settings
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public enum SCENES
 {
@@ -23,53 +25,160 @@ public enum LESSONS
     // LESSON_4,
 }
 
-// public abstract record QuizState
+// public abstract record QuizQnState
 // {
 //     
 // }
 //
-// public record VectorQuizState(Vector3 value) : QuizState()
+// public record VectorQuizQnState(Vector3 value) : QuizQnState()
 // {
 //     
 // }
 //
-// public record SliderState(double value) : QuizState()
+// public record SliderQnState(double value) : QuizQnState()
 // {
 //     
 // }
 
-public abstract class QuizState
+public abstract class QuizQnState
 {
-    
+    public abstract QuizQnState duplicate();
+
+    public abstract bool Equals(QuizQnState qnState);
 }
 
-public class VectorQuizState : QuizState
+public class VectorQuizQnState : QuizQnState
 {
     public Vector3 value;
 
-    public VectorQuizState()
+    public VectorQuizQnState()
     {
         this.value = new Vector3(1, 1);
     }
 
-    public VectorQuizState(Vector3 value)
+    public VectorQuizQnState(Vector3 value)
     {
         this.value = value;
     }
+
+    public override QuizQnState duplicate()
+    {
+        return new VectorQuizQnState();
+    }
+
+    public override bool Equals(QuizQnState qnState)
+    {
+        if (qnState is VectorQuizQnState cState)
+        {
+            // VectorQuizQnState cState = qnState as VectorQuizQnState;
+            
+            // For some reason, unity overloads == with approx. equals...
+            return value == cState.value;
+        }
+        else
+        {
+            return false;
+        }
+    }
 }
 
-public class SliderState : QuizState
+public class SliderQnState : QuizQnState
 {
     public double value;
 
-    public SliderState()
+    public SliderQnState()
     {
         this.value = 0.2;
     }
 
-    public SliderState(double value)
+    public SliderQnState(double value)
     {
         this.value = value;
+    }
+
+    public override QuizQnState duplicate()
+    {
+        return new SliderQnState();
+    }
+
+    public override bool Equals(QuizQnState qnState)
+    {
+        if (qnState is SliderQnState cState)
+        {
+            // VectorQuizQnState cState = qnState as VectorQuizQnState;
+
+            return Math.Abs(value - cState.value) < 1e-8;
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+}
+
+public record QuizQnGrade
+{
+    public string questionName;
+    public int questionNumber;
+    public bool correct;
+
+    public QuizQnGrade(string questionName, int questionNumber, bool correct)
+    {
+        this.questionName = questionName;
+        this.questionNumber = questionNumber;
+        this.correct = correct;
+    }
+}
+
+public class QuizState
+{
+    public List<QuizQnState> quizKey;
+    public List<QuizQnState> quizQnStates;
+    public List<string> quizQnNames;
+    
+    
+
+    public QuizState(List<QuizQnState> quizKey, List<string> quizQnNames)
+    {
+        this.quizKey = quizKey;
+
+        this.quizQnStates = (from keyState in this.quizKey
+            select keyState.duplicate()).ToList();
+
+        this.quizQnNames = quizQnNames;
+    }
+
+    // public void setStateAt(int pos, QuizQnState qnState)
+    // {
+    //     quizStates[pos] = qnState;
+    // }
+
+    public QuizQnState getStateAt(int pos)
+    {
+        return quizQnStates[pos];
+    }
+
+    
+    public List<QuizQnGrade> grade()
+    { 
+        List<QuizQnGrade> grades = new List<QuizQnGrade>(quizKey.Count);
+
+        for (int i = 0; i < quizKey.Count; i++)
+        {
+            grades[i] = new QuizQnGrade(quizQnNames[i], i, quizKey[i].Equals(quizQnStates[i]));
+        }
+        
+        // So ugly...
+        // grades = Enumerable.Zip(quizKey, quizQnStates,
+        //     (state, qnState) => new QuizQnGrade(state.Equals(qnState))).ToList();
+        //
+        // foreach (QuizQnGrade grade in grades)
+        // {
+        //     
+        // }
+
+        return grades;
     }
 }
 
@@ -98,6 +207,7 @@ public class ArbitraryScene : SessionScene
 
     public override void GoToScene()
     {
+        // this.session.SetActiveScene(this);
         ChangeScene.GoToScene(scene);
     }
 }
@@ -132,24 +242,48 @@ public class SandboxScene : ArbitraryScene
 
 public class QuizIntroScene : ArbitraryScene
 {
-    
+    // public List<QuizQnState> quizKey;
+    // public List<string> quizQnNames;
+    public QuizState quizState;
     
     public QuizIntroScene(string publicName, SCENES scene) : base(publicName, scene)
     {
     }
-}
 
-public class QuizScene : ArbitraryScene
-{
-    public QuizState quizState;
-    public QuizScene(string publicName, SCENES scene, QuizState quizState) : base(publicName, scene)
+    public QuizIntroScene(string publicName, SCENES scene, QuizState quizState) : base(publicName, scene)
     {
         this.quizState = quizState;
     }
 
     public override void GoToScene()
     {
-        session.activeQuizState = quizState;
+        session.activeQuizStates = quizState;
+        base.GoToScene();
+    }
+}
+
+public class QuizQnScene : ArbitraryScene
+{
+    public QuizQnState qnState;
+    public string quizQnText;
+    public int quizQnNum;
+    
+    public QuizQnScene(string publicName, SCENES scene, string quizText) : base(publicName, scene)
+    {
+        this.quizQnText = quizText;
+    }
+
+    public QuizQnScene(string publicName, SCENES scene, string quizText, int quizNum) : base(publicName, scene)
+    {
+        this.quizQnText = quizText;
+        this.quizQnNum = quizNum;
+    }
+
+    public override void GoToScene()
+    {
+        // session.activeQuizStates[quizNum] = QuizQnState;
+        session.activeQuizQnText = quizQnText;
+        session.activeQuizQnNum = quizQnNum;
         base.GoToScene();
     }
 }
@@ -178,6 +312,7 @@ public class ReviewScene : SessionScene
     {
         this.session.review = true;
         this.session.SetReviewScenes(reviewScenes);
+        // this.session.SetActiveScene(this);
         ChangeScene.GoToScene(SCENES.REVIEW);
     }
 }
@@ -185,6 +320,9 @@ public class ReviewScene : SessionScene
 public class SessionSceneListBuilder
 {
     private List<SessionScene> scenes = new List<SessionScene>();
+    private List<QuizQnScene> quizQnScenes = new List<QuizQnScene>();
+    private List<QuizQnState> quizKey = new List<QuizQnState>();
+    private int quizCounter = 1;
 
     public SessionSceneListBuilder AddScene(SessionScene newScene)
     {
@@ -207,6 +345,30 @@ public class SessionSceneListBuilder
         return this;
     }
 
+    public SessionSceneListBuilder AddQuizQn(string qnName, SCENES qnScene, QuizQnState qnState, string qnText)
+    {
+        quizQnScenes.Add(new QuizQnScene(qnName, qnScene, qnText, quizCounter++));
+        quizKey.Add(qnState);
+        return this;
+    }
+
+    public SessionSceneListBuilder AddWholeQuiz(string quizName, SCENES scene)
+    {
+        QuizState quizState = new QuizState(quizKey,
+            (from qnScene in quizQnScenes
+                select qnScene.publicName).ToList());
+        scenes.Add(new QuizIntroScene(quizName, scene, quizState));
+        Enumerable.Zip(quizQnScenes, quizState.quizQnStates, (qnScene, state) =>
+        {
+            qnScene.qnState = state;
+            scenes.Add(qnScene);
+            return 0;
+        });
+        quizQnScenes.Clear();
+        quizKey = new List<QuizQnState>();
+        return this;
+    }
+
     public List<SessionScene> getList() => scenes;
 }
 
@@ -215,9 +377,17 @@ public class Session
     public string name;
     private List<SessionScene> scenes;
     public int scenePosition;
+    
+    // Eventually, ALL of the below should be replaced with just public SessionScene activeScene!
+    public SessionScene activeScene;
+    
     public List<SessionScene> reviewScenes;
-    public QuizState activeQuizState;
     public bool review;
+    
+    // public QuizQnState activeQuizState;
+    public string activeQuizQnText;
+    public QuizState activeQuizStates;
+    public int activeQuizQnNum;
     
     public Session(string name, SessionSceneListBuilder builder)
     {
@@ -290,6 +460,11 @@ public class Session
     {
         this.reviewScenes = reviewScenes;
     }
+
+    public void SetActiveScene(SessionScene newActiveScene)
+    {
+        this.activeScene = newActiveScene;
+    }
 }
 
 public static class Globals
@@ -323,8 +498,10 @@ public static class Globals
                 .AddScene(new LessonScene("lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS)) // For now, needs to be changed...
                 .AddReviewScene("review1", new[] {0, 1})
+                .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?")
+                .AddWholeQuiz("quiz!", SCENES.MENU)
                 // .AddScene(new QuizIntroScene("quizIntro", SCENES.QUIZ))
-                .AddScene(new QuizScene("quiz1", SCENES.QUIZ, new SliderState()))
+                // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
             )
         };
 
