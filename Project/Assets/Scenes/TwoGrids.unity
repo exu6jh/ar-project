@@ -2463,6 +2463,7 @@ MonoBehaviour:
   euler: {x: -0, y: 0, z: 63.434944}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!1 &486944490
 GameObject:
   m_ObjectHideFlags: 0
@@ -3433,6 +3434,7 @@ MonoBehaviour:
   euler: {x: -0, y: 0, z: 33.690067}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!1001 &721709595
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5432,7 +5434,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.size
-      value: 2
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Mode
@@ -5443,6 +5445,10 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Mode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 1042452131}
@@ -5451,7 +5457,15 @@ PrefabInstance:
       value: 
       objectReference: {fileID: 46592392}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Target
+      value: 
+      objectReference: {fileID: 46592392}
+    - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_CallState
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
@@ -5463,11 +5477,19 @@ PrefabInstance:
       value: GoToScene
       objectReference: {fileID: 0}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_MethodName
+      value: ExitReview
+      objectReference: {fileID: 0}
+    - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
       value: DataManagerCommunicator, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_TargetAssemblyTypeName
+      value: ChangeScene, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_TargetAssemblyTypeName
       value: ChangeScene, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
@@ -5485,6 +5507,10 @@ PrefabInstance:
     - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[1].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: GetScene, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 2718514442269995788, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
+      propertyPath: OnClick.m_PersistentCalls.m_Calls.Array.data[2].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 4825909323513302049, guid: aa1f6ae41e5d5ce4fbeaad55f0cda1e4, type: 3}
       propertyPath: m_Mesh
@@ -6729,6 +6755,7 @@ MonoBehaviour:
   euler: {x: 0, y: 0, z: 315}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!1001 &1312557301
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -8219,6 +8246,7 @@ MonoBehaviour:
   euler: {x: -0, y: 0, z: 0}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!1001 &1498678577
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -10876,6 +10904,7 @@ MonoBehaviour:
   euler: {x: 0, y: 0, z: 270}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!1001 &1906528446
 PrefabInstance:
   m_ObjectHideFlags: 0
