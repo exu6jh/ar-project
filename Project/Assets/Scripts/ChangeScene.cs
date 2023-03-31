@@ -31,6 +31,11 @@ public class ChangeScene : MonoBehaviour
         }
     }
 
+    public void EnterSessionScene()
+    {
+        Globals.activeSession.EnterSessionScene();
+    }
+
     public void FirstSessionScene()
     {
         Globals.activeSession.GoToFirstScene();
@@ -43,6 +48,6 @@ public class ChangeScene : MonoBehaviour
 
     public void ExitReview()
     {
-        (Globals.activeSession.activeScene as ReviewScene)?.resetActiveReviewScene();
+        Globals.activeSession.GetNestedActiveScene().closestAncestor<ReviewScene>()?.resetActiveReview();
     }
 }

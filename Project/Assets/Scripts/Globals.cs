@@ -3,6 +3,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public enum SCENES
@@ -86,14 +87,14 @@ public class VectorQuizQnState : QuizQnState
 
 public class SliderQnState : QuizQnState
 {
-    public double value;
+    public float value;
 
     public SliderQnState()
     {
-        this.value = 0.5;
+        this.value = 0.5f;
     }
 
-    public SliderQnState(double value)
+    public SliderQnState(float value)
     {
         this.value = value;
     }
@@ -168,7 +169,7 @@ public class QuizState
 
         for (int i = 0; i < quizKey.Count; i++)
         {
-            grades[i] = new QuizQnGrade(quizQnNames[i], i, quizKey[i].Equals(quizQnStates[i]));
+            grades.Add(new QuizQnGrade(quizQnNames[i], i, quizKey[i].Equals(quizQnStates[i])));
         }
         
         // So ugly...
@@ -196,6 +197,23 @@ public abstract class SessionScene
     }
 
     public abstract void GoToScene();
+
+    public SessionScene parentScene()
+    {
+        return session?.Parent;
+    }
+    
+    public T closestAncestor<T>() where T : SessionScene
+    {
+        if (this is T tScene)
+        {
+            return tScene;
+        }
+        else
+        {
+            return parentScene()?.closestAncestor<T>();
+        }
+    }
 }
 
 public class ArbitraryScene : SessionScene
@@ -248,6 +266,7 @@ public class QuizIntroScene : ArbitraryScene, AbstractSession
     // public List<string> quizQnNames;
     public QuizState quizState;
     public Session quizSession;
+    private bool quizzing;
     
     // public QuizIntroScene(string publicName, SCENES scene) : base(publicName, scene)
     // {
@@ -256,7 +275,12 @@ public class QuizIntroScene : ArbitraryScene, AbstractSession
     public QuizIntroScene(string publicName, SCENES scene, QuizState quizState, List<SessionScene> quizScenes) : base(publicName, scene)
     {
         this.quizState = quizState;
-        this.quizSession = new Session(publicName, scene, quizScenes);
+        this.quizSession = new Session(publicName, scene, this, quizScenes);
+        Debug.Log(quizScenes);
+        foreach (SessionScene scenea in quizScenes)
+        {
+            Debug.Log(scenea.publicName);
+        }
     }
 
     // public override void GoToScene()
@@ -264,11 +288,20 @@ public class QuizIntroScene : ArbitraryScene, AbstractSession
     //     session.activeQuizStates = quizState;
     //     base.GoToScene();
     // }
-    public bool GoToPreviousScene() => quizSession?.GoToPreviousScene() ?? false;
+    
+    public bool GoToPreviousScene() => quizzing && (quizSession?.GoToPreviousScene() ?? false);
 
-    public bool GoToNextScene() => quizSession?.GoToNextScene() ?? false;
+    public bool GoToNextScene() => quizzing && (quizSession?.GoToNextScene() ?? false);
 
-    public void GoToMenuScene() => quizSession?.GoToMenuScene();
+    public bool GoToMenuScene() => quizzing && (quizSession?.GoToMenuScene() ?? false);
+
+    public void EnterSessionScene()
+    {
+        quizzing = true;
+        quizSession?.EnterSessionScene();
+    }
+
+    public SessionScene GetNestedActiveScene() => quizzing ? quizSession?.GetNestedActiveScene() : this;
 }
 
 public class QuizQnScene : ArbitraryScene
@@ -304,14 +337,12 @@ public class QuizSubmitScene : ArbitraryScene
     }
 }
 
-public class ReviewScene : SessionScene
+public class ReviewScene : SessionScene, AbstractSession
 {
-    public List<SessionScene> reviewScenes;
-    public SessionScene activeReviewScene;
-
-    public ReviewScene(string publicName) : base(publicName)
-    {
-    }
+    private List<SessionScene> reviewScenes;
+    // public SessionScene activeReviewScene;
+    private Session reviewSession;
+    private bool reviewing;
 
     public ReviewScene(string publicName, List<SessionScene> reviewScenes) : base(publicName)
     {
@@ -322,14 +353,44 @@ public class ReviewScene : SessionScene
     {
         // this.session.review = true;
         // this.session.SetReviewScenes(reviewScenes);
+        this.reviewSession = new Session(publicName, SCENES.REVIEW, this, reviewScenes);
         this.session.SetActiveScene(this);
         ChangeScene.GoToScene(SCENES.REVIEW);
     }
 
-    public void resetActiveReviewScene()
+    public string GetNameOf(int scenePos)
     {
-        activeReviewScene = null;
+        return reviewScenes[scenePos].publicName;
     }
+
+    public void GoToReviewSceneAt(int scenePos)
+    {
+        reviewing = true;
+        reviewSession.GoToSceneAt(scenePos);
+    }
+
+    public void resetActiveReview()
+    {
+        reviewing = false;
+        foreach (SessionScene scene in reviewScenes)
+        {
+            scene.session = this.session;
+        }
+    }
+    
+    public bool GoToPreviousScene() => reviewing && (reviewSession?.GoToPreviousScene() ?? false);
+
+    public bool GoToNextScene() => reviewing && (reviewSession?.GoToNextScene() ?? false);
+
+    public bool GoToMenuScene() => reviewing && (reviewSession?.GoToMenuScene() ?? false);
+
+    public void EnterSessionScene()
+    {
+        reviewing = true;
+        reviewSession?.EnterSessionScene();
+    }
+
+    public SessionScene GetNestedActiveScene() => reviewing ? reviewSession?.GetNestedActiveScene() : this;
 }
 
 public class SessionSceneListBuilder
@@ -375,13 +436,17 @@ public class SessionSceneListBuilder
 
     public SessionSceneListBuilder AddWholeQuiz(string quizName, SCENES scene)
     {
+        Func<IEnumerable<QuizQnScene>> quizFilter = () => 
+            from qnScene in quizScenes
+            where qnScene is QuizQnScene
+            select qnScene as QuizQnScene;
+        
         QuizState quizState = new QuizState(quizKey,
-            (from qnScene in quizScenes
+            (from qnScene in quizFilter()
                 select qnScene.publicName).ToList());
         
-        List<SessionScene> reviewScenes = Enumerable.Zip(from quizScene in quizScenes
-                where quizScene is QuizQnScene
-                select quizScene as QuizQnScene
+        List<SessionScene> reviewScenes = Enumerable.Zip(
+              quizFilter()
             , quizState.quizQnStates
             , (qnScene, state) =>
         {
@@ -390,12 +455,17 @@ public class SessionSceneListBuilder
         }).ToList();
 
         quizScenes.Add(new ReviewScene(quizName + "review", reviewScenes));
-        quizScenes.Add(new QuizSubmitScene(quizName + "submit", SCENES.MENU));
+        quizScenes.Add(new QuizSubmitScene(quizName + "submit", SCENES.QUIZ_SUBMIT));
         
         scenes.Add(new QuizIntroScene(quizName, scene, quizState, quizScenes));
-        quizScenes.Clear();
+        quizScenes = new List<SessionScene>();
         quizKey = new List<QuizQnState>();
         quizCounter = 0;
+        // return this;
+        
+        Debug.Log(scenes[scenes.Count-1]);
+        Debug.Log(((QuizIntroScene) scenes[scenes.Count-1]).quizSession);
+        Debug.Log($"quizName after creation: {quizName}");
         return this;
     }
 
@@ -408,15 +478,22 @@ public interface AbstractSession
 
     public bool GoToNextScene();
 
-    public void GoToMenuScene();
+    public void EnterSessionScene();
+
+    public bool GoToMenuScene();
+
+    public SessionScene GetNestedActiveScene();
 }
 
 public class Session : AbstractSession
 {
     public string name;
     private List<SessionScene> scenes;
-    public int scenePosition;
+    private int scenePosition;
     private SCENES menuScene;
+    private SessionScene parent;
+
+    public SessionScene Parent => parent;
     
     // Eventually, ALL of the below should be replaced with just public SessionScene activeScene!
     public SessionScene activeScene;
@@ -424,26 +501,15 @@ public class Session : AbstractSession
     // public List<SessionScene> reviewScenes;
     // public bool review;
 
-    public Session(string name, SCENES menuScene, SessionSceneListBuilder builder)
-    {
-        this.name = name;
-        this.scenes = builder.getList();
-        scenePosition = 0;
-        this.menuScene = menuScene;
-        // review = false;
-
-        foreach (SessionScene scene in scenes)
-        {
-            scene.session = this;
-        }
-    }
-
-    public Session(string name, SCENES menuScene, List<SessionScene> scenes)
+    public Session(string name, SCENES menuScene, SessionScene parent, List<SessionScene> scenes)
     {
         this.name = name;
         this.scenes = scenes;
         scenePosition = 0;
         this.menuScene = menuScene;
+        this.parent = parent;
+        
+        
         // review = false;
 
         foreach (SessionScene scene in scenes)
@@ -457,12 +523,17 @@ public class Session : AbstractSession
     //     return new Session(name, menuScene, (from scene in scenes select scene as SessionScene).ToList());
     // } 
 
-    public Session(string name, SessionSceneListBuilder builder) : this(name, SCENES.MENU, builder) {}
+    public Session(string name, SCENES menuScene, List<SessionScene> scenes) : this(name, menuScene, null, scenes) {}
 
-    public Session(string name, List<SessionScene> scenes) : this(name, SCENES.MENU, scenes) {}
+    public Session(string name, SessionSceneListBuilder builder) : this(name, SCENES.MENU, null, builder.getList()) {}
+
+    public Session(string name, List<SessionScene> scenes) : this(name, SCENES.MENU, null, scenes) {}
 
     public void GoToSceneAt(int scenePos)
     {
+        Debug.Log($"Session name: {name}");
+        Debug.Log($"scenePos: {scenePos}");
+        Debug.Log($"Count: {scenes.Count}");
         DataManager.Instance.AddNewDataEntry(scenes[scenePos].publicName);
         scenes[scenePos].GoToScene();
     } 
@@ -511,6 +582,18 @@ public class Session : AbstractSession
         }
     }
 
+    public void EnterSessionScene()
+    {
+        if (activeScene is AbstractSession session)
+        {
+            session.EnterSessionScene();
+        }
+        else
+        {
+            GoToFirstScene();
+        }
+    }
+
     public void GoToFirstScene()
     {
         // Debug.Log(Globals.activeSession);
@@ -518,18 +601,20 @@ public class Session : AbstractSession
         GoToSceneAt(scenePosition);
     }
 
-    public void GoToMenuScene()
+    public bool GoToMenuScene()
     {
-        if (activeScene is AbstractSession session)
+        if (!((activeScene as AbstractSession)?.GoToMenuScene() ?? false))
         {
-            session.GoToMenuScene();
+            GoToMyMenuScene();
         }
-        else
-        {
-            activeScene = null;
-            DataManager.Instance.AddNewDataEntry("Menu");
-            ChangeScene.GoToScene(menuScene);
-        }
+        return true;
+    }
+
+    public void GoToMyMenuScene()
+    {
+        activeScene = null;
+        DataManager.Instance.AddNewDataEntry("Menu");
+        ChangeScene.GoToScene(menuScene);
     }
 
     public void SetReviewScenes(List<SessionScene> reviewScenes)
@@ -540,6 +625,11 @@ public class Session : AbstractSession
     public void SetActiveScene(SessionScene newActiveScene)
     {
         this.activeScene = newActiveScene;
+    }
+
+    public SessionScene GetNestedActiveScene()
+    {
+        return (activeScene as AbstractSession)?.GetNestedActiveScene() ?? activeScene;
     }
 }
 
@@ -571,12 +661,13 @@ public static class Globals
         defaultSessions = new List<Session>()
         {
             new ("Lesson 1", new SessionSceneListBuilder()
+                .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS))
                 .AddScene(new LessonScene("lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS)) // For now, needs to be changed...
                 .AddReviewScene("review1", new[] {0, 1})
-                .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(0.8), 
+                .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(0.8f), 
                     "What is the y-component of the green vector?")
-                .AddQuizQn("y-component-boog", SCENES.QUIZ_TEST, new SliderQnState(0.1), 
+                .AddQuizQn("y-component-boog", SCENES.QUIZ_TEST, new SliderQnState(0.1f), 
                     "What is the y-component of the blue vector?")
                 .AddWholeQuiz("quiz!", SCENES.QUIZ_INSTRUCTIONS)
                 // .AddScene(new QuizIntroScene("quizIntro", SCENES.QUIZ))

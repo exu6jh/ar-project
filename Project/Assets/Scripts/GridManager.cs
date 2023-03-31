@@ -326,7 +326,7 @@ public class GridManager : MonoBehaviour
                             // Only update point if it has no other constraints
                             if (pointManager.activeConstraints.Count == 0)
                             {
-                                Debug.Log("Point active!");
+                                // Debug.Log("Point active!");
                                 pointManager.SetNewValue(pointManager.value);   
                             }
                             break;

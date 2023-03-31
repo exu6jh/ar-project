@@ -11,7 +11,7 @@ public class ReviewEnabler : MonoBehaviour
         //     gameObject.SetActive(false);
         // }
         
-        if (Globals.activeSession.activeScene is ReviewScene != enableOnReviewOrFlip)
+        if ((Globals.activeSession.GetNestedActiveScene().closestAncestor<ReviewScene>() != null) != enableOnReviewOrFlip)
         {
             gameObject.SetActive(false);
         }

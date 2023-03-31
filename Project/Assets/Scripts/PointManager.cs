@@ -64,8 +64,8 @@ public class PointManager : MonoBehaviour
         
         newStandardValue *= gridManager.euclideanGridScale;
         transform.localPosition = newStandardValue;
-        Debug.Log("Setting new point standard value!");
-        Debug.Log(transform.localPosition);
+        // Debug.Log("Setting new point standard value!");
+        // Debug.Log(transform.localPosition);
     }
 
     public void SetNewValue(Vector3 newValue) => SetNewStandardValue(gridManager.tMatrix * newValue);

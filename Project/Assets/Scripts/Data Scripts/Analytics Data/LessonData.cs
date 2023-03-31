@@ -11,6 +11,6 @@ public class LessonData : Data
 
   public List<GazeData> Gaze;
 
-  public List<QuizData> Quiz;
+  public List<QuizData> Quiz = new List<QuizData>();
 
 }

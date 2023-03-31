@@ -9,13 +9,15 @@ public class ReviewButton : MonoBehaviour
 
     private void Start()
     {
-        reviewScene = Globals.activeSession.activeScene as ReviewScene;
-        buttonText.SetText(reviewScene.reviewScenes[reviewNum].publicName);
+        reviewScene = Globals.activeSession.GetNestedActiveScene().closestAncestor<ReviewScene>();
+        buttonText.SetText(reviewScene.GetNameOf(reviewNum));
     }
 
     public void Review()
     {
-        DataManager.Instance.AddNewDataEntry(reviewScene.reviewScenes[reviewNum].publicName);
-        reviewScene.reviewScenes[reviewNum].GoToScene();
+        // DataManager.Instance.AddNewDataEntry(reviewScene.reviewScenes[reviewNum].publicName);
+        // reviewScene.activeReviewScene = reviewScene.reviewScenes[reviewNum];
+        // reviewScene.reviewScenes[reviewNum].GoToScene();
+        reviewScene.GoToReviewSceneAt(reviewNum);
     }
 }
