@@ -32,7 +32,7 @@ public class DataManager : MonoBehaviour
     }
     LessonData newData = new LessonData();
     newData.Name = Name;
-    newData.Start_Time = System.DateTime.Now.ToString();
+    newData.Start_Time = System.DateTime.Now;
     CurrDataEntry = newData;
     Debug.Log("Added new entry: " + Name);
   }
@@ -40,8 +40,8 @@ public class DataManager : MonoBehaviour
   {
     if (CurrDataEntry != null)
     {
-      CurrDataEntry.End_Time = System.DateTime.Now.ToString();
-      CurrDataEntry.Total_Time = (float)(System.DateTime.Parse(CurrDataEntry.End_Time) - System.DateTime.Parse(CurrDataEntry.Start_Time)).TotalSeconds;
+      CurrDataEntry.End_Time = System.DateTime.Now;
+      CurrDataEntry.Total_Time = (CurrDataEntry.End_Time - CurrDataEntry.Start_Time).TotalMilliseconds / 1000;
       DataListObj.Entries.Add(CurrDataEntry);
       CurrDataEntry = null;
       Debug.Log("Removed Current Entry");

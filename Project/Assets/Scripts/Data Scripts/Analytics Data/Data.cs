@@ -6,9 +6,9 @@ using UnityEngine;
 public class Data
 {
   public string Name;
-  public float Total_Time;
+  public double Total_Time;
 
-  public string Start_Time;
+  public System.DateTime Start_Time;
 
-  public string End_Time;
+  public System.DateTime End_Time;
 }
