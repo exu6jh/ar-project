@@ -1,9 +1,15 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
 public class DataManagerCommunicator : MonoBehaviour
 {
+  private void Awake()
+  {
+    DataManager.Instance.SetStartTime();
+  }
+
   public void CallAddNewDataEnrty(string Name)
   {
     DataManager.Instance.AddNewDataEntry(Name);

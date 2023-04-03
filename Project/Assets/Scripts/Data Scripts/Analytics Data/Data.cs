@@ -9,6 +9,8 @@ public class Data
   public double Total_Time;
 
   public System.DateTime Start_Time;
+  public string StartTime;
 
   public System.DateTime End_Time;
+  public string EndTime;
 }

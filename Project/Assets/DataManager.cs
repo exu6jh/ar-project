@@ -32,15 +32,21 @@ public class DataManager : MonoBehaviour
     }
     LessonData newData = new LessonData();
     newData.Name = Name;
-    newData.Start_Time = System.DateTime.Now;
     CurrDataEntry = newData;
     Debug.Log("Added new entry: " + Name);
+  }
+
+  public void SetStartTime()
+  {
+    CurrDataEntry.Start_Time = System.DateTime.Now;
+    CurrDataEntry.StartTime = CurrDataEntry.Start_Time.ToString("s");
   }
   public void StopCurrDataEntry()
   {
     if (CurrDataEntry != null)
     {
       CurrDataEntry.End_Time = System.DateTime.Now;
+      CurrDataEntry.EndTime = CurrDataEntry.End_Time.ToString("s");
       CurrDataEntry.Total_Time = (CurrDataEntry.End_Time - CurrDataEntry.Start_Time).TotalMilliseconds / 1000;
       DataListObj.Entries.Add(CurrDataEntry);
       CurrDataEntry = null;

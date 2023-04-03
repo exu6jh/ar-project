@@ -3,7 +3,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEditor.SceneManagement;
 using UnityEngine;
 
 public enum SCENES
@@ -16,6 +15,7 @@ public enum SCENES
     QUIZ,
     QUIZ_TEST,
     QUIZ_SUBMIT,
+    SANDBOX,
     TEMPLATE
 }
 
@@ -227,7 +227,7 @@ public class ArbitraryScene : SessionScene
 
     public override void GoToScene()
     {
-        this.session.SetActiveScene(this);
+        // this.session.SetActiveScene(this);
         ChangeScene.GoToScene(scene);
     }
 }
@@ -294,6 +294,11 @@ public class QuizIntroScene : ArbitraryScene, AbstractSession
     public bool GoToNextScene() => quizzing && (quizSession?.GoToNextScene() ?? false);
 
     public bool GoToMenuScene() => quizzing && (quizSession?.GoToMenuScene() ?? false);
+    
+    public void GoToMyMenuScene()
+    {
+        throw new NotImplementedException();
+    }
 
     public void EnterSessionScene()
     {
@@ -353,8 +358,9 @@ public class ReviewScene : SessionScene, AbstractSession
     {
         // this.session.review = true;
         // this.session.SetReviewScenes(reviewScenes);
+        reviewing = false;
         this.reviewSession = new Session(publicName, SCENES.REVIEW, this, reviewScenes);
-        this.session.SetActiveScene(this);
+        // this.session.SetActiveScene(this);
         ChangeScene.GoToScene(SCENES.REVIEW);
     }
 
@@ -383,6 +389,13 @@ public class ReviewScene : SessionScene, AbstractSession
     public bool GoToNextScene() => reviewing && (reviewSession?.GoToNextScene() ?? false);
 
     public bool GoToMenuScene() => reviewing && (reviewSession?.GoToMenuScene() ?? false);
+    public void GoToMyMenuScene()
+    {
+        if (reviewing)
+            reviewSession?.GoToMyMenuScene();
+        else
+            this.session.GoToMyMenuScene();
+    }
 
     public void EnterSessionScene()
     {
@@ -482,6 +495,8 @@ public interface AbstractSession
 
     public bool GoToMenuScene();
 
+    public void GoToMyMenuScene();
+
     public SessionScene GetNestedActiveScene();
 }
 
@@ -535,6 +550,7 @@ public class Session : AbstractSession
         Debug.Log($"scenePos: {scenePos}");
         Debug.Log($"Count: {scenes.Count}");
         DataManager.Instance.AddNewDataEntry(scenes[scenePos].publicName);
+        SetActiveScene(scenes[scenePos]);
         scenes[scenePos].GoToScene();
     } 
 
@@ -544,10 +560,14 @@ public class Session : AbstractSession
         {
             return true;
         }
+
+        Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
+        Debug.Log($"oldScenePosition: {scenePosition}");
         
         scenePosition--;
         if (scenePosition < 0)
         {
+            activeScene = null;
             scenePosition = 0;
             // DataManager.Instance.AddNewDataEntry("Menu");
             // ChangeScene.GoToScene(menuScene);
@@ -567,9 +587,13 @@ public class Session : AbstractSession
             return true;
         }
 
+        Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
+        Debug.Log($"oldScenePosition: {scenePosition}");
+
         scenePosition++;
         if (scenePosition >= scenes.Count)
         {
+            activeScene = null;
             scenePosition = 0;
             // DataManager.Instance.AddNewDataEntry("Menu");
             // ChangeScene.GoToScene(menuScene);
@@ -612,9 +636,24 @@ public class Session : AbstractSession
 
     public void GoToMyMenuScene()
     {
+
+        Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
+        Debug.Log($"oldScenePosition: {scenePosition}");
+        
         activeScene = null;
-        DataManager.Instance.AddNewDataEntry("Menu");
-        ChangeScene.GoToScene(menuScene);
+        scenePosition = 0;
+        // DataManager.Instance.AddNewDataEntry("Menu");
+        // ChangeScene.GoToScene(menuScene);
+        if (parent != null)
+        {
+            DataManager.Instance.AddNewDataEntry(parent.publicName);
+            parent.GoToScene();
+        }
+        else
+        {
+            DataManager.Instance.AddNewDataEntry("Menu");
+            ChangeScene.GoToScene(SCENES.MENU);
+        }
     }
 
     public void SetReviewScenes(List<SessionScene> reviewScenes)
@@ -661,9 +700,9 @@ public static class Globals
         defaultSessions = new List<Session>()
         {
             new ("Lesson 1", new SessionSceneListBuilder()
-                .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS))
+                // .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS))
                 .AddScene(new LessonScene("lesson1.txt"))
-                .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS)) // For now, needs to be changed...
+                .AddScene(new SandboxScene("sandbox1", SCENES.SANDBOX)) // For now, needs to be changed...
                 .AddReviewScene("review1", new[] {0, 1})
                 .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(0.8f), 
                     "What is the y-component of the green vector?")

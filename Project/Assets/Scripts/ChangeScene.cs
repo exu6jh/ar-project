@@ -46,6 +46,14 @@ public class ChangeScene : MonoBehaviour
         Globals.activeSession.GoToMenuScene();
     }
 
+    public void MetaMenuScene<T>() where T : SessionScene, AbstractSession
+    {
+        // Globals.activeSession.GetNestedActiveScene().closestAncestor<T>()?.GoToScene();
+        Globals.activeSession.GetNestedActiveScene().closestAncestor<T>()?.GoToMyMenuScene();
+    }
+
+    public void ReviewMenuScene() => MetaMenuScene<ReviewScene>();
+
     public void ExitReview()
     {
         Globals.activeSession.GetNestedActiveScene().closestAncestor<ReviewScene>()?.resetActiveReview();
