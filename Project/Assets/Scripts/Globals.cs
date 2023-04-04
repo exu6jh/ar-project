@@ -14,7 +14,7 @@ public enum SCENES
     QUIZ_INSTRUCTIONS,
     QUIZ_1,
     QUIZ_2,
-    // QUIZ_3,
+    QUIZ_3,
     // QUIZ_4,
     // QUIZ_5,
     // QUIZ_6,
@@ -799,8 +799,8 @@ public static class Globals
                     "What can a vector encode?")
                 .AddQuizQnCount("uses", SCENES.QUIZ_2, new DiscreteQnState(1),
                     "What can a vector represent?")
-                // .AddQuizQnCount("create", SCENES.QUIZ_3, new VectorQnState(new Vector3(4, 5)),
-                //     "Create a vector with components (4, 5)")
+                .AddQuizQnCount("create", SCENES.QUIZ_3, new VectorQnState(new Vector3(4, 5)),
+                    "Create a vector with\ncomponents (4, 5)")
                 // .AddQuizQnCount("what-x-comp", SCENES.QUIZ_4, new SliderQnState(0.9f),
                 //     "What is the \"x\" or horizontal component of this vector?")
                 // .AddQuizQnCount("what-y-comp", SCENES.QUIZ_5, new SliderQnState(0.2f),
