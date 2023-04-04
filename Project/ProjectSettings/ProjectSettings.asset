@@ -153,8 +153,6 @@ PlayerSettings:
   - {fileID: 0}
   - {fileID: 0}
   - {fileID: 0}
-  - {fileID: -68412410190813736, guid: 1b61a105ad546c149bde46986ebae7d4, type: 2}
-  - {fileID: 3856532126969147299, guid: a150518710108584f812a9ab18131695, type: 2}
   metroInputSource: 0
   wsaTransparentSwapchain: 0
   m_HolographicPauseOnTrackingLoss: 1
@@ -740,7 +738,7 @@ PlayerSettings:
   apiCompatibilityLevelPerPlatform: {}
   m_RenderingPath: 1
   m_MobileRenderingPath: 1
-  metroPackageName: LALearning-DisableBasis
+  metroPackageName: LALearning-DataCollection
   metroPackageVersion: 1.0.0.0
   metroCertificatePath: Assets\WSATestCertificate.pfx
   metroCertificatePassword: 
