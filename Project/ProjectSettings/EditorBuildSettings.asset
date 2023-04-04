@@ -38,9 +38,18 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Quiz6.unity
     guid: 8ad198615addd6d43b852a25d085908f
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Quiz7.unity
     guid: 950eb18cbfe85cf49b9656549f111c9f
+  - enabled: 1
+    path: Assets/Scenes/Quiz8.unity
+    guid: bdae3beaa04509f4eaee325b7d927eca
+  - enabled: 1
+    path: Assets/Scenes/Quiz9.unity
+    guid: 5fdc3d011048da844840d54d1cb791b7
+  - enabled: 1
+    path: Assets/Scenes/Quiz10.unity
+    guid: ae7eec73ecf47ec44a60e656121a20c0
   - enabled: 1
     path: Assets/Scenes/QuizSubmit.unity
     guid: 80cf88b5289a88a428a2f0f4d988b681

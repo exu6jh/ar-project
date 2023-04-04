@@ -18,10 +18,10 @@ public enum SCENES
     QUIZ_4,
     QUIZ_5,
     QUIZ_6,
-    QUIZ_7,
-    // QUIZ_8,
-    // QUIZ_9,
-    // QUIZ_10,
+    // QUIZ_7,
+    QUIZ_8,
+    QUIZ_9,
+    QUIZ_10,
     QUIZ_SUBMIT,
     SANDBOX,
     TEMPLATE,
@@ -167,12 +167,16 @@ public class TwoSliderQnState : QuizQnState
 
     public TwoSliderQnState()
     {
-        (this.value1, this.value2) = (0.5f, 0.5f);
+        // (this.value1, this.value2) = (0.5f, 0.5f);
+        this.value1 = 0.5f;
+        this.value2 = 0.5f;
     }
 
     public TwoSliderQnState(float value1, float value2)
     {
-        (this.value1, this.value2) = (value1, value2);
+        // (this.value1, this.value2) = (value1, value2);
+        this.value1 = value1;
+        this.value2 = value2;
     }
 
     public override QuizQnState duplicate()
@@ -827,9 +831,9 @@ public static class Globals
                 // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
             ),
             new("Lesson 1", new SessionSceneListBuilder()
-                // .AddScene(new LessonScene("video", "lesson1.txt"))
+                .AddScene(new LessonScene("video", "lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox", SCENES.SANDBOX)) // For now, needs to be changed...
-                // .AddReviewScene("review1", new[] {0, 1})
+                .AddReviewScene("review1", new[] {0, 1})
                 .AddQuizQnCount("encoding", SCENES.QUIZ_1, new DiscreteQnState(3),
                     "What can a vector encode?")
                 .AddQuizQnCount("uses", SCENES.QUIZ_2, new DiscreteQnState(1),
@@ -846,21 +850,24 @@ public static class Globals
                 //     {
                 //         new SliderQnState(1), new SliderQnState(0.3f)
                 //     }), "What are the components of the below vector?")
-                .AddQuizQnCount("what-comps", SCENES.QUIZ_7, new TwoSliderQnState(1, 0.3f), "What are the components of the below vector?")
-                // .AddQuizQnCount("twice-hor-1", SCENES.QUIZ_8, new VectorQnState(new Vector3(1, 2)), 
-                //     "Modify the vector such that their vertical component is twice that of their horizontal component")
-                // .AddQuizQnCount("twice-hor-2", SCENES.QUIZ_9, new VectorQnState(new Vector3(3, 6)),
-                //     "Modify the vector such that their vertical component is twice that of their horizontal component")
-                // .AddQuizQnCount("paul", SCENES.QUIZ_10, new VectorQnState(new Vector3(2, 1)),
-                //     "Paul is moving from Point A to Point B in 3 seconds. Create a vector that represents Paul's average" +
-                //     "velocity; or the distance that Paul would move in 1 second.")
+                // .AddQuizQnCount("what-comps", SCENES.QUIZ_7, new TwoSliderQnState(1, 0.3f), "What are the components of the below vector?")
+                .AddQuizQnCount("twice-hor-1", SCENES.QUIZ_8, new VectorQnState(new Vector3(1, 2)), 
+                    "Modify the vector so that\nthe vertical component\nis twice that of the\nhorizontal component")
+                .AddQuizQnCount("twice-hor-2", SCENES.QUIZ_9, new VectorQnState(new Vector3(3, 6)),
+                    "Modify the vector so that\nthe vertical component\nis twice that of the\nhorizontal component")
+                .AddQuizQnCount("paul", SCENES.QUIZ_10, new VectorQnState(new Vector3(2, 1)),
+                    "Paul is moving from Point A to Point B in 3 seconds.\nCreate a vector that represents Paul's average" +
+                    "velocity;\nor the distance that Paul would move in 1 second.")
                 .AddWholeQuiz("quiz", SCENES.QUIZ_INSTRUCTIONS)
             ),
         };
 
         activeSession = defaultSessions[1];
 
-        // QuizIntroScene a = activeSession.scenes[3] as QuizIntroScene;
+        // QuizIntroScene a = activeSession.scenes[1] as QuizIntroScene;
+        QuizIntroScene a = activeSession.scenes[3] as QuizIntroScene;
+        ((VectorQnState) a.quizState.quizQnStates[6]).value = new Vector3(1, 5);
+        ((VectorQnState) a.quizState.quizQnStates[7]).value = new Vector3(3, 5);
         // ((VectorQnState) a.quizState.quizQnStates[7]).value = new Vector3(1, 5);
         // ((VectorQnState) a.quizState.quizQnStates[8]).value = new Vector3(3, 5);
 
