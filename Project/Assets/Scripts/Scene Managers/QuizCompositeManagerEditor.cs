@@ -29,7 +29,7 @@ public class QuizCompositeManagerEditor : Editor
     private void Awake()
     {
         QuizCompositeManager quizCompositeManager = target as QuizCompositeManager;
-        quizCompositeManager.stateUsers = new List<QuizStateUser>();
+        quizCompositeManager.stateUsers ??= new List<QuizStateUser>();
         
         var userCreation = new (string name, Type stateUserType)[]
         {

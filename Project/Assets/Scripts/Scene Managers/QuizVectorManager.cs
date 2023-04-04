@@ -8,7 +8,7 @@ public class QuizVectorManager : MonoBehaviour
      private VectorQnState state;
 
      // private static Vector3 standard = new Vector3(1, 1);
-     private static Vector3 standard() => new Vector3(1, 1);
+     internal static Vector3 standard() => new Vector3(1, 1);
 
      private void Start()
      {

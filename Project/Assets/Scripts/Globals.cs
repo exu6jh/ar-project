@@ -18,7 +18,7 @@ public enum SCENES
     QUIZ_4,
     QUIZ_5,
     QUIZ_6,
-    // QUIZ_7,
+    QUIZ_7,
     // QUIZ_8,
     // QUIZ_9,
     // QUIZ_10,
@@ -152,6 +152,39 @@ public class SliderQnState : QuizQnState
         {
             // return Math.Abs(value - cState.value) < 1e-8;
             return Math.Abs(value - cState.value) < 1e-1;
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+}
+
+public class TwoSliderQnState : QuizQnState
+{
+    public float value1, value2;
+
+    public TwoSliderQnState()
+    {
+        (this.value1, this.value2) = (0.5f, 0.5f);
+    }
+
+    public TwoSliderQnState(float value1, float value2)
+    {
+        (this.value1, this.value2) = (value1, value2);
+    }
+
+    public override QuizQnState duplicate()
+    {
+        return new TwoSliderQnState();
+    }
+
+    public override bool Equals(QuizQnState qnState)
+    {
+        if (qnState is TwoSliderQnState cState)
+        {
+            return Math.Abs(value1 - cState.value1) < 1e-1 && Math.Abs(value2 - cState.value2) < 1e-1;
         }
 
         else
@@ -813,6 +846,7 @@ public static class Globals
                 //     {
                 //         new SliderQnState(1), new SliderQnState(0.3f)
                 //     }), "What are the components of the below vector?")
+                .AddQuizQnCount("what-comps", SCENES.QUIZ_7, new TwoSliderQnState(1, 0.3f), "What are the components of the below vector?")
                 // .AddQuizQnCount("twice-hor-1", SCENES.QUIZ_8, new VectorQnState(new Vector3(1, 2)), 
                 //     "Modify the vector such that their vertical component is twice that of their horizontal component")
                 // .AddQuizQnCount("twice-hor-2", SCENES.QUIZ_9, new VectorQnState(new Vector3(3, 6)),
