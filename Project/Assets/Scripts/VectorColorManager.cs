@@ -6,9 +6,11 @@ public class VectorColorManager : MonoBehaviour
     public VectorMaterials vectorMaterials;
     
     private MeshRenderer cylinder;
+
+    public int answerNum;
     
     
-    private void Start()
+    private void Awake()
     {
         cylinder = GetComponent<VectorManager>().TransformCylinder.transform.GetChild(0).GetComponent<MeshRenderer>();
     }
@@ -16,5 +18,10 @@ public class VectorColorManager : MonoBehaviour
     public void Material(int index)
     {
         cylinder.material = vectorMaterials.Material(index);
+    }
+
+    public void Answer(int answer)
+    {
+        Material(answerNum == answer ? 1 : 0);
     }
 }

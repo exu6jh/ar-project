@@ -17,7 +17,7 @@ public enum SCENES
     QUIZ_3,
     QUIZ_4,
     QUIZ_5,
-    // QUIZ_6,
+    QUIZ_6,
     // QUIZ_7,
     // QUIZ_8,
     // QUIZ_9,
@@ -807,8 +807,8 @@ public static class Globals
                     "What is the x component\nof the vector?")
                 .AddQuizQnCount("what-y-comp", SCENES.QUIZ_5, new SliderQnState(0.2f),
                     "What is the y component\nof this vector?")
-                // .AddQuizQnCount("which-y-comp", SCENES.QUIZ_6, new DiscreteQnState(4),
-                //     "Which of the following vectors have y component 1?")
+                .AddQuizQnCount("which-y-comp", SCENES.QUIZ_6, new DiscreteQnState(4),
+                    "Which of the following vectors have y component 1?")
                 // .AddQuizQnCount("what-comps", SCENES.QUIZ_7, new CompositeQnState(new List<QuizQnState>()
                 //     {
                 //         new SliderQnState(1), new SliderQnState(0.3f)
