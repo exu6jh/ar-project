@@ -50,6 +50,38 @@ public abstract class QuizQnState
     public abstract bool Equals(QuizQnState qnState);
 }
 
+public class DiscreteQnState : QuizQnState
+{
+    public int value;
+
+    public DiscreteQnState()
+    {
+        this.value = 0;
+    }
+
+    public DiscreteQnState(int value)
+    {
+        this.value = value;
+    }
+
+    public override QuizQnState duplicate()
+    {
+        return new DiscreteQnState();
+    }
+
+    public override bool Equals(QuizQnState qnState)
+    {
+        if (qnState is DiscreteQnState cState)
+        {
+            return value == cState.value;
+        }
+        else
+        {
+            return false;
+        }
+    }
+}
+
 public class VectorQnState : QuizQnState
 {
     public Vector3 value;

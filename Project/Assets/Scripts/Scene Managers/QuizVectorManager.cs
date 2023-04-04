@@ -6,7 +6,7 @@ public class QuizVectorManager : MonoBehaviour
      public VectorManager vectorManager;
      private VectorQnState state;
 
-     private static Vector3 standard = new Vector3(1, 1, 0);
+     private static Vector3 standard = new Vector3(1, 1);
 
      private void Start()
      {
