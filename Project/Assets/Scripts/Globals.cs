@@ -857,7 +857,7 @@ public static class Globals
                     "Modify the vector so that\nthe vertical component\nis twice that of the\nhorizontal component")
                 .AddQuizQnCount("paul", SCENES.QUIZ_10, new VectorQnState(new Vector3(2, 1)),
                     "Paul is moving from Point A to Point B in 3 seconds.\nCreate a vector that represents Paul's average" +
-                    "velocity;\nor the distance that Paul would move in 1 second.")
+                    " velocity;\nor the distance that Paul would move in 1 second.")
                 .AddWholeQuiz("quiz", SCENES.QUIZ_INSTRUCTIONS)
             ),
         };
