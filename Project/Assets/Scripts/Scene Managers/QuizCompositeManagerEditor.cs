@@ -20,7 +20,9 @@ public class QuizCompositeManagerEditor : Editor
 {
     private bool addFoldoutOpen;
     
-    (string name, Type stateUserType, StateUserContainer potNewState, bool active)[] users;
+    (string name, Type stateUserType, StateUserContainer potNewState)[] users;
+
+    private string[] userNames;
 
     private int active;
 
@@ -29,26 +31,22 @@ public class QuizCompositeManagerEditor : Editor
         QuizCompositeManager quizCompositeManager = target as QuizCompositeManager;
         quizCompositeManager.stateUsers = new List<QuizStateUser>();
         
-        users = new (string name, Type stateUserType, StateUserContainer potNewState, bool active)[]
+        var userCreation = new (string name, Type stateUserType)[]
         {
-            ("Slider User", typeof(SliderStateUser), CreateInstance<StateUserContainer>(), false),
-            ("Vector User", typeof(VectorStateUser), CreateInstance<StateUserContainer>(), false),
+            ("Slider User", typeof(SliderStateUser)),
+            ("Vector User", typeof(VectorStateUser)),
         };
         
+        users = (from user in userCreation select (user.name, user.stateUserType, CreateInstance<StateUserContainer>())).ToArray();
+        
+        userNames = (from user in userCreation select user.name).ToArray();
+
+        active = -1;
+
         // foreach ((string name, Type stateUserType, StateUserContainer potNewState, bool active) _ in users)
         // {
         //     Debug.Log(_.stateUserType.IsSubclassOf(typeof(QuizStateUser)));
         // }
-    }
-
-    private void SetActive(int j)
-    {
-        active = j;
-        for (int i = 0; i < users.Length; i++)
-        {
-            if (i == j) continue;
-            users[i].active = false;
-        }
     }
 
     public override void OnInspectorGUI()
@@ -60,39 +58,40 @@ public class QuizCompositeManagerEditor : Editor
 
         if (addFoldoutOpen)
         {
-            for (int i = 0; i < users.Length; i++)
+            bool addNewUser = GUILayout.Button("Add New State User");
+            
+            active = EditorGUILayout.Popup("Choose State User", active, userNames);
+            
+            if(active >= 0)
             {
-                users[i].active = EditorGUILayout.Toggle(users[i].name, users[i].active);
-                
-                if (users[i].active)
+
+                users[active].potNewState.stateUser ??=
+                    users[active].stateUserType.GetConstructor(Type.EmptyTypes).Invoke(null) as QuizStateUser;
+
+                SerializedObject newStateObj = new SerializedObject(users[active].potNewState);
+
+                SerializedProperty newStateProp = newStateObj.FindProperty("stateUser");
+
+                EditorGUILayout.PropertyField(newStateProp, new GUIContent(users[active].name), true);
+
+                newStateObj.ApplyModifiedProperties();
+
+
+                if (addNewUser)
                 {
-                    SetActive(i);
-                        
-                    if (users[i].potNewState.stateUser == null)
-                    {
-                        users[i].potNewState.stateUser = users[i].stateUserType.GetConstructor(Type.EmptyTypes).Invoke(null) as QuizStateUser;
-                    }
-                    
-                    SerializedObject newStateObj = new SerializedObject(users[i].potNewState);
-                    
-                    SerializedProperty newStateProp = newStateObj.FindProperty("stateUser");
+                    QuizCompositeManager quizCompositeManager = target as QuizCompositeManager;
 
-                    EditorGUILayout.PropertyField(newStateProp, new GUIContent(users[i].name), true);
+                    quizCompositeManager.stateUsers.Add(users[active].potNewState.stateUser);
 
-                    newStateObj.ApplyModifiedProperties();
-                }
-            }
+                    // for (int i = 0; i < users.Length; i++)
+                    // {
+                    //     users[i].potNewState.stateUser = null;
+                    // }
 
-            if (GUILayout.Button("Add New State User"))
-            {
-                QuizCompositeManager quizCompositeManager = target as QuizCompositeManager;
-                
-                quizCompositeManager.stateUsers.Add(users[active].potNewState.stateUser);
+                    users[active].potNewState.stateUser =
+                        users[active].stateUserType.GetConstructor(Type.EmptyTypes).Invoke(null) as QuizStateUser;
 
-                for (int i = 0; i < users.Length; i++)
-                {
-                    users[i].active = false;
-                    users[i].potNewState.stateUser = null;
+                    active = -1;
                 }
             }
         }
