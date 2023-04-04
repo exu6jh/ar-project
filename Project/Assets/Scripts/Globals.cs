@@ -50,28 +50,28 @@ public abstract class QuizQnState
     public abstract bool Equals(QuizQnState qnState);
 }
 
-public class VectorQuizQnState : QuizQnState
+public class VectorQnState : QuizQnState
 {
     public Vector3 value;
 
-    public VectorQuizQnState()
+    public VectorQnState()
     {
         this.value = new Vector3(1, 1);
     }
 
-    public VectorQuizQnState(Vector3 value)
+    public VectorQnState(Vector3 value)
     {
         this.value = value;
     }
 
     public override QuizQnState duplicate()
     {
-        return new VectorQuizQnState();
+        return new VectorQnState();
     }
 
     public override bool Equals(QuizQnState qnState)
     {
-        if (qnState is VectorQuizQnState cState)
+        if (qnState is VectorQnState cState)
         {
             // VectorQuizQnState cState = qnState as VectorQuizQnState;
             
@@ -108,9 +108,39 @@ public class SliderQnState : QuizQnState
     {
         if (qnState is SliderQnState cState)
         {
-            // VectorQuizQnState cState = qnState as VectorQuizQnState;
-
             return Math.Abs(value - cState.value) < 1e-8;
+        }
+
+        else
+        {
+            return false;
+        }
+    }
+}
+
+public class CompositeQnState : QuizQnState
+{
+    public List<QuizQnState> value;
+
+    public CompositeQnState(List<QuizQnState> value)
+    {
+        this.value = value;
+    }
+
+    public override QuizQnState duplicate()
+    {
+        return new CompositeQnState((from state in value
+            select state.duplicate()).ToList());
+    }
+
+    public override bool Equals(QuizQnState qnState)
+    {
+        if (qnState is CompositeQnState cState && value.Count == cState.value.Count)
+        {
+            return Enumerable.Zip(value, cState.value, (state, qnState) => state.Equals(qnState))
+                .All(b => b);
+            // return Enumerable.Zip(value, cState.value, (state, qnState) => (state, qnState))
+            //     .All(((QuizQnState state, QuizQnState qnState) _) => _.state.Equals(_.qnState));
         }
 
         else
@@ -707,7 +737,7 @@ public static class Globals
                 .AddQuizQn("y-component", SCENES.QUIZ, new SliderQnState(0.8f), 
                     "What is the y-component of the green vector?")
                 .AddQuizQn("y-component-boog", SCENES.QUIZ_TEST, new SliderQnState(0.1f), 
-                    "What is the y-component of the blue vector?")
+                    "What is the x-component of the blue vector?")
                 .AddWholeQuiz("quiz!", SCENES.QUIZ_INSTRUCTIONS)
                 // .AddScene(new QuizIntroScene("quizIntro", SCENES.QUIZ))
                 // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
