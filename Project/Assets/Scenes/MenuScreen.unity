@@ -134,6 +134,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Lesson3
       objectReference: {fileID: 0}
+    - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2204069621878992557, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Mesh
       value: 
@@ -365,6 +369,10 @@ PrefabInstance:
     - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Name
       value: Lesson4
+      objectReference: {fileID: 0}
+    - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2204069621878992557, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Mesh
@@ -612,6 +620,10 @@ PrefabInstance:
     - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Name
       value: Lesson2
+      objectReference: {fileID: 0}
+    - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2204069621878992557, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Mesh
@@ -1692,6 +1704,10 @@ PrefabInstance:
     - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Name
       value: Lesson1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2204069621878992557, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Mesh
