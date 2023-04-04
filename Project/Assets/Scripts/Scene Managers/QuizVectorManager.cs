@@ -4,9 +4,11 @@ using UnityEngine;
 public class QuizVectorManager : MonoBehaviour
 {
      public VectorManager vectorManager;
+     public PointSnapConstraint PointSnapConstraint;
      private VectorQnState state;
 
-     private static Vector3 standard = new Vector3(1, 1);
+     // private static Vector3 standard = new Vector3(1, 1);
+     private static Vector3 standard() => new Vector3(1, 1);
 
      private void Start()
      {
@@ -15,7 +17,12 @@ public class QuizVectorManager : MonoBehaviour
           {
                Debug.Log("Oops!");
           }
-          vectorManager.SetNewStandardValue(state?.value ?? standard);
+          else
+          {
+               Debug.Log($"{state} has value: {state.value}");    
+          }
+          // vectorManager.SetNewStandardValue(state?.value ?? standard());
+          PointSnapConstraint.SetFollowStandardValue(state?.value ?? standard());
      }
 
      public void updateQnState()

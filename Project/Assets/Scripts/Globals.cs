@@ -15,8 +15,8 @@ public enum SCENES
     QUIZ_1,
     QUIZ_2,
     QUIZ_3,
-    // QUIZ_4,
-    // QUIZ_5,
+    QUIZ_4,
+    QUIZ_5,
     // QUIZ_6,
     // QUIZ_7,
     // QUIZ_8,
@@ -150,7 +150,8 @@ public class SliderQnState : QuizQnState
     {
         if (qnState is SliderQnState cState)
         {
-            return Math.Abs(value - cState.value) < 1e-8;
+            // return Math.Abs(value - cState.value) < 1e-8;
+            return Math.Abs(value - cState.value) < 1e-1;
         }
 
         else
@@ -242,6 +243,7 @@ public class QuizState
         for (int i = 0; i < quizKey.Count; i++)
         {
             grades.Add(new QuizQnGrade(quizQnNames[i], i, quizKey[i].Equals(quizQnStates[i])));
+            Debug.Log($"{i}, {(quizKey[i] is SliderQnState a ? a.value.ToString("N10") : "not a slider!")}, {(quizQnStates[i] is SliderQnState b ? b.value.ToString("N10") : "not a slider!")}");
         }
         
         // So ugly...
@@ -625,9 +627,9 @@ public class Session : AbstractSession
 
     public void GoToSceneAt(int scenePos)
     {
-        Debug.Log($"Session name: {name}");
-        Debug.Log($"scenePos: {scenePos}");
-        Debug.Log($"Count: {scenes.Count}");
+        // Debug.Log($"Session name: {name}");
+        // Debug.Log($"scenePos: {scenePos}");
+        // Debug.Log($"Count: {scenes.Count}");
         DataManager.Instance.AddNewDataEntry(scenes[scenePos].publicName);
         SetActiveScene(scenes[scenePos]);
         scenes[scenePos].GoToScene();
@@ -640,8 +642,8 @@ public class Session : AbstractSession
             return true;
         }
 
-        Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
-        Debug.Log($"oldScenePosition: {scenePosition}");
+        // Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
+        // Debug.Log($"oldScenePosition: {scenePosition}");
         
         scenePosition--;
         if (scenePosition < 0)
@@ -666,8 +668,8 @@ public class Session : AbstractSession
             return true;
         }
 
-        Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
-        Debug.Log($"oldScenePosition: {scenePosition}");
+        // Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
+        // Debug.Log($"oldScenePosition: {scenePosition}");
 
         scenePosition++;
         if (scenePosition >= scenes.Count)
@@ -716,8 +718,8 @@ public class Session : AbstractSession
     public void GoToMyMenuScene()
     {
 
-        Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
-        Debug.Log($"oldScenePosition: {scenePosition}");
+        // Debug.Log($"current active scene: {activeScene?.publicName ?? "none"}");
+        // Debug.Log($"oldScenePosition: {scenePosition}");
         
         activeScene = null;
         scenePosition = 0;
@@ -792,19 +794,19 @@ public static class Globals
                 // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
             ),
             new("Lesson 1", new SessionSceneListBuilder()
-                .AddScene(new LessonScene("video", "lesson1.txt"))
+                // .AddScene(new LessonScene("video", "lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox", SCENES.SANDBOX)) // For now, needs to be changed...
-                .AddReviewScene("review1", new[] {0, 1})
+                // .AddReviewScene("review1", new[] {0, 1})
                 .AddQuizQnCount("encoding", SCENES.QUIZ_1, new DiscreteQnState(3),
                     "What can a vector encode?")
                 .AddQuizQnCount("uses", SCENES.QUIZ_2, new DiscreteQnState(1),
                     "What can a vector represent?")
                 .AddQuizQnCount("create", SCENES.QUIZ_3, new VectorQnState(new Vector3(4, 5)),
                     "Create a vector with\ncomponents (4, 5)")
-                // .AddQuizQnCount("what-x-comp", SCENES.QUIZ_4, new SliderQnState(0.9f),
-                //     "What is the \"x\" or horizontal component of this vector?")
-                // .AddQuizQnCount("what-y-comp", SCENES.QUIZ_5, new SliderQnState(0.2f),
-                //     "What is the \"y\" or vertical component of this vector?")
+                .AddQuizQnCount("what-x-comp", SCENES.QUIZ_4, new SliderQnState(0.9f),
+                    "What is the x component\nof the vector?")
+                .AddQuizQnCount("what-y-comp", SCENES.QUIZ_5, new SliderQnState(0.2f),
+                    "What is the y component\nof this vector?")
                 // .AddQuizQnCount("which-y-comp", SCENES.QUIZ_6, new DiscreteQnState(4),
                 //     "Which of the following vectors have y component 1?")
                 // .AddQuizQnCount("what-comps", SCENES.QUIZ_7, new CompositeQnState(new List<QuizQnState>()
