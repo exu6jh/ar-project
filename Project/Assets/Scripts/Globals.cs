@@ -12,11 +12,21 @@ public enum SCENES
     TWO_GRIDS,
     REVIEW,
     QUIZ_INSTRUCTIONS,
-    QUIZ,
-    QUIZ_TEST,
+    QUIZ_1,
+    QUIZ_2,
+    // QUIZ_3,
+    // QUIZ_4,
+    // QUIZ_5,
+    // QUIZ_6,
+    // QUIZ_7,
+    // QUIZ_8,
+    // QUIZ_9,
+    // QUIZ_10,
     QUIZ_SUBMIT,
     SANDBOX,
-    TEMPLATE
+    TEMPLATE,
+    QUIZ,
+    QUIZ_TEST,
 }
 
 // Lessons avilable
@@ -503,6 +513,13 @@ public class SessionSceneListBuilder
         return this;
     }
 
+    public SessionSceneListBuilder AddQuizQnCount(string qnName, SCENES qnScene, QuizQnState qnState, string qnText)
+    {
+        quizScenes.Add(new QuizQnScene($"{quizCounter}-{qnName}", qnScene, qnText, quizCounter++));
+        quizKey.Add(qnState);
+        return this;
+    }
+
     public SessionSceneListBuilder AddQuizOtherScene(SessionScene newScene)
     {
         quizScenes.Add(newScene);
@@ -565,7 +582,7 @@ public interface AbstractSession
 public class Session : AbstractSession
 {
     public string name;
-    private List<SessionScene> scenes;
+    public List<SessionScene> scenes; // Change it back later...now for hacks below
     private int scenePosition;
     private SCENES menuScene;
     private SessionScene parent;
@@ -761,7 +778,7 @@ public static class Globals
         Debug.Log("Hi, initializing globals");
         defaultSessions = new List<Session>()
         {
-            new ("Lesson 1", new SessionSceneListBuilder()
+            new ("Test", new SessionSceneListBuilder()
                 // .AddScene(new SandboxScene("sandbox1", SCENES.TWO_GRIDS))
                 .AddScene(new LessonScene("lesson1.txt"))
                 .AddScene(new SandboxScene("sandbox1", SCENES.SANDBOX)) // For now, needs to be changed...
@@ -773,11 +790,44 @@ public static class Globals
                 .AddWholeQuiz("quiz!", SCENES.QUIZ_INSTRUCTIONS)
                 // .AddScene(new QuizIntroScene("quizIntro", SCENES.QUIZ))
                 // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
-            )
+            ),
+            new("Lesson 1", new SessionSceneListBuilder()
+                .AddScene(new LessonScene("video", "lesson1.txt"))
+                .AddScene(new SandboxScene("sandbox", SCENES.SANDBOX)) // For now, needs to be changed...
+                .AddReviewScene("review1", new[] {0, 1})
+                .AddQuizQnCount("encoding", SCENES.QUIZ_1, new DiscreteQnState(3),
+                    "What can a vector encode?")
+                .AddQuizQnCount("uses", SCENES.QUIZ_2, new DiscreteQnState(1),
+                    "What can a vector represent?")
+                // .AddQuizQnCount("create", SCENES.QUIZ_3, new VectorQnState(new Vector3(4, 5)),
+                //     "Create a vector with components (4, 5)")
+                // .AddQuizQnCount("what-x-comp", SCENES.QUIZ_4, new SliderQnState(0.9f),
+                //     "What is the \"x\" or horizontal component of this vector?")
+                // .AddQuizQnCount("what-y-comp", SCENES.QUIZ_5, new SliderQnState(0.2f),
+                //     "What is the \"y\" or vertical component of this vector?")
+                // .AddQuizQnCount("which-y-comp", SCENES.QUIZ_6, new DiscreteQnState(4),
+                //     "Which of the following vectors have y component 1?")
+                // .AddQuizQnCount("what-comps", SCENES.QUIZ_7, new CompositeQnState(new List<QuizQnState>()
+                //     {
+                //         new SliderQnState(1), new SliderQnState(0.3f)
+                //     }), "What are the components of the below vector?")
+                // .AddQuizQnCount("twice-hor-1", SCENES.QUIZ_8, new VectorQnState(new Vector3(1, 2)), 
+                //     "Modify the vector such that their vertical component is twice that of their horizontal component")
+                // .AddQuizQnCount("twice-hor-2", SCENES.QUIZ_9, new VectorQnState(new Vector3(3, 6)),
+                //     "Modify the vector such that their vertical component is twice that of their horizontal component")
+                // .AddQuizQnCount("paul", SCENES.QUIZ_10, new VectorQnState(new Vector3(2, 1)),
+                //     "Paul is moving from Point A to Point B in 3 seconds. Create a vector that represents Paul's average" +
+                //     "velocity; or the distance that Paul would move in 1 second.")
+                .AddWholeQuiz("quiz", SCENES.QUIZ_INSTRUCTIONS)
+            ),
         };
 
-        activeSession = defaultSessions[0];
-        
+        activeSession = defaultSessions[1];
+
+        // QuizIntroScene a = activeSession.scenes[3] as QuizIntroScene;
+        // ((VectorQnState) a.quizState.quizQnStates[7]).value = new Vector3(1, 5);
+        // ((VectorQnState) a.quizState.quizQnStates[8]).value = new Vector3(3, 5);
+
         // DEBUG
         // Debug.Log(Globals.activeSession);
         // activeSession.scenePosition = 1;    
