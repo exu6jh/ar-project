@@ -27,6 +27,8 @@ public class GridlineCreatorEditor : Editor
             gridlineManager.movement = (from gridMovement in gridlineCreator.newGridMovements
                                         select gridMovement.Clone()).ToArray();
             gridlineManager.pointingDim = gridlineCreator.newPointingDim;
+
+            StringBuilder gridlineName = new StringBuilder("Grid Line", 20);
             
             // Set rotation
             // Does not handle general case, only 3d case right now
@@ -39,8 +41,9 @@ public class GridlineCreatorEditor : Editor
             pointingDimVec[gridlineManager.pointingDim] = 1;
             newTransform.localRotation = Quaternion.FromToRotation(Vector3.up, pointingDimVec);
 
+            gridlineName.AppendFormat(" ({0})", gridlineManager.pointingDim);
+
             // Set position
-            StringBuilder gridlineName = new StringBuilder("Grid Line", 20);
             Vector3 position = Vector3.zero;
             foreach (GridMovement gridMovement in gridlineManager.movement)
             {
