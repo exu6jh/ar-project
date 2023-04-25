@@ -187,7 +187,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 2e79e3e082eee1d40acbbaa599c5a437, type: 2}
+  - {fileID: 2100000, guid: 28eddc58801e2494e833a3d0b30d7c3e, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -278,12 +278,13 @@ MonoBehaviour:
   gridManager: {fileID: 0}
   TransformCylinder: {fileID: 978473222446088736}
   TransformCone: {fileID: 8647535147292946866}
-  standardValue: {x: 0.99999994, y: 0.000000059604645, z: 0}
+  standardValue: {x: 0, y: 1, z: 0}
   value: {x: 0.99999994, y: 0.000000059604645, z: 0}
   length: 1
-  euler: {x: 0, y: 0, z: 270}
+  euler: {x: -0, y: 0, z: 0}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!114 &3332227949052744578
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -291,7 +292,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 3332227949052744579}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 70a3307490814eb8b18a5699d900f502, type: 3}
   m_Name: 

@@ -42,9 +42,13 @@ public class VectorLinCombConstraint : MonoBehaviour
         Vector3 start = _targetVectorManager.GetCurStartPoint();
         Vector3 value = Vector3.zero;
         value[dim] = scalar;
-        if (dim == 1)
+        if (dim > 0)
         {
             start += new Vector3(_targetVectorManager.standardValue[0], 0, 0) * gridManager.euclideanGridScale;
+        }
+        if (dim > 1)
+        {
+            start += new Vector3(0, _targetVectorManager.standardValue[1], 0) * gridManager.euclideanGridScale;
         }
         _thisVectorManager.SetNewStartPoint(start);
         _thisVectorManager.SetNewStandardValue(value);

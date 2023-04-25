@@ -61,6 +61,7 @@ MonoBehaviour:
   euler: {x: -0, y: 0, z: 0}
   zOffset: -0.5
   zOffsetVector: {x: 0, y: 0, z: -0.5}
+  canonicalEuler: {x: 0, y: 0, z: 0}
 --- !u!114 &989545634597493769
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -226,7 +227,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: ad694c835af800c4e9e5f2c6af994bdc, type: 2}
+  - {fileID: 2100000, guid: ef962da21408f824baf163c7d492ce99, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

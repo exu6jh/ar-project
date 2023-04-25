@@ -60,30 +60,24 @@ public class PointSnapConstraint : MonoBehaviour
         // Vector3 pos = originTransform.InverseTransformPoint(followTransform.position);
         followStandardValue = followTransform.localPosition / _gridManager.euclideanGridScale;
         followValue = _gridManager.tMatrix.inverse * followStandardValue;
-        float closestCoordX;
-        float closestCoordY;
-        if (disableSnapping)
+        Vector3 closestCoord = followValue;
+        if (!disableSnapping)
         {
-            closestCoordX = followValue.x;
-            closestCoordY = followValue.y;
+            closestCoord.x = (float) Math.Round(followValue.x);
+            closestCoord.y = (float) Math.Round(followValue.y);
+            closestCoord.z = (float) Math.Round(followValue.z);
         }
-        else
-        {
-            closestCoordX = (float) Math.Round(followValue.x);
-            closestCoordY = (float) Math.Round(followValue.y);
-        }
-        // float closestCoordZ = (float) Math.Round(pos.z / gridManager.euclideanGridScale);
 
-        _pointManager.SetNewValue(new Vector3(closestCoordX, closestCoordY, 0));
+        _pointManager.SetNewValue(closestCoord);
     }
 
     public void ResetFollowPosition()
     {
         // followTransform.localPosition = Vector3.zero;
         Vector3 localPosition = transform.localPosition;
-        localPosition.z = 0;
+        // localPosition.z = 0;
         
-        transform.localPosition = localPosition;
+        // transform.localPosition = localPosition;
         followTransform.localPosition = localPosition;
         followTransform.localRotation = Quaternion.identity;
     }

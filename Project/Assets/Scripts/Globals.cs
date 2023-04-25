@@ -24,6 +24,7 @@ public enum SCENES
     QUIZ_10,
     QUIZ_SUBMIT,
     SANDBOX,
+    _3D_LIGHT_TEST,
     TEMPLATE,
     QUIZ,
     QUIZ_TEST,
