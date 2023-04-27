@@ -32,6 +32,16 @@ void InvertMapClampMax_half(half RawVal, half RawMax, out half ClampVal)
     ClampVal = 1 - saturate( RawVal / RawMax );
 }
 
+void InvertQuadMapClampMax_float(float RawVal, float RawMax, out float ClampVal)
+{
+    ClampVal = 1 - saturate( pow(RawVal / RawMax, 2) );
+}
+
+void InvertQuadMapClampMax_half(half RawVal, half RawMax, out half ClampVal)
+{
+    ClampVal = 1 - saturate( pow(RawVal / RawMax, 2) );
+}
+
 
 
 void FocusPositionTest_float(float FocusDis, float3 CameraPos, float3 CameraDir, out float3 FocusPos)

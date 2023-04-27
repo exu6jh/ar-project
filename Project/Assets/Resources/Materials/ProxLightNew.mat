@@ -9,8 +9,11 @@ Material:
   m_PrefabAsset: {fileID: 0}
   m_Name: ProxLightNew
   m_Shader: {fileID: -6465566751694194690, guid: fab8a30c8eb857e4eadfab2a53879c92, type: 3}
-  m_ValidKeywords: []
-  m_InvalidKeywords: []
+  m_ValidKeywords:
+  - _ATTENUATION_ICUTINVQUAD
+  m_InvalidKeywords:
+  - _ATTENUATION_LINEAR
+  - _A_A
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -78,6 +81,8 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
+    - _A: 0
+    - _ATTENUATION: 1
     - _AlphaClip: 0
     - _Blend: 0
     - _BumpScale: 1
