@@ -15,6 +15,8 @@ public class Matrix
         return values.GetLength(1);
     }
 
+    public Matrix(Vector3 vector3) : this(new float[3, 1] { { vector3.x }, { vector3.y }, { vector3.z } }) { }
+
     public Matrix(float[,] values) {
         if(values.Rank != 2) {
             Debug.Log("Invalid size of multidimensional array; array must be 2-dimensional.");

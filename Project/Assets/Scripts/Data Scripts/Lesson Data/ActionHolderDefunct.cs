@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [System.Serializable]
-public class ActionHolder : MonoBehaviour
+public class ActionHolderDefunct : MonoBehaviour
 {
   public float time;
   public string command;
 
-  public ActionHolder(float time, string command)
+  public ActionHolderDefunct(float time, string command)
   {
     this.time = time;
     this.command = command;
