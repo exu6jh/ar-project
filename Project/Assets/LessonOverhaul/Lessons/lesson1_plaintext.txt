@@ -1,0 +1,23 @@
+[0:00:00]DRAW GRID "defaultGrid"
+[0:00:00]ASSIGN-PROPERTY "defaultGrid" "POS" {0,0,1}
+[0:00:02]PLAY SOUND "lesson1"
+[0:00:18]DRAW POINT "point1" ON "defaultGrid"
+[0:00:18]DRAW POINT "point2" ON "defaultGrid"
+[0:00:18]ASSIGN-PROPERTY "point1" "POS" {0.05,0.1,1}
+[0:00:18]ASSIGN-PROPERTY "point2" "POS" {0.2,0.2,1}
+[0:00:25.5]ASSIGN-PROPERTY "point1" "POS" {-0.2,0,1} 2.0
+[0:00:25.5]ASSIGN-PROPERTY "point2" "POS" {0.1,0.2,1} 2.0
+[0:00:28]ASSIGN-PROPERTY "point1" "POS" {-0.05,0.2,1} 2.0
+[0:00:28]ASSIGN-PROPERTY "point2" "POS" {0.05,0.15,1} 2.0
+[0:00:30.5]ASSIGN-PROPERTY "point1" "POS" {0.15,-0.1,1} 2.0
+[0:00:30.5]ASSIGN-PROPERTY "point2" "POS" {-0.05,0,1} 2.0
+[0:00:36]DRAW POINT "origin" ON "defaultGrid"
+[0:00:36]ASSIGN-PROPERTY "origin" "POS" {0,0,1}
+[0:00:50.5]DRAW VECTOR "difference" FROM "point1" TO "point2"
+[0:00:67.5]DRAW VECTOR "vector1" FROM "origin" TO "point1"
+[0:00:67.5]DRAW VECTOR "vector2" FROM "origin" TO "point2"
+[0:01:10.5]ASSIGN-PROPERTY "point1" "POS" {0.05,0.1,1} 5.0
+[0:01:10.5]ASSIGN-PROPERTY "point2" "POS" {0.2,0.2,1} 5.0
+[0:01:25.5]DRAW POINT "point3" ON "defaultGrid"
+[0:01:25.5]ASSIGN-PROPERTY "point3" "POS" {-0.2,0.05,1}
+[0:01:31.5]DRAW VECTOR "vector3" FROM "origin" TO "point3"
