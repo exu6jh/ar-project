@@ -16,6 +16,7 @@ public class TimeDisplay : MonoBehaviour
 
     public GameObject tokenPrefab;
     public GameObject polytokenPrefab;
+    public GameObject endOfLessonPrefab;
 
     private float start;
     private float end;
@@ -28,6 +29,7 @@ public class TimeDisplay : MonoBehaviour
 
     private List<Token> tokens;
     private List<TokenPoly> polytokens;
+    private GameObject endOfLesson;
 
     // Start is called before the first frame update
     void Awake()
@@ -43,6 +45,7 @@ public class TimeDisplay : MonoBehaviour
 
     void Start()
     {
+        EndOfLesson();
         CreateTokens(repository);
     }
 
@@ -54,7 +57,8 @@ public class TimeDisplay : MonoBehaviour
         }
 
         float scroll = Input.mouseScrollDelta.y;
-        if(Mathf.Abs(scroll) > SCROLL_THRESHOLD) {
+        Vector3 mousePos = Input.mousePosition;
+        if(Mathf.Abs(scroll) > SCROLL_THRESHOLD && mousePos.x <= Screen.width && mousePos.x >= 0) {
             float newWidth = (end - start) * (1 - SCROLL_MULTIPLIER * Input.mouseScrollDelta.y);
             if(newWidth < MIN_RANGE) {
                 newWidth = MIN_RANGE;
@@ -63,7 +67,6 @@ public class TimeDisplay : MonoBehaviour
                 newWidth = MAX_RANGE;
             }
 
-            Vector3 mousePos = Input.mousePosition;
             float targetTime = (mousePos.x / Screen.width - 0.1f) / 0.8f * (end - start) + start;
             start = targetTime - newWidth * (targetTime - start) / (end - start);
             end = start + newWidth;
@@ -75,8 +78,8 @@ public class TimeDisplay : MonoBehaviour
                 start = start - (end - MAX_RANGE);
                 end = MAX_RANGE;
             }
-            DeleteTokens();
-            CreateTokens(repository);
+            EndOfLesson();
+            Respawn();
         }
 
         startText.text = string.Format("{0:0.00}", start);
@@ -91,10 +94,6 @@ public class TimeDisplay : MonoBehaviour
 
     public float GetEnd() {
         return end;
-    }
-
-    public int GetIndex(ActionHolder holder) {
-        return repository.GetIndex(holder);
     }
 
     private void ValueChange() {
@@ -145,11 +144,9 @@ public class TimeDisplay : MonoBehaviour
         }
         if(subactions.Count > 1) {
             // Generate new multitoken
-            Debug.Log(string.Format("Creating final polytoken at {0}", subactions[0].time));
             CreatePolytoken(subactions);
         } else if(subactions.Count == 1) {
             // Generate new regular token
-            Debug.Log(string.Format("Creating final token at {0}", subactions[0].time));
             CreateToken(subactions[0]);
         }
     }
@@ -173,9 +170,6 @@ public class TimeDisplay : MonoBehaviour
                 polytokens.RemoveAt(i);
             }
         }
-        
-        DeleteTokens();
-        CreateTokens(repository);
     }
 
     public void DeleteTokens() {
@@ -194,5 +188,16 @@ public class TimeDisplay : MonoBehaviour
         foreach(TokenPoly polytoken in polytokens) {
             polytoken.Close();
         }
+    }
+
+    public void Respawn() {
+        DeleteTokens();
+        CreateTokens(repository);
+    }
+
+    private void EndOfLesson() {
+        Destroy(endOfLesson);
+        endOfLesson = Instantiate(endOfLessonPrefab);
+        endOfLesson.transform.SetParent(transform);
     }
 }

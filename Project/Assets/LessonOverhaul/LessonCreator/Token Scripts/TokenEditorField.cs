@@ -71,6 +71,8 @@ public class TokenEditorField : MonoBehaviour
         }
 
         menu.UpdateFields();
+        ((TimeDisplay)FindObjectOfType(typeof(TimeDisplay), true)).Respawn();
+
     }
 
     void ToggleChange() {
@@ -87,6 +89,7 @@ public class TokenEditorField : MonoBehaviour
         }
 
         menu.UpdateFields();
+        ((TimeDisplay)FindObjectOfType(typeof(TimeDisplay), true)).Respawn();
     }
 
     public void SetMenu(TokenEditorMenu menu) {

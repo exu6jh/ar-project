@@ -165,14 +165,14 @@ public class Matrix
 
     // Custom ToString command to better examine matrices
     public override string ToString() {
-        string mainString = "[";
+        string mainString = "{";
         for(int i = 0; i < this.getRows(); i++) {
             for(int j = 0; j < this.getCols(); j++) {
                 mainString += values[i,j].ToString() + (j != this.getCols() - 1 ? "," : "");
             }
             mainString += (i != this.getRows() - 1 ? ";" : "");
         }
-        mainString += "]";
+        mainString += "}";
         return mainString;
     }
 }

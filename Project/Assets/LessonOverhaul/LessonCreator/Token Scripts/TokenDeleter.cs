@@ -21,6 +21,7 @@ public class TokenDeleter : MonoBehaviour
         if(holder != null) {
             display.DeleteToken(holder);
             repo.DeleteHolder(holder);
+            display.Respawn();
         }
     }
 }

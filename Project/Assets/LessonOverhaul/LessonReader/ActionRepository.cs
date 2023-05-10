@@ -71,7 +71,7 @@ public class ActionRepository : MonoBehaviour
         } else if(Regex.Match(command, "^DELETE-OBJECT \"[\\w\\-. ]+\"$").Success) {
             string[] names = command.Split("\"");
             return new ActionHolder(time, CommandType.DeleteObject, names[1], null, null, null, null, 0f);
-        } else if(Regex.Match(command, "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" (({(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*})|(\"[\\w-.]+\"))( [0-9]+(.[0-9]+))?$").Success) {
+        } else if(Regex.Match(command, "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" ({(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*})( [0-9]+(.[0-9]+))?$").Success) {
             string[] names = command.Split("\"");
             string[] parsedString = command.Split(new char[] {'{', '}'});
             float movementTime = 0f;
@@ -110,6 +110,35 @@ public class ActionRepository : MonoBehaviour
         }
     }
 
+    private OldActionHolder OldActionHolderFromNew(ActionHolder holder) {
+        string commandString = "";
+        if(holder.command == CommandType.CreateObject) {
+            commandString = "CREATE-OBJECT \"" + holder.editorObjectName + "\"";
+            commandString += (holder.internalObjectName == null ? " AS \"" + holder.internalObjectName + "\"" : "");
+        } else if(holder.command == CommandType.CreateMatrix) {
+            commandString = "CREATE-MATRIX \"" + holder.internalObjectName + "\" " + (new Matrix(holder.matrixFields)).ToString();
+        } else if(holder.command == CommandType.DeleteObject) {
+            commandString = "DELETE-OBJECT \"" + holder.internalObjectName + "\"";
+        } else if(holder.command == CommandType.AssignProperty) {
+            commandString = "ASSIGN-PROPERTY \"" + holder.internalObjectName + "\" \"" + holder.property + "\" " + (new Matrix(holder.matrixFields)).ToString();
+            commandString += (holder.duration > 0.1f ? " " + holder.duration.ToString() : "");
+        } else if(holder.command == CommandType.PlaySound) {
+            commandString = "PLAY-SOUND \"" + holder.editorObjectName + "\"";
+        } else if(holder.command == CommandType.DrawGrid) {
+            commandString = "DRAW-GRID \"" + holder.internalObjectName + "\"";
+        } else if(holder.command == CommandType.DrawPoint) {
+            commandString = "DRAW-POINT \"" + holder.internalObjectName + "\" ON \"" + holder.affiliatedObjects[0] + "\"";
+        } else if(holder.command == CommandType.DrawVector) {
+            commandString = "DRAW-VECTOR \"" + holder.internalObjectName + "\" FROM \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.affiliatedObjects[1] + "\"";
+        } else if(holder.command == CommandType.ApplyMatrix) {
+            commandString = "APPLY-MATRIX \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.internalObjectName;
+        } else {
+            Debug.Log("Unrecognized holder command.");
+            return null;
+        }
+        return new OldActionHolder(holder.time, commandString);
+    }
+
     private float ParseTimestamp(string timestamp) {
         string[] timeSections = timestamp.Split(':');
         if(timeSections.Length > 3) {
@@ -128,16 +157,20 @@ public class ActionRepository : MonoBehaviour
         return actions;
     }
 
+    public int GetIndex(ActionHolder holder) {
+        return actions.IndexOf(holder);
+    }
+
+    public int GetLength() {
+        return actions.Count;
+    }
+
     public void AddHolder(ActionHolder newHolder) {
         int i = 0;
         while(actions[i].time <= newHolder.time) {
             i++;
         }
         actions.Insert(i, newHolder);
-    }
-
-    public int GetIndex(ActionHolder holder) {
-        return actions.IndexOf(holder);
     }
 
     public void DeleteHolder(ActionHolder holder) {

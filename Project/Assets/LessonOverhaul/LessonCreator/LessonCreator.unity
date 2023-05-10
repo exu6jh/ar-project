@@ -13524,6 +13524,7 @@ MonoBehaviour:
   reader: {fileID: 381306737}
   tokenPrefab: {fileID: 914724935531513227, guid: 7baf090541974e84fa0a96a3b0283e1f, type: 3}
   polytokenPrefab: {fileID: 4787515927475523547, guid: 8dc7fb2703c8b0b4a806a8a84875eebd, type: 3}
+  endOfLessonPrefab: {fileID: 1117769611326072448, guid: c1aa160667758d845ba66ac83e655aa9, type: 3}
 --- !u!114 &891438645
 MonoBehaviour:
   m_ObjectHideFlags: 0

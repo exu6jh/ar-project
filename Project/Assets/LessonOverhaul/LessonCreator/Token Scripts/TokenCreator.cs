@@ -70,6 +70,7 @@ public class TokenCreator : MonoBehaviour
         
         repo.AddHolder(newHolder);
         display.CreateToken(newHolder);
+        display.Respawn();
     }
 
     public void Open() {
