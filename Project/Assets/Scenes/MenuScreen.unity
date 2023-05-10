@@ -1376,7 +1376,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d2be81faa6404b34894ddd8ef8e4ff6f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  sceneToLoad: 2
+  sceneToLoad: 16
   lessonToLoad: 0
 --- !u!1 &1726231703
 GameObject:
@@ -1740,6 +1740,10 @@ PrefabInstance:
     - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Name
       value: 3DTest
+      objectReference: {fileID: 0}
+    - target: {fileID: 2204069621426241315, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 2204069621878992557, guid: 436e1cc9fee04574d9171c2368a51948, type: 3}
       propertyPath: m_Mesh

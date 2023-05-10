@@ -423,6 +423,7 @@ public class QuizIntroScene : ArbitraryScene, AbstractSession
 
 public class QuizQnScene : ArbitraryScene
 {
+    public string gradeName;
     public QuizQnState qnState;
     public string quizQnText;
     public int quizQnNum;
@@ -432,8 +433,16 @@ public class QuizQnScene : ArbitraryScene
     //     this.quizQnText = quizText;
     // }
 
-    public QuizQnScene(string publicName, SCENES scene, string quizText, int quizNum) : base(publicName, scene)
+    public QuizQnScene(string gradeName, SCENES scene, string quizText, int quizNum) : base(gradeName, scene)
     {
+        this.gradeName = gradeName;
+        this.quizQnText = quizText;
+        this.quizQnNum = quizNum;
+    }
+
+    public QuizQnScene(string publicName, string gradeName, SCENES scene, string quizText, int quizNum) : base(publicName, scene)
+    {
+        this.gradeName = gradeName;
         this.quizQnText = quizText;
         this.quizQnNum = quizNum;
     }
@@ -523,7 +532,7 @@ public class SessionSceneListBuilder
     private List<SessionScene> scenes = new List<SessionScene>();
     private List<SessionScene> quizScenes = new List<SessionScene>();
     private List<QuizQnState> quizKey = new List<QuizQnState>();
-    private int quizCounter = 0;
+    private int quizCounter = 1;
 
     public SessionSceneListBuilder AddScene(SessionScene newScene)
     {
@@ -548,14 +557,14 @@ public class SessionSceneListBuilder
 
     public SessionSceneListBuilder AddQuizQn(string qnName, SCENES qnScene, QuizQnState qnState, string qnText)
     {
-        quizScenes.Add(new QuizQnScene(qnName, qnScene, qnText, quizCounter++));
+        quizScenes.Add(new QuizQnScene($"Question {quizCounter}", qnName, qnScene, qnText, quizCounter++));
         quizKey.Add(qnState);
         return this;
     }
 
     public SessionSceneListBuilder AddQuizQnCount(string qnName, SCENES qnScene, QuizQnState qnState, string qnText)
     {
-        quizScenes.Add(new QuizQnScene($"{quizCounter}-{qnName}", qnScene, qnText, quizCounter++));
+        quizScenes.Add(new QuizQnScene($"Question {quizCounter}", $"{quizCounter}-{qnName}", qnScene, qnText, quizCounter++));
         quizKey.Add(qnState);
         return this;
     }
@@ -575,7 +584,7 @@ public class SessionSceneListBuilder
         
         QuizState quizState = new QuizState(quizKey,
             (from qnScene in quizFilter()
-                select qnScene.publicName).ToList());
+                select qnScene.gradeName).ToList());
         
         List<SessionScene> reviewScenes = Enumerable.Zip(
               quizFilter()
@@ -592,7 +601,7 @@ public class SessionSceneListBuilder
         scenes.Add(new QuizIntroScene(quizName, scene, quizState, quizScenes));
         quizScenes = new List<SessionScene>();
         quizKey = new List<QuizQnState>();
-        quizCounter = 0;
+        quizCounter = 1;
         // return this;
         
         Debug.Log(scenes[scenes.Count-1]);

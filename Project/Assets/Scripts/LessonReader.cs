@@ -405,13 +405,18 @@ public class LessonReader : MonoBehaviour
         // Obtain sound from AssetDatabase
         // Like with CREATE-OBJECT, this is editor-only
 #if UNITY_EDITOR
-        string[] matchingAssets = AssetDatabase.FindAssets(names[1]);
-        string dataPath = AssetDatabase.GUIDToAssetPath(matchingAssets[0]);
+        // string[] matchingAssets = AssetDatabase.FindAssets(names[1]);
+        // Debug.Log("Found assets");
+        // string dataPath = AssetDatabase.GUIDToAssetPath(matchingAssets[0]);
+        // Debug.Log("Found dataPath");
         // Play audio
 #endif
-        AudioClip audio = (AudioClip)Resources.Load("lessons/" + names[1]);
+        AudioClip audio = (AudioClip)Resources.Load<AudioClip>("lessons/" + names[1]);
+        Debug.Log("Loaded audio clip");
         GetComponent<AudioSource>().clip = audio;
+        Debug.Log("Set Audio Source Clip");
         GetComponent<AudioSource>().Play();
+        Debug.Log("Play Audio");
       }
       catch
       {
