@@ -9,6 +9,7 @@ public class TokenCreator : MonoBehaviour
     private TimeDisplay display;
     private ActionReader reader;
     
+    public GameObject openCreatorButton;
     public TMP_Dropdown choice;
     public TMP_InputField time;
 
@@ -68,15 +69,17 @@ public class TokenCreator : MonoBehaviour
         }
         
         repo.AddHolder(newHolder);
-        display.AddToken(newHolder);
+        display.CreateToken(newHolder);
     }
 
     public void Open() {
+        openCreatorButton.SetActive(false);
         gameObject.SetActive(true);
         reader.Stop();
     }
 
     public void Close() {
+        openCreatorButton.SetActive(true);
         gameObject.SetActive(false);
     }
 

@@ -120,7 +120,7 @@ public class ActionReader : MonoBehaviour
                     // Either directly change position, or change over time
                     if(holder.duration > 0f) {
                         Debug.Log("Movement time detected.");
-                        IEnumerator posCoroutine = Pos(obj.transform, targetPosition, holder.duration >= progress ? 0f : holder.duration);
+                        IEnumerator posCoroutine = Pos(obj.transform, targetPosition, progress, holder.duration);
                         StartCoroutine(posCoroutine);
                     } else {
                         Debug.Log("No movement time detected.");
@@ -143,7 +143,7 @@ public class ActionReader : MonoBehaviour
                     // Either directly change rotation, or change over time
                     if(holder.duration > 0f) {
                         Debug.Log("Rotation time detected.");
-                        IEnumerator rotCoroutine = Rot(obj.transform, targetRotation, holder.duration >= progress ? 0f : holder.duration);
+                        IEnumerator rotCoroutine = Rot(obj.transform, targetRotation, progress, holder.duration);
                         StartCoroutine(rotCoroutine);
                     } else {
                         Debug.Log("No movement time detected.");
@@ -166,7 +166,7 @@ public class ActionReader : MonoBehaviour
                     // Change scale
                     if(holder.duration > 0f) {
                         Debug.Log("Scale time detected.");
-                        IEnumerator scaleCoroutine = Scale(obj.transform, targetScale, holder.duration >= progress ? 0f : holder.duration);
+                        IEnumerator scaleCoroutine = Scale(obj.transform, targetScale, progress, holder.duration);
                         StartCoroutine(scaleCoroutine);
                     } else {
                         Debug.Log("No movement time detected.");
@@ -293,36 +293,36 @@ public class ActionReader : MonoBehaviour
     }
 
     // Position changing coroutine
-    private IEnumerator Pos(Transform obj, Vector3 target, float time) {
-        if(time > 0.1f) {
+    private IEnumerator Pos(Transform obj, Vector3 target, float progress, float duration) {
+        if(duration > 0.1f && duration > progress) {
             Vector3 initPosition = obj.position;
             Debug.Log("Changing position.");
-            for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
-                obj.position = Vector3.Lerp(initPosition, target, i / Mathf.Ceil(time / Time.fixedDeltaTime));
-                yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+            for(int i = Mathf.CeilToInt(progress / Time.fixedDeltaTime); i < Mathf.CeilToInt(duration / Time.fixedDeltaTime); i++) {
+                obj.position = Vector3.Lerp(initPosition, target, i / Mathf.Ceil(duration / Time.fixedDeltaTime));
+                yield return new WaitForSeconds(duration / Mathf.Ceil(duration / Time.fixedDeltaTime));
             }
             obj.position = target;
             Debug.Log("Change over.");
         } else {
             obj.position = target;
-            Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
+            Debug.Log("Instantaneous position change applied.");
         }
     }
 
     // Rotation changing coroutine
-    private IEnumerator Rot(Transform obj, Vector3 target, float time)
+    private IEnumerator Rot(Transform obj, Vector3 target, float progress, float duration)
     {
         bool useSlerp = true;
-        if(time > 0.1f) {
+        if(duration > 0.1f) {
             if (useSlerp)
             {
                 Quaternion initRotation = obj.rotation;
                 Quaternion targetRotation = Quaternion.Euler(target);
                 Debug.Log("Changing rotation.");
-                for (int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++)
+                for (int i = Mathf.CeilToInt(progress / Time.fixedDeltaTime); i < Mathf.CeilToInt(duration / Time.fixedDeltaTime); i++)
                 {
-                    obj.rotation = Quaternion.Slerp(initRotation, targetRotation, i / Mathf.Ceil(time / Time.fixedDeltaTime));
-                    yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+                    obj.rotation = Quaternion.Slerp(initRotation, targetRotation, i / Mathf.Ceil(duration / Time.fixedDeltaTime));
+                    yield return new WaitForSeconds(duration / Mathf.Ceil(duration / Time.fixedDeltaTime));
                 }
 
                 obj.eulerAngles = target;
@@ -332,10 +332,10 @@ public class ActionReader : MonoBehaviour
             {
                 Vector3 initRotation = obj.eulerAngles;
                 Debug.Log("Changing rotation.");
-                for (int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++)
+                for (int i = Mathf.CeilToInt(progress / Time.fixedDeltaTime); i < Mathf.CeilToInt(duration / Time.fixedDeltaTime); i++)
                 {
-                    obj.eulerAngles = Vector3.Lerp(initRotation, target, i / Mathf.Ceil(time / Time.fixedDeltaTime));
-                    yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+                    obj.eulerAngles = Vector3.Lerp(initRotation, target, i / Mathf.Ceil(duration / Time.fixedDeltaTime));
+                    yield return new WaitForSeconds(duration / Mathf.Ceil(duration / Time.fixedDeltaTime));
                 }
 
                 obj.eulerAngles = target;
@@ -343,23 +343,24 @@ public class ActionReader : MonoBehaviour
             }
         } else {
             obj.eulerAngles = target;
-            Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
+            Debug.Log("Instantaneous rotation change applied.");
         }
     }
 
-    private IEnumerator Scale(Transform obj, Vector3 target, float time) {
-        if(time > 0.1f) {
+    // Scale changing coroutine
+    private IEnumerator Scale(Transform obj, Vector3 target, float progress, float duration) {
+        if(duration > 0.1f) {
             Vector3 initScale = obj.localScale;
             Debug.Log("Changing scale.");
-            for(int i = 0; i < Mathf.Ceil(time / Time.fixedDeltaTime); i++) {
-                obj.localScale = Vector3.Lerp(initScale, target, i / Mathf.Ceil(time / Time.fixedDeltaTime));
-                yield return new WaitForSeconds(time / Mathf.Ceil(time / Time.fixedDeltaTime));
+            for(int i = Mathf.CeilToInt(progress / Time.fixedDeltaTime); i < Mathf.CeilToInt(duration / Time.fixedDeltaTime); i++) {
+                obj.localScale = Vector3.Lerp(initScale, target, i / Mathf.Ceil(duration / Time.fixedDeltaTime));
+                yield return new WaitForSeconds(duration / Mathf.Ceil(duration / Time.fixedDeltaTime));
             }
             obj.localScale = target;
             Debug.Log("Change over.");
         } else {
             obj.localScale = target;
-            Debug.Log("Time given is less than 0.1 seconds and is imperceptibly small; instantaneous change applied.");
+            Debug.Log("Instantaneous scale change applied.");
         }
     }
 
@@ -380,6 +381,7 @@ public class ActionReader : MonoBehaviour
     public void Stop() {
         pauseTime = Time.time - startTime;
         executing = false;
+        StopAllCoroutines();
         GetComponent<AudioSource>()?.Stop();
     }
 
