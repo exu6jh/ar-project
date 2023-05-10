@@ -29,14 +29,25 @@ public class LessonReader : MonoBehaviour
   public GameObject point;
   public GameObject vector;
 
+  public bool custom = false;
+
   // Start is called before the first frame update
   void Start()
   {
-    TextAsset txt = (TextAsset)Resources.Load("lessons/lesson1", typeof(TextAsset));
-    Debug.Log("Lesson loaded!!");
-    // Read the default lesson.
-    string[] lines = txt.text.Split(Environment.NewLine);
-    StartNewLesson(lines);
+    if (custom)
+    {
+      string[] actionList = System.IO.File.ReadAllLines(System.IO.Path.Combine(Application.persistentDataPath, "CustomLessons", "active1.txt"));
+      Debug.Log("Custom Lesson loaded!!");
+      StartNewLesson(actionList);
+    }
+    else
+    {
+      TextAsset txt = (TextAsset) Resources.Load($"lessons/{Globals.lesson}", typeof(TextAsset));
+      Debug.Log("Resource Lesson loaded!!");
+      // Read the default lesson.
+      string[] lines = txt.text.Split(Environment.NewLine);
+      StartNewLesson(lines);
+    }
   }
 
   // For reading a lesson from a string.
@@ -411,8 +422,19 @@ public class LessonReader : MonoBehaviour
         // Debug.Log("Found dataPath");
         // Play audio
 #endif
-        AudioClip audio = (AudioClip)Resources.Load<AudioClip>("lessons/" + names[1]);
-        Debug.Log("Loaded audio clip");
+        AudioClip audio;
+        if (custom)
+        {
+          audio =
+            WavUtility.ToAudioClip(System.IO.Path.Combine(Application.persistentDataPath, "CustomLessons",
+              $"{names[1]}.wav"));
+          Debug.Log("Loaded custom audio clip");
+        }
+        else
+        {
+          audio = (AudioClip) Resources.Load<AudioClip>("lessons/" + names[1]);
+          Debug.Log("Loaded resource audio clip");
+        }
         GetComponent<AudioSource>().clip = audio;
         Debug.Log("Set Audio Source Clip");
         GetComponent<AudioSource>().Play();
@@ -527,15 +549,23 @@ public class LessonReader : MonoBehaviour
         Transformable transformable = gameObjects[names[3]][0];
         switch (transformable)
         {
-          case Transformable.MPartialGridManager partialGridManager:
-            GridManager gridManager = partialGridManager.GridManager;
+          case Transformable.MPartialGridManager({ }, { } gridManager):
+            // GridManager gridManager = partialGridManager.GridManager;
 
-            foreach (VectorManager vectorManager in gridManager.GetVectorManagers())
+            foreach (VectorManager basisVectorManager in gridManager.GetBasisVectorManagers())
             {
-              Matrix result = matrixToApply * new Matrix(vectorManager.standardValue);
-              vectorManager.SetNewStandardValue(new Vector3(result.values[0, 0], result.values[1, 0], result.values[2, 0]));
+              Matrix basisResult = matrixToApply * new Matrix(basisVectorManager.standardValue);
+              basisVectorManager.SetNewStandardValue(new Vector3(basisResult.values[0, 0], basisResult.values[1, 0], basisResult.values[2, 0]));
             }
 
+            gridManager.TransformOnlyUpdate();
+            gridManager.LinearMapFollowupUpdate();
+
+            break;
+          case Transformable.MVectorManager({ } vectorManager):
+            
+            Matrix result = matrixToApply * new Matrix(vectorManager.standardValue);
+            vectorManager.SetNewStandardValue(new Vector3(result.values[0, 0], result.values[1, 0], result.values[2, 0]));
             break;
           case Transformable.NotTransformable notTransformable:
             // Apply transformation to every mesh that is in the object

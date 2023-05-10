@@ -5,29 +5,29 @@ ASSIGN-PROPERTY "defaultGrid2" "POS" [0.5,0,1]
 WAIT 2.0
 PLAY SOUND "lesson2"
 DRAW POINT "origin1" ON "defaultGrid1"
-ASSIGN-PROPERTY "origin1" "POS" [-0.5,0,1]
+ASSIGN-PROPERTY "origin1" "POS" [0,0,0]
 DRAW POINT "point1" ON "defaultGrid1"
-ASSIGN-PROPERTY "point1" "POS" [-0.65,0.15,1]
+ASSIGN-PROPERTY "point1" "POS" [-3,3,0]
 DRAW POINT "point2" ON "defaultGrid1"
-ASSIGN-PROPERTY "point2" "POS" [-0.4,-0.25,1]
+ASSIGN-PROPERTY "point2" "POS" [2,-5,0]
 DRAW POINT "point3" ON "defaultGrid1"
-ASSIGN-PROPERTY "point3" "POS" [-0.4,0.15,1]
+ASSIGN-PROPERTY "point3" "POS" [2,3,0]
 WAIT 10.5
 DRAW VECTOR "vector1" FROM "origin1" TO "point1"
 DRAW VECTOR "vector2" FROM "point2" TO "point3"
 WAIT 32
-ASSIGN-PROPERTY "point1" "POS" [-0.55,0.1,1]
-ASSIGN-PROPERTY "point2" "POS" [-0.35,0.05,1]
-ASSIGN-PROPERTY "point3" "POS" [-0.4,0.15,1]
+ASSIGN-PROPERTY "point1" "POS" [-1,2,0]
+ASSIGN-PROPERTY "point2" "POS" [3,1,0]
+ASSIGN-PROPERTY "point3" "POS" [2,3,0]
 WAIT 28
 DRAW POINT "origin2" ON "defaultGrid2"
-ASSIGN-PROPERTY "origin2" "POS" [0.5,0,1]
+ASSIGN-PROPERTY "origin2" "POS" [0,0,0]
 DRAW POINT "point4" ON "defaultGrid2"
-ASSIGN-PROPERTY "point4" "POS" [0.45,0.1,1]
+ASSIGN-PROPERTY "point4" "POS" [-1,2,0]
 DRAW POINT "point5" ON "defaultGrid2"
-ASSIGN-PROPERTY "point5" "POS" [0.65,0.05,1]
+ASSIGN-PROPERTY "point5" "POS" [3,1,0]
 DRAW POINT "point6" ON "defaultGrid2"
-ASSIGN-PROPERTY "point6" "POS" [0.6,0.15,1]
+ASSIGN-PROPERTY "point6" "POS" [2,3,0]
 WAIT 5
 DRAW VECTOR "vector3" FROM "origin2" TO "point4"
 DRAW VECTOR "vector4" FROM "origin2" TO "point5"

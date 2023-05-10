@@ -146,6 +146,7 @@ public class GridManager : MonoBehaviour
     [HideInInspector] public float euclideanGridScale = 2.5f;
 
     private VectorManager[] _vectorManagers;
+    private GridlineManager[] _gridlineManagers;
     private Transformable[] _transformables;
     private int dimensions = 2;
 
@@ -220,6 +221,8 @@ public class GridManager : MonoBehaviour
         
         _vectorManagers = (from basis in bases 
             select basis.GetComponent<VectorManager>()).ToArray();
+        // _gridlineManagers = (from gridline in GridlineParent.transform.Cast<Transform>()
+        //     select gridline.GetComponent<GridlineManager>()).ToArray();
         _transformables = (from mappable in toTransform
             from transformables in createTransformable(mappable)
             select transformables).ToArray();
@@ -292,56 +295,66 @@ public class GridManager : MonoBehaviour
     {
         if (transformable)
         {
-            // Update tMatrix with the current positions of basis vectors
-            for(int i = 0; i < dimensions; i++)
-            {
-                Vector3 basisValue = _vectorManagers[i].standardValue;
-                tMatrix[0, i] = basisValue[0];
-                tMatrix[1, i] = basisValue[1];
-                tMatrix[2, i] = basisValue[2];
-            }
-
-            // Update the positions of all gridlines
-            foreach (Transform gridline in GridlineParent.transform)
-            {
-                SetGridlinePosition(gridline, skipRS: false);
-            }
+            TransformOnlyUpdate();
 
             if (linearMap)
             {
-                foreach (Transformable transformable in _transformables)
-                {
-                    switch (transformable)
-                    {
-                        case Transformable.MVectorManager({ } vectorManager):
-                            // VectorManager vectorManager = mVectorManager.VectorManager;
-                            // Only update vector if it has no other constraints
-                            if (vectorManager.activeConstraints.Count == 0)
-                            {
-                                vectorManager.SetNewValue(vectorManager.value);
-                            }
-                            break;
-                        case Transformable.MPointManager({ } pointManager):
-                            // PointManager pointManager = mPointManager.PointManager;
-                            // Only update point if it has no other constraints
-                            if (pointManager.activeConstraints.Count == 0)
-                            {
-                                // Debug.Log("Point active!");
-                                pointManager.SetNewValue(pointManager.value);   
-                            }
-                            break;
-                        case Transformable.MPointSnapConstraint({ } pointSnapConstraint):
-                            // PointSnapConstraint pointSnapConstraint = mPointSnapConstraint.PointSnapConstraint;
-                            // Updates position of point's constraint so that the point will be subsequently updated also
-                            pointSnapConstraint.SetFollowValue(pointSnapConstraint.followValue);
-                            break;
-                    }
-                }
+                LinearMapFollowupUpdate();
             }
         }
     }
 
-    public VectorManager[] GetVectorManagers() => _vectorManagers;
+    public VectorManager[] GetBasisVectorManagers() => _vectorManagers;
+
+    public void TransformOnlyUpdate()
+    {
+        // Update tMatrix with the current positions of basis vectors
+        for(int i = 0; i < dimensions; i++)
+        {
+            Vector3 basisValue = _vectorManagers[i].standardValue;
+            tMatrix[0, i] = basisValue[0];
+            tMatrix[1, i] = basisValue[1];
+            tMatrix[2, i] = basisValue[2];
+        }
+
+        // Update the positions of all gridlines
+        foreach (Transform gridline in GridlineParent.transform)
+        {
+            SetGridlinePosition(gridline, skipRS: false);
+        }
+    }
+
+    public void LinearMapFollowupUpdate()
+    {
+        foreach (Transformable transformable in _transformables)
+        {
+            switch (transformable)
+            {
+                case Transformable.MVectorManager({ } vectorManager):
+                    // VectorManager vectorManager = mVectorManager.VectorManager;
+                    // Only update vector if it has no other constraints
+                    if (vectorManager.activeConstraints.Count == 0)
+                    {
+                        vectorManager.SetNewValue(vectorManager.value);
+                    }
+                    break;
+                case Transformable.MPointManager({ } pointManager):
+                    // PointManager pointManager = mPointManager.PointManager;
+                    // Only update point if it has no other constraints
+                    if (pointManager.activeConstraints.Count == 0)
+                    {
+                        // Debug.Log("Point active!");
+                        pointManager.SetNewValue(pointManager.value);   
+                    }
+                    break;
+                case Transformable.MPointSnapConstraint({ } pointSnapConstraint):
+                    // PointSnapConstraint pointSnapConstraint = mPointSnapConstraint.PointSnapConstraint;
+                    // Updates position of point's constraint so that the point will be subsequently updated also
+                    pointSnapConstraint.SetFollowValue(pointSnapConstraint.followValue);
+                    break;
+            }
+        }
+    }
 
     // public void 
 }

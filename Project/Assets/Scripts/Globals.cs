@@ -25,6 +25,7 @@ public enum SCENES
     QUIZ_SUBMIT,
     SANDBOX,
     _3D_LIGHT_TEST,
+    CUSTOM_LESSON,
     TEMPLATE,
     QUIZ,
     QUIZ_TEST,
@@ -35,6 +36,7 @@ public enum LESSONS
 {
     LESSON_1,
     LESSON_2,
+    CUSTOM_1,
     // LESSON_3,
     // LESSON_4,
 }
@@ -814,11 +816,13 @@ public static class Globals
         switch (lessons)
         {
             case LESSONS.LESSON_1:
-                return "lesson1.txt";
+                // return "lesson1.txt";
+                return "lesson1";
             case LESSONS.LESSON_2:
-                return "lesson2.txt";
+                // return "lesson2.txt";
+                return "lesson2";
             default:
-                return "lesson1.txt";
+                return "lesson1";
         }
     }
 
@@ -841,7 +845,7 @@ public static class Globals
                 // .AddScene(new QuizQnScene("quiz1", SCENES.QUIZ, new SliderQnState(), "What is your favorite color?"))
             ),
             new("Lesson 1", new SessionSceneListBuilder()
-                .AddScene(new LessonScene("video", "lesson1.txt"))
+                .AddScene(new LessonScene("video", "lesson1"))
                 .AddScene(new SandboxScene("sandbox", SCENES.SANDBOX)) // For now, needs to be changed...
                 .AddReviewScene("review1", new[] {0, 1})
                 .AddQuizQnCount("encoding", SCENES.QUIZ_1, new DiscreteQnState(3),
