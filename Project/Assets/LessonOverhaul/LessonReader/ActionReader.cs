@@ -64,6 +64,7 @@ public class ActionReader : MonoBehaviour
             try {
                 // Instantiate corresponding asset from AssetDatabase.
                 // Note that this is editor-only!
+#if Unity_Editor
                 string[] matchingAssets = AssetDatabase.FindAssets(holder.editorObjectName);
                 string dataPath = AssetDatabase.GUIDToAssetPath(matchingAssets[0]);
                 GameObject obj = (GameObject)AssetDatabase.LoadAssetAtPath(dataPath, typeof(GameObject));
@@ -76,6 +77,7 @@ public class ActionReader : MonoBehaviour
                 } else {
                     gameObjects[holder.editorObjectName] = newObj;
                 }
+#endif
             } catch {
                 Debug.Log(string.Format("Asset \"{0}\" not found.", holder.editorObjectName));
             }
@@ -187,6 +189,7 @@ public class ActionReader : MonoBehaviour
             try {
                 // Obtain sound from AssetDatabase
                 // Like with CREATE-OBJECT, this is editor-only
+#if UNITY_EDITOR
                 string[] matchingAssets = AssetDatabase.FindAssets(holder.editorObjectName);
                 string dataPath = AssetDatabase.GUIDToAssetPath(matchingAssets[0]);
                 AudioClip audio = (AudioClip)AssetDatabase.LoadAssetAtPath(dataPath, typeof(AudioClip));
@@ -197,6 +200,7 @@ public class ActionReader : MonoBehaviour
                     source.time = progress;
                     source.Play();
                 }
+#endif
             } catch {
                 Debug.Log(string.Format("Sound error, either clip \"{0}\" not found or no audio component attached.", holder.editorObjectName));
             }
