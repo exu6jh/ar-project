@@ -136,7 +136,7 @@ public class ActionRepository : MonoBehaviour
         string commandString = "";
         if(holder.command == CommandType.CreateObject) {
             commandString = "CREATE-OBJECT \"" + holder.editorObjectName + "\"";
-            commandString += (holder.internalObjectName == null ? " AS \"" + holder.internalObjectName + "\"" : "");
+            commandString += (holder.internalObjectName == null ? "" : " AS \"" + holder.internalObjectName + "\"");
         } else if(holder.command == CommandType.CreateMatrix) {
             commandString = "CREATE-MATRIX \"" + holder.internalObjectName + "\" " + (new Matrix(holder.matrixFields)).ToString();
         } else if(holder.command == CommandType.DeleteObject) {
@@ -153,7 +153,7 @@ public class ActionRepository : MonoBehaviour
         } else if(holder.command == CommandType.DrawVector) {
             commandString = "DRAW-VECTOR \"" + holder.internalObjectName + "\" FROM \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.affiliatedObjects[1] + "\"";
         } else if(holder.command == CommandType.ApplyMatrix) {
-            commandString = "APPLY-MATRIX \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.internalObjectName;
+            commandString = "APPLY-MATRIX \"" + holder.internalObjectName + "\" TO \"" + holder.affiliatedObjects[0] + "\"";
         } else {
             Debug.Log("Unrecognized holder command.");
             return null;
@@ -291,7 +291,7 @@ public class ActionRepository : MonoBehaviour
         string commandString = "";
         if(holder.command == CommandType.CreateObject) {
             commandString = "CREATE-OBJECT \"" + holder.editorObjectName + "\"";
-            commandString += (holder.internalObjectName == null ? " AS \"" + holder.internalObjectName + "\"" : "");
+            commandString += (holder.internalObjectName == null ? "" : " AS \"" + holder.internalObjectName + "\"");
             
             toParentName.Add(holder.internalObjectName ?? holder.editorObjectName, "mangle_origin");
             toProperties.Add(holder.internalObjectName ?? holder.editorObjectName, getInitialProperties());
@@ -339,7 +339,7 @@ public class ActionRepository : MonoBehaviour
             commandString = "DRAW VECTOR \"" + holder.internalObjectName + "\" FROM \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.affiliatedObjects[1] + "\"";
             
         } else if(holder.command == CommandType.ApplyMatrix) {
-            commandString = "APPLY-MATRIX \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.internalObjectName;
+            commandString = "APPLY-MATRIX \"" + holder.internalObjectName + "\" TO \"" + holder.affiliatedObjects[0] + "\"";
             
         } else {
             Debug.Log("Unrecognized holder command.");

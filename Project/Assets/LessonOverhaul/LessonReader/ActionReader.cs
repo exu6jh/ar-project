@@ -64,7 +64,7 @@ public class ActionReader : MonoBehaviour
             try {
                 // Instantiate corresponding asset from AssetDatabase.
                 // Note that this is editor-only!
-#if Unity_Editor
+#if UNITY_EDITOR
                 string[] matchingAssets = AssetDatabase.FindAssets(holder.editorObjectName);
                 string dataPath = AssetDatabase.GUIDToAssetPath(matchingAssets[0]);
                 GameObject obj = (GameObject)AssetDatabase.LoadAssetAtPath(dataPath, typeof(GameObject));

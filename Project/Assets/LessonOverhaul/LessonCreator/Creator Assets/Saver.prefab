@@ -160,7 +160,6 @@ GameObject:
   - component: {fileID: 7670860282443940585}
   - component: {fileID: 3447257719678729672}
   - component: {fileID: 9144268545821138164}
-  - component: {fileID: 6000871464340821328}
   - component: {fileID: 5747141703945585182}
   m_Layer: 5
   m_Name: Saver
@@ -231,21 +230,6 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
---- !u!114 &6000871464340821328
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2281094291634138247}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a1883fe364997f46b352001e1286506, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  openCreatorButton: {fileID: 0}
-  choice: {fileID: 0}
-  time: {fileID: 0}
 --- !u!114 &5747141703945585182
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -355,8 +339,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -409,7 +393,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558aa3927daa49a43a17341e37d58157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleFactor: 0.03
+  scaleFactor: 0.025
 --- !u!1 &4896794996007190582
 GameObject:
   m_ObjectHideFlags: 0
@@ -784,8 +768,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 18
-  m_fontSizeBase: 18
+  m_fontSize: 15
+  m_fontSizeBase: 15
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -838,7 +822,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 558aa3927daa49a43a17341e37d58157, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  scaleFactor: 0.03
+  scaleFactor: 0.025
 --- !u!1 &6446335319392059695
 GameObject:
   m_ObjectHideFlags: 0
@@ -1052,7 +1036,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Choose a Save Format
+  m_text: Save Format
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
