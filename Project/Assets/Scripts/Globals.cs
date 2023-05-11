@@ -810,6 +810,8 @@ public static class Globals
 
     public static string lessonCreate;
 
+    public static bool isJSON = true;
+
     public static List<Session> defaultSessions;
 
     public static Session activeSession;

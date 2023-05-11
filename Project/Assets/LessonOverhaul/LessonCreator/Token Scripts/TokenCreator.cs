@@ -28,12 +28,14 @@ public class TokenCreator : MonoBehaviour
                 break;
             case 1:
                 newHolder.command = CommandType.CreateMatrix;
+                newHolder.matrixFields = new float[3, 3];
                 break;
             case 2:
                 newHolder.command = CommandType.DeleteObject;
                 break;
             case 3:
                 newHolder.command = CommandType.AssignProperty;
+                newHolder.matrixFields = new float[1, 3];
                 break;
             case 4:
                 newHolder.command = CommandType.PlaySound;

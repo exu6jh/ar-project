@@ -369,18 +369,6 @@ MonoBehaviour:
           m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
-      - m_Target: {fileID: 1422657072}
-        m_TargetAssemblyTypeName: ChangeScene, Assembly-CSharp
-        m_MethodName: GoToScene
-        m_Mode: 2
-        m_Arguments:
-          m_ObjectArgument: {fileID: 41527909}
-          m_ObjectArgumentAssemblyTypeName: GetScene, Assembly-CSharp
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
 --- !u!114 &41527907
 MonoBehaviour:
   m_ObjectHideFlags: 0

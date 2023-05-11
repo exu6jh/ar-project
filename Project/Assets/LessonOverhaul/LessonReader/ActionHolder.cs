@@ -33,7 +33,7 @@ public class ActionHolder
         this.affiliatedObjects = new string[2];
         this.editorObjectName = "";
         this.property = "";
-        this.matrixFields = new float[3,3];
+        this.matrixFields = new float[0,0];
         this.duration = 0f;
     }
     

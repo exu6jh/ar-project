@@ -24,15 +24,23 @@ public class MenuLessonLoader : MonoBehaviour
         string path = EditorUtility.OpenFilePanel("Lesson", "", "txt");
         if(path.Length != 0) {
             Globals.lessonCreate = path;
+            ChangeScene.GoToScene(SCENES.CREATE);
+        }
+        else
+        {
+            Debug.Log("No Lesson Selected!");
         }
     }
 
     public void CreateLesson() {
-        if(lessonName.name == "") {
+        if(lessonName.text == "") {
             Globals.lessonCreate = "Assets/LessonOverhaul/Lessons/default.txt";
+            Debug.Log("Lesson set to default.txt!");
         } else {
             Globals.lessonCreate = "Assets/LessonOverhaul/Lessons/" + lessonName.text + ".txt";
+            Debug.Log($"Lesson set to {lessonName.text}.txt!");
         }
+        ChangeScene.GoToScene(SCENES.CREATE);
     }
 
     public void MainMenu() {

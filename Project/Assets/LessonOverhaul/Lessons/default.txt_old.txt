@@ -1,0 +1,22 @@
+WAIT 0.0
+DRAW GRID "mygrid"
+PLAY SOUND "demotest"
+WAIT 0.1
+ASSIGN-PROPERTY "mygrid" "POS" [0,0,1]
+DRAW POINT "point1" ON "mygrid"
+DRAW POINT "point2" ON "mygrid"
+WAIT 0.9
+ASSIGN-PROPERTY "point1" "POS" [-3,-1,0]
+WAIT 1.0
+ASSIGN-PROPERTY "point2" "POS" [3,2,0]
+WAIT 1.0
+DRAW VECTOR "vector1" FROM "point1" TO "point2"
+WAIT 1.9
+ASSIGN-PROPERTY "point1" "POS" [-3,2,0] 2.7
+ASSIGN-PROPERTY "point2" "POS" [3,-1,0] 2.7
+WAIT 6.4
+ASSIGN-PROPERTY "point1" "POS" [-3,-1,0]
+ASSIGN-PROPERTY "point2" "POS" [3,2,0]
+WAIT 1.7
+ASSIGN-PROPERTY "point1" "POS" [-3,2,0]
+ASSIGN-PROPERTY "point2" "POS" [3,-1,0]

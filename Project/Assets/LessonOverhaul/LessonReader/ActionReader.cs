@@ -226,7 +226,7 @@ public class ActionReader : MonoBehaviour
                 newPoint.GetComponent<PointManager>().gridManager = manager;
                 newPoint.GetComponent<PointSnapConstraint>().origin = manager.origin;
                 // Scale normalization
-                newPoint.transform.localScale = new Vector3(1,1,1);
+                newPoint.transform.localScale = new Vector3(10,10,10);
             } catch {
                 Debug.Log(string.Format("Error: when drawing point, could not find grid corresponding to {0}.", holder.affiliatedObjects[0]));
             }

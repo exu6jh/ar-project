@@ -200,7 +200,6 @@ public class TimeDisplay : MonoBehaviour
 
     private void EndOfLesson() {
         Destroy(endOfLesson);
-        endOfLesson = Instantiate(endOfLessonPrefab);
-        endOfLesson.transform.SetParent(transform);
+        endOfLesson = Instantiate(endOfLessonPrefab, transform, true);
     }
 }

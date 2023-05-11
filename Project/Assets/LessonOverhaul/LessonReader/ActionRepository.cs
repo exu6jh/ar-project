@@ -17,6 +17,14 @@ public class ActionRepository : MonoBehaviour
     {
         Debug.Log(Globals.lessonCreate);
         readFromJsonFile(Globals.lessonCreate);
+        // if (Globals.isJSON)
+        // {
+        //     readFromJsonFile(Globals.lessonCreate);
+        // }
+        // else
+        // {
+        //     readFromOldFile(Globals.lessonCreate);
+        // }
     }
     
     private void readFromPlaintextFile(string filename) {
@@ -210,7 +218,7 @@ public class ActionRepository : MonoBehaviour
         Debug.Log("Writing complete.");
     }
 
-    public void SaveOld(string filepathname)
+    public void SaveOld()
     {
         Debug.Log("SaveOld entered");
         Debug.Log("Sorting.");
@@ -226,7 +234,7 @@ public class ActionRepository : MonoBehaviour
         // }
         
         // System.IO.File.WriteAllText($"{filepathname}-{filenameCandidate}.txt", actionString);
-        System.IO.File.WriteAllText(Globals.lessonCreate, jsonString);
+        System.IO.File.WriteAllText($"{Globals.lessonCreate}_old.txt", actionString);
         Debug.Log("Writing complete.");
     }
 
@@ -344,4 +352,73 @@ public class ActionRepository : MonoBehaviour
     {
         readFromJsonFile(filename);
     }
+    //
+    // private void readFromOldFile(string filename)
+    // {
+    //     ResetOldOldDictionaries();
+    // }
+    //
+    // private ActionHolder ActionHolderFromOldOld(OldActionHolder old) {
+    //     float time = old.time;
+    //     string command = old.command;
+    //     if(Regex.Match(command, "^CREATE-OBJECT \"[\\w\\-. ]+\"( AS \"[\\w\\-. ]+\")?$").Success) {
+    //         string[] names = command.Split("\"");
+    //         if(names.Length > 3) {
+    //             return new ActionHolder(time, CommandType.CreateObject, names[3], null, names[1], null, null, 0f);
+    //         } else {
+    //             return new ActionHolder(time, CommandType.CreateObject, null, null, names[1], null, null, 0f);
+    //         }
+    //     } else if (Regex.Match(command, "^CREATE-MATRIX \"[\\w\\- ]+\" {((-?[0-9]+(.[0-9]+)?)(,-?[0-9]+(.[0-9]+)?)*)(;(-?[0-9]+(.[0-9]+)?)(,-?[0-9]+(.[0-9]+)?)*)*}$").Success) {
+    //         // Obtain matrix elements
+    //         string matrixElements = command.Split(new char[] {'{', '}'})[1];
+    //         string[] names = command.Split("\"");
+    //         try {
+    //             // Attempt to create matrix
+    //             Matrix mat = new Matrix(matrixElements);
+    //             return new ActionHolder(time, CommandType.CreateMatrix, names[1], null, null, null, mat.values, 0f);
+    //         } catch {
+    //             Debug.Log("Error: inconsistent matrix size when loading from command JSON document.");
+    //             return null;
+    //         }
+    //     } else if(Regex.Match(command, "^DELETE-OBJECT \"[\\w\\-. ]+\"$").Success) {
+    //         string[] names = command.Split("\"");
+    //         return new ActionHolder(time, CommandType.DeleteObject, names[1], null, null, null, null, 0f);
+    //     } else if(Regex.Match(command, "^ASSIGN-PROPERTY \"[\\w-. ]+\" \"[A-Z]+\" ({(-?[0-9]+(.[0-9]+)?)((;|,)(-?[0-9]+(.[0-9]+)?))*})( [0-9]+(.[0-9]+))?$").Success) {
+    //         string[] names = command.Split("\"");
+    //         string[] parsedString = command.Split(new char[] {'{', '}'});
+    //         float movementTime = 0f;
+    //         if(!string.IsNullOrEmpty(parsedString[2])) {
+    //             movementTime = float.Parse(parsedString[2]);
+    //         }
+    //         try {
+    //             string matrixElements = parsedString[1];
+    //             Matrix mat = new Matrix(matrixElements);
+    //             return new ActionHolder(time, CommandType.AssignProperty, names[1], null, null, names[3], mat.values, movementTime);
+    //         } catch {
+    //             Debug.Log("Error: inconsistent matrix size when loading from command JSON document.");
+    //             return null;
+    //         }
+    //     } else if(Regex.Match(command, "^PLAY SOUND \"[\\w\\- ]+\"").Success) {
+    //         string[] names = command.Split("\"");
+    //         return new ActionHolder(time, CommandType.PlaySound, null, null, names[1], null, null, 0f);
+    //     } else if(Regex.Match(command, "^DRAW GRID \"[\\w\\- ]+\"").Success) {
+    //         string[] parsedString = command.Split("\"");
+    //         return new ActionHolder(time, CommandType.DrawGrid, parsedString[1], null, null, null, null, 0f);
+    //     } else if(Regex.Match(command, "^DRAW POINT \"[\\w\\- ]+\" ON \"[\\w\\- ]+\"$").Success) {
+    //         string[] parsedString = command.Split("\"");
+    //         string[] grid = new string[]{parsedString[3]};
+    //         return new ActionHolder(time, CommandType.DrawPoint, parsedString[1], grid, null, null, null, 0f);
+    //     } else if(Regex.Match(command, "^DRAW VECTOR \"[\\w\\- ]+\" FROM \"[\\w\\- ]+\" TO \"[\\w\\- ]+\"$").Success) {
+    //         string[] parsedString = command.Split("\"");
+    //         string[] endpoints = new string[]{parsedString[3], parsedString[5]};
+    //         return new ActionHolder(time, CommandType.DrawVector, parsedString[1], endpoints, null, null, null, 0f);
+    //     } else if(Regex.Match(command, "^APPLY-MATRIX \"[\\w\\- ]+\" TO \"[\\w\\-. ]+\"$").Success) {
+    //         string[] names = command.Split("\"");
+    //         string[] appliedTo = new string[]{names[3]};
+    //         return new ActionHolder(time, CommandType.ApplyMatrix, names[1], appliedTo, null, null, null, 0f);
+    //     } else {
+    //         Debug.Log(string.Format("No command, or invalid command, received from command JSON document."));
+    //         return null;
+    //     }
+    // }
 }

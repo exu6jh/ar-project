@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -27,6 +28,11 @@ public class TokenEditorField : MonoBehaviour
     private TokenEditorMenu menu;
     private TMP_InputField textField;
     private Toggle toggle;
+
+    private void Awake()
+    {
+        SetupListeners();
+    }
 
     void TextChange() {
         Debug.Log("Text change. " + textField.text);
@@ -96,13 +102,33 @@ public class TokenEditorField : MonoBehaviour
         this.menu = menu;
     }
 
-    public void UpdateValues() {
+    public void SetupListeners()
+    {
         if(isTime || isInternalName || isAffiliatedObject || isEditorName || isMatrixFields || isDuration) {
             textField = GetComponent<TMP_InputField>();
             textField.onEndEdit.AddListener(delegate {TextChange();});
         } else {
             toggle = GetComponent<Toggle>();
             toggle.onValueChanged.AddListener(delegate {ToggleChange();});
+        }
+    }
+
+    public void UpdateValues() {
+        // if(isTime || isInternalName || isAffiliatedObject || isEditorName || isMatrixFields || isDuration) {
+        //     textField = GetComponent<TMP_InputField>();
+        //     textField.onEndEdit.AddListener(delegate {TextChange();});
+        // } else {
+        //     toggle = GetComponent<Toggle>();
+        //     toggle.onValueChanged.AddListener(delegate {ToggleChange();});
+        // }
+
+        if (isTime || isInternalName || isAffiliatedObject || isEditorName || isMatrixFields || isDuration)
+        {
+            if (!textField) Debug.Log("Text Field is not initialized!");
+        }
+        else
+        {
+            if (!toggle) Debug.Log("Toggle is not initialized!");
         }
         
         if(isTime) {
