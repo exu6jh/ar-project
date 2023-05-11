@@ -27,8 +27,8 @@ public class TimeDisplay : MonoBehaviour
     private const float SCROLL_MULTIPLIER = 0.1f;
     private const float OBSTRUCTION_THRESHOLD = 0.03f;
 
-    private List<Token> tokens;
-    private List<TokenPoly> polytokens;
+    private List<GameObject> tokens;
+    private List<GameObject> polytokens;
     private GameObject endOfLesson;
 
     // Start is called before the first frame update
@@ -39,8 +39,8 @@ public class TimeDisplay : MonoBehaviour
         end = 60f;
         slider.value = 0f;
         slider.onValueChanged.AddListener(delegate {ValueChange();});
-        tokens = new List<Token>();
-        polytokens = new List<TokenPoly>();
+        tokens = new List<GameObject>();
+        polytokens = new List<GameObject>();
     }
 
     void Start()
@@ -108,14 +108,14 @@ public class TimeDisplay : MonoBehaviour
         GameObject tokenInstance = Instantiate(tokenPrefab);
         tokenInstance.transform.SetParent(transform);
         tokenInstance.GetComponent<Token>().SetParameters(token, false, 0);
-        tokens.Add(tokenInstance.GetComponent<Token>());
+        tokens.Add(tokenInstance);
     }
 
     public void CreatePolytoken(List<ActionHolder> tokenList) {
         GameObject polytokenInstance = Instantiate(polytokenPrefab);
         polytokenInstance.transform.SetParent(transform);
         polytokenInstance.GetComponent<TokenPoly>().SetParameters(tokenList);
-        polytokens.Add(polytokenInstance.GetComponent<TokenPoly>());
+        polytokens.Add(polytokenInstance);
     }
 
     public void CreateTokens(ActionRepository repo) {
@@ -153,13 +153,14 @@ public class TimeDisplay : MonoBehaviour
 
     public void DeleteToken(ActionHolder holder) {
         for(int i = tokens.Count - 1; i >= 0; i--) {
-            if(tokens[i].GetAction() == holder) {
+            if(tokens[i].GetComponent<Token>().GetAction() == holder) {
+                Destroy(tokens[i]);
                 tokens.RemoveAt(i);
             }
         }
 
         for(int i = polytokens.Count - 1; i >= 0; i--) {
-            List<ActionHolder> actions = polytokens[i].GetActions();
+            List<ActionHolder> actions = polytokens[i].GetComponent<TokenPoly>().GetActions();
             for(int j = actions.Count - 1; j >= 0; j--) {
                 if(actions[j] == holder) {
                     actions.RemoveAt(j);
@@ -167,6 +168,7 @@ public class TimeDisplay : MonoBehaviour
             }
             if(actions.Count == 0) {
                 // This shouldn't happen, but just in case.
+                Destroy(polytokens[i]);
                 polytokens.RemoveAt(i);
             }
         }
@@ -174,24 +176,25 @@ public class TimeDisplay : MonoBehaviour
 
     public void DeleteTokens() {
         for(int i = 0; i < tokens.Count; i++) {
-            Destroy(tokens[i].gameObject);
+            Destroy(tokens[i]);
         }
         tokens.Clear();
 
         for(int i = 0; i < polytokens.Count; i++) {
-            Destroy(polytokens[i].gameObject);
+            Destroy(polytokens[i]);
         }
         polytokens.Clear();
     }
 
     public void ClosePolytokens() {
-        foreach(TokenPoly polytoken in polytokens) {
-            polytoken.Close();
+        foreach(GameObject polytoken in polytokens) {
+            polytoken.GetComponent<TokenPoly>().Close();
         }
     }
 
     public void Respawn() {
         DeleteTokens();
+        EndOfLesson();
         CreateTokens(repository);
     }
 

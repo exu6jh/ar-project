@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -12,7 +13,8 @@ public class ActionRepository : MonoBehaviour
     // Start is called before the first frame update
     void Awake()
     {
-        readFromJsonFile("Assets/LessonOverhaul/Lessons/lesson1_objectjson.txt");
+        Debug.Log(Globals.lessonCreate);
+        readFromJsonFile(Globals.lessonCreate);
     }
     
     private void readFromPlaintextFile(string filename) {
@@ -41,9 +43,19 @@ public class ActionRepository : MonoBehaviour
     }
 
     private void readFromJsonFile(string filename) {
-        string[] lines = System.IO.File.ReadAllLines(filename);
-        string json = string.Join("", lines);
-        actions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionHolder>>(json);
+        try {
+            Debug.Log("Reading from file " + filename + ".");
+            string[] lines = System.IO.File.ReadAllLines(filename);
+            string json = string.Join("", lines);
+            actions = Newtonsoft.Json.JsonConvert.DeserializeObject<List<ActionHolder>>(json);
+            if(actions == null) {
+                actions = new List<ActionHolder>();
+            }
+        } catch {
+            Debug.Log("No such file found. Creating file.");
+            File.WriteAllText(filename, "");
+            actions = new List<ActionHolder>();
+        }
     }
 
     private ActionHolder ActionHolderFromOld(OldActionHolder old) {
@@ -167,7 +179,7 @@ public class ActionRepository : MonoBehaviour
 
     public void AddHolder(ActionHolder newHolder) {
         int i = 0;
-        while(actions[i].time <= newHolder.time) {
+        while(i < actions.Count && actions[i].time <= newHolder.time) {
             i++;
         }
         actions.Insert(i, newHolder);
@@ -185,13 +197,13 @@ public class ActionRepository : MonoBehaviour
         actions.Sort(CompareByTime);
     }
 
-    public void SaveJson(string filename) {
+    public void SaveJson() {
         Debug.Log("Sorting.");
         Sort();
         Debug.Log("Converting to JSON.");
         string jsonString = Newtonsoft.Json.JsonConvert.SerializeObject(actions);
         Debug.Log("Writing to file.");
-        System.IO.File.WriteAllText(filename, jsonString);
+        System.IO.File.WriteAllText(Globals.lessonCreate, jsonString);
         Debug.Log("Writing complete.");
     }
 }

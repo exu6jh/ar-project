@@ -383,8 +383,10 @@ public class ActionReader : MonoBehaviour
     }
 
     public void Stop() {
-        pauseTime = Time.time - startTime;
-        executing = false;
+        if(executing) {
+            pauseTime = Time.time - startTime;
+            executing = false;
+        }
         StopAllCoroutines();
         GetComponent<AudioSource>()?.Stop();
     }

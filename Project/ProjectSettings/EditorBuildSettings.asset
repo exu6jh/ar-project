@@ -62,6 +62,12 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/CustomLesson.unity
     guid: b6240ab7c5fb4dc4c8a65a6fd730e78d
+  - enabled: 1
+    path: Assets/LessonOverhaul/LessonCreator/Main Creator.unity
+    guid: 7fd754eac8925cb4f9855461d0633794
+  - enabled: 1
+    path: Assets/LessonOverhaul/LessonCreator/Creator Assets/LessonCreator.unity
+    guid: 0d5cbe1be58b09645b2edc40258d158e
   m_configObjects:
     com.unity.xr.management.loader_settings: {fileID: 11400000, guid: 1b61a105ad546c149bde46986ebae7d4, type: 2}
     com.unity.xr.openxr.settings4: {fileID: 11400000, guid: a150518710108584f812a9ab18131695, type: 2}
