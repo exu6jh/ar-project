@@ -175,4 +175,18 @@ public class Matrix
         mainString += "}";
         return mainString;
     }
+    
+    public string ToStringSquareDelim() {
+        string mainString = "[";
+        for(int i = 0; i < this.getRows(); i++) {
+            for(int j = 0; j < this.getCols(); j++) {
+                mainString += values[i,j].ToString() + (j != this.getCols() - 1 ? "," : "");
+            }
+            mainString += (i != this.getRows() - 1 ? ";" : "");
+        }
+        mainString += "]";
+        return mainString;
+    }
+    
+    public static Matrix newRowVector(Vector3 vector3) => new(new[,] {{vector3[0], vector3[1], vector3[2]}});
 }

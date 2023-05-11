@@ -1,6 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using UnityEngine;
@@ -186,6 +189,7 @@ public class ActionRepository : MonoBehaviour
     }
 
     public void SaveJson(string filename) {
+        Debug.Log("SaveJson entered");
         Debug.Log("Sorting.");
         Sort();
         Debug.Log("Converting to JSON.");
@@ -193,5 +197,139 @@ public class ActionRepository : MonoBehaviour
         Debug.Log("Writing to file.");
         System.IO.File.WriteAllText(filename, jsonString);
         Debug.Log("Writing complete.");
+    }
+
+    public void SaveOld(string filepathname)
+    {
+        Debug.Log("SaveOld entered");
+        Debug.Log("Sorting.");
+        Sort();
+        Debug.Log("Converting to string.");
+        string actionString = newActionsToOldString(actions);
+        Debug.Log("Writing to file.");
+        StringBuilder filenameCandidate = new StringBuilder(System.DateTime.Now.ToString("s"));
+        
+        foreach (var c in Path.GetInvalidFileNameChars()) 
+        { 
+            filenameCandidate.Replace(c, '-'); 
+        }
+        
+        System.IO.File.WriteAllText($"{filepathname}-{filenameCandidate}.txt", actionString);
+        Debug.Log("Writing complete.");
+    }
+
+    public string newActionsToOldString(List<ActionHolder> actions)
+    {
+        ResetOldOldDictionaries();
+        
+        IEnumerable<IGrouping<float, string>> timeGroupedActions =  
+            from action in actions
+            group OldOldActionHolderFromNew(action).command by action.time into timeGroupedOldAction
+            select timeGroupedOldAction;
+
+        List<string> outputLines = new List<string>();
+        
+        float lastTime = 0;
+        foreach (var (curTime, commands) in timeGroupedActions.Select(x => (x.Key, x)))
+        {
+            outputLines.Add($"WAIT {curTime - lastTime :F1}");
+            lastTime = curTime;
+
+            foreach (var command in commands)
+            {
+                outputLines.Add(command);
+            }
+        }
+
+        return String.Join("\n", outputLines);
+    }
+
+    private Dictionary<string, string> toParentName = new();
+    private Dictionary<string, Dictionary<string, Vector3>> toProperties = new();
+
+    private static Dictionary<string, Vector3> getInitialProperties()
+    {
+        return new() {{"POS", Vector3.zero}, {"ROT", Vector3.zero}, {"SCALE", Vector3.one}};
+    }
+    
+    private static Dictionary<string, Vector3> getInitialGridProperties()
+    {
+        return new() {{"POS", Vector3.zero}, {"ROT", Vector3.zero}, {"SCALE", Vector3.one * 0.05f}};
+    }
+
+    private void ResetOldOldDictionaries()
+    {
+        toParentName.Clear();
+        toProperties.Clear();
+        
+        toProperties.Add("mangle_origin", getInitialProperties());
+    }
+    
+    
+
+    private OldActionHolder OldOldActionHolderFromNew(ActionHolder holder) {
+        string commandString = "";
+        if(holder.command == CommandType.CreateObject) {
+            commandString = "CREATE-OBJECT \"" + holder.editorObjectName + "\"";
+            commandString += (holder.internalObjectName == null ? " AS \"" + holder.internalObjectName + "\"" : "");
+            
+            toParentName.Add(holder.internalObjectName ?? holder.editorObjectName, "mangle_origin");
+            toProperties.Add(holder.internalObjectName ?? holder.editorObjectName, getInitialProperties());
+            
+        } else if(holder.command == CommandType.CreateMatrix) {
+            commandString = "CREATE-MATRIX \"" + holder.internalObjectName + "\" " + (new Matrix(holder.matrixFields)).ToStringSquareDelim();
+            
+        } else if(holder.command == CommandType.DeleteObject) {
+            commandString = "DELETE-OBJECT \"" + holder.internalObjectName + "\"";
+            
+        } else if(holder.command == CommandType.AssignProperty) {
+            
+            // Any program that can be converted back to oldold format must go to Vector3 
+            Vector3 newWorldProperty = new Vector3(holder.matrixFields[0, 0], holder.matrixFields[0, 1], holder.matrixFields[0, 2]);
+            
+            toProperties[holder.internalObjectName][holder.property] = newWorldProperty;
+
+            // This is bad code (only works for POS when 0 ROT), but eh
+            Vector3 parentWorldProperty = toProperties[toParentName[holder.internalObjectName]][holder.property];
+            
+            Vector3 parentWorldScale = toProperties[toParentName[holder.internalObjectName]]["SCALE"];
+            
+            Vector3 newLocalProperty = (newWorldProperty - parentWorldProperty);
+                for(int i=0; i<3; i++) newLocalProperty[i] /= parentWorldScale[i];
+            
+            commandString = "ASSIGN-PROPERTY \"" + holder.internalObjectName + "\" \"" + holder.property + "\" " + (Matrix.newRowVector(newLocalProperty)).ToStringSquareDelim();
+            commandString += (holder.duration > 0.1f ? " " + holder.duration.ToString("F1") : "");
+            
+        } else if(holder.command == CommandType.PlaySound) {
+            commandString = "PLAY SOUND \"" + holder.editorObjectName + "\"";
+            
+        } else if(holder.command == CommandType.DrawGrid) {
+            commandString = "DRAW GRID \"" + holder.internalObjectName + "\"";
+            
+            toParentName.Add(holder.internalObjectName, "mangle_origin");
+            toProperties.Add(holder.internalObjectName, getInitialGridProperties());
+            
+        } else if(holder.command == CommandType.DrawPoint) {
+            commandString = "DRAW POINT \"" + holder.internalObjectName + "\" ON \"" + holder.affiliatedObjects[0] + "\"";
+            
+            toParentName.Add(holder.internalObjectName, holder.affiliatedObjects[0]);
+            toProperties.Add(holder.internalObjectName, getInitialProperties());
+            
+        } else if(holder.command == CommandType.DrawVector) {
+            commandString = "DRAW VECTOR \"" + holder.internalObjectName + "\" FROM \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.affiliatedObjects[1] + "\"";
+            
+        } else if(holder.command == CommandType.ApplyMatrix) {
+            commandString = "APPLY-MATRIX \"" + holder.affiliatedObjects[0] + "\" TO \"" + holder.internalObjectName;
+            
+        } else {
+            Debug.Log("Unrecognized holder command.");
+            return null;
+        }
+        return new OldActionHolder(holder.time, commandString);
+    }
+
+    public void Refresh(string filename)
+    {
+        readFromJsonFile(filename);
     }
 }
