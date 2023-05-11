@@ -26,9 +26,11 @@ public enum SCENES
     SANDBOX,
     _3D_LIGHT_TEST,
     CUSTOM_LESSON,
+    CREATE_MENU,
+    CREATE,
     TEMPLATE,
     QUIZ,
-    QUIZ_TEST,
+    QUIZ_TEST
 }
 
 // Lessons avilable
@@ -805,6 +807,8 @@ public class Session : AbstractSession
 public static class Globals
 {
     public static string lesson;
+
+    public static string lessonCreate;
 
     public static List<Session> defaultSessions;
 
