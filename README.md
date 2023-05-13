@@ -23,3 +23,22 @@ GridManager is responsible for updating gridlines when its basis vectors change,
 Lessons are implemented through means of our custom scripting language. The language is parsed within the LessonReader class through a regex-based parser. A comprehensive list of available commands, as well as sample lessons, is present in the dedicated document entitled “Script Commands and Example Lessons.pdf”. These lessons can also be found within the Lessons folder of the Assets folder within Project.
 
 Custom script loading is temporarily disabled due to the issues with deployment and incompatible file systems. The functionality for it is present in ChangeLesson.cs, which was originally attached to a TextMeshPro object to allow the user to input the name of the custom script, but the object was removed because of the aforementioned issue.
+
+# **Data Collection:**
+The linear algebra application contains a data collection system that collects engagement data like the total amount of time a user has spent in a certain scene of a lesson. For the quiz sections, it also collects data on how many questions a user has answered correctly / inocorrectly. 
+
+Data was stored in the following format: 
+
+Entries: This is the array which stores multiple “entries”. Each entry contains data of the user on each scene that they visited. Entries are arranged in chronological order of the time they were visited.
+
+Entry format:
+- Name: Name of the scene visited 
+- Total_time: Total time spent on the scene
+- StartTime: The start timestamp of the scene (formatted in YYYY-MM-DD HH:MM:SS) 
+- EndTime: The end timestamp of the scene with the same format 
+- Completed: For the quiz scenes, checks if the quiz was completed or not 
+- Quiz: Data for the quiz scene, contains an array of quiz questions and a boolean for which questions are right and wrong 
+
+The other fields were not filled up during data collection.
+
+/Project/Assets/Scripts/Data Scripts/ contains all the classes in which the data is formatted as well as the scripts which serialize the data collected into a JSON string. After the JSON string has been serialized, a UnityWebRequest is sent to a NextJS api hosted on vercell which then transfers the string into the MongoDB database. 
